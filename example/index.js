@@ -1,6 +1,6 @@
 import components from '../src'
 
-const readme = new components.Readme('', {
+const readme = new components.Readme({
   name: 'handlebars2',
   username: 'ulivz',
   author: {
