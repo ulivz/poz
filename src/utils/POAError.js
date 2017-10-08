@@ -1,4 +1,4 @@
-export default class PropaError extends Error {
+export default class POAError extends Error {
 
   constructor(msg) {
     super(msg)

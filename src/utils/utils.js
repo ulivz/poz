@@ -29,3 +29,10 @@ export function isArray(arr) {
 export function isString(str) {
   return typeof str === 'string'
 }
+
+/**
+ * Undefined type check
+ */
+export function isUndefined(str) {
+  return typeof str === 'undefined'
+}
