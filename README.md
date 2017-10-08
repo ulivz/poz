@@ -1,26 +1,26 @@
-# propa
-> a project patcher
+# poa
+> Project Omnipresent Amenities Edit
 
 ## Badges
 
-[![NPMversion](https://img.shields.io/npm/v/propa.svg?style=flat)](https://npmjs.com/package/propa)[![NPMdownloads](https://img.shields.io/npm/dm/propa.svg?style=flat)](https://npmjs.com/package/propa)[![CircleCI](https://circleci.com/gh/ulivz/propa/tree/master.svg?style=shield)](https://circleci.com/gh/ulivz/propa/tree/master)[![codecov](https://codecov.io/gh/ulivz/propa/branch/master/graph/badge.svg)](https://codecov.io/gh/ulivz/propa)
+[![NPMversion](https://img.shields.io/npm/v/poa.svg?style=flat)](https://npmjs.com/package/poa)[![NPMdownloads](https://img.shields.io/npm/dm/poa.svg?style=flat)](https://npmjs.com/package/poa)[![CircleCI](https://circleci.com/gh/ulivz/poa/tree/master.svg?style=shield)](https://circleci.com/gh/ulivz/poa/tree/master)[![codecov](https://codecov.io/gh/ulivz/poa/branch/master/graph/badge.svg)](https://codecov.io/gh/ulivz/poa)
 
 ## Install
 
-Install _propa_:
+Install _poa_:
 
 ```bash
 # Either globally
-yarn global add propa
+yarn global add poa
 # Or locally (preferred)
-yarn add propa --dev
+yarn add poa --dev
 ```
 
 or, If you use `npm`:
 
 ```bash
-npm i propa -g
-npm i propa --save-dev
+npm i poa -g
+npm i poa --save-dev
 ```
 
 ## Contributing
@@ -33,8 +33,8 @@ npm i propa --save-dev
 
 ## Author
 
-**propa** © [ULIVZ](https://github.com/ulivz), Released under the [MIT](./LICENSE) License.
+**poa** © [ULIVZ](https://github.com/ulivz), Released under the [MIT](./LICENSE) License.
 
-Authored and maintained by ULIVZ with help from contributors ([list](https://github.com/ulivz/propa/contributors)).
+Authored and maintained by ULIVZ with help from contributors ([list](https://github.com/ulivz/poa/contributors)).
 
 > [v2js.com](http://v2js.com) · GitHub [@ULIVZ](https://github.com/ulivz)
