@@ -1,7 +1,7 @@
 {
-  "name": "propa",
+  "name": "poa",
   "version": "0.0.1",
-  "description": "a project patcher",
+  "description": "project omnipresent amenities",
   "repository": {
     "url": "ULIVZ/propa",
     "type": "git"
@@ -12,11 +12,11 @@
     "dist"
   ],
   "scripts": {
-    "test:cov": "jest --coverage && npm run lint",
-    "test": "npm run lint && jest",
+    "test:cov": "BABEL_ENV=test jest --coverage",
+    "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
-    "build": "bili --config build/bili.config.js",
+    "build": "roly --config build/bili.config.js",
     "example": "poi --config build/poi.config.js",
     "build:example": "poi build --config build/poi.config.js",
     "gh": "gh-pages -d example/dist",
@@ -27,35 +27,23 @@
   "jest": {
     "testEnvironment": "node"
   },
-  "babel": {
-    "env": {
-      "test": {
-        "presets": [
-          [
-            "env",
-            {
-              "targets": {
-                "node": "current"
-              }
-            }
-          ]
-        ]
-      }
-    }
-  },
   "dependencies": {
+    "git-config-path": "^1.0.1",
+    "handlebars2": "^0.1.1",
     "mitt": "^1.1.2",
-    "handlebars2": "^0.0.12"
+    "parse-git-config": "^1.1.1"
   },
   "devDependencies": {
+    "babel-plugin-inline-import": "^2.0.6",
     "babel-preset-env": "^1.4.0",
-    "bili": "^0.17.0",
     "eslint-config-rem": "^3.0.0",
     "gh-pages": "^1.0.0",
-    "jest-cli": "^19.0.0",
+    "handlebars2": "^0.1.0",
+    "jest-cli": "^21.2.1",
     "poi": "^9.1.4",
     "raw-loader": "^0.5.1",
     "rollup-plugin-string": "^2.0.2",
+    "roly": "^1.1.1",
     "xo": "^0.18.0"
   },
   "xo": {

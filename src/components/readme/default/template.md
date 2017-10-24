@@ -1,44 +1,39 @@
-{{#noindent}}
-  {{#if logo}}
-    <p align="center">
-      <img alt="logo.svg" width="{{logo.width}}"
-           src="https://cdn.rawgit.com/{{ username }}/{{ name }}/master/{{logo.path}}">
-    </p>
+```handlebars
+{{#if logo}}
+<p align="center">
+  <img alt="logo.svg" width="{{logo.width}}" src="https://cdn.rawgit.com/{{ username }}/{{ name }}/master/{{logo.path}}">
+</p>
 
-    <p align="center">
-      {{description}}
-    </p>
-
-  {{else}}
-    # {{ name }}
-    > {{ description }}
+<p align="center">
+{{description}}
+</p>
+{{else}}
+# {{ name }}
+> {{ description }}
   {{/if}}
-{{/noindent}}
 {{#if badges}}
-  {{#noindent}}
 
-    ## Badges
+## Badges
 
-    {{#nospace}}
-      {{#nobreak}}
-        {{#if badges.version}}
-          [![NPM version](https://img.shields.io/npm/v/{{ name }}.svg?style=flat)](https://npmjs.com/package/{{ name }})&nbsp;
-        {{/if}}
-        {{#if badges.downloads}}
-          [![NPM downloads](https://img.shields.io/npm/dm/{{ name }}.svg?style=flat)](https://npmjs.com/package/{{ name }})&nbsp;
-        {{/if}}
-        {{#if badges.ci}}
-          [![CircleCI](https://circleci.com/gh/{{ username }}/{{ name }}/tree/master.svg?style=shield)](https://circleci.com/gh/{{ username }}/{{ name }}/tree/master)&nbsp;
-        {{/if}}
-        {{#if badges.coverage}}
-          [![codecov](https://codecov.io/gh/{{ username }}/{{ name }}/branch/master/graph/badge.svg)](https://codecov.io/gh/{{ username }}/{{ name }})&nbsp;
-        {{/if}}
-        {{#if badges.donate}}
-          [![donate](https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&style=flat)](https://github.com/{{ username }}/donate)
-        {{/if}}
-      {{/nobreak}}
-    {{/nospace}}
-  {{/noindent}}
+{{#nospace}}
+  {{#nobreak}}
+    {{#if badges.version}}
+      [![NPM version](https://img.shields.io/npm/v/{{ name }}.svg?style=flat)](https://npmjs.com/package/{{ name }})&nbsp;
+    {{/if}}
+    {{#if badges.downloads}}
+      [![NPM downloads](https://img.shields.io/npm/dm/{{ name }}.svg?style=flat)](https://npmjs.com/package/{{ name }})&nbsp;
+    {{/if}}
+    {{#if badges.ci}}
+      [![CircleCI](https://circleci.com/gh/{{ username }}/{{ name }}/tree/master.svg?style=shield)](https://circleci.com/gh/{{ username }}/{{ name }}/tree/master)&nbsp;
+    {{/if}}
+    {{#if badges.coverage}}
+      [![codecov](https://codecov.io/gh/{{ username }}/{{ name }}/branch/master/graph/badge.svg)](https://codecov.io/gh/{{ username }}/{{ name }})&nbsp;
+    {{/if}}
+    {{#if badges.donate}}
+      [![donate](https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&style=flat)](https://github.com/{{ username }}/donate)
+    {{/if}}
+  {{/nobreak}}
+{{/nospace}}
 
 {{/if}}
 {{#if install}}
@@ -132,4 +127,4 @@
       author.twitter}} · Twitter [@{{ author.twitter }}](https://twitter.com/{{ author.twitter }}) {{/if}}
   {{/noindent}}
 {{/if}}
-
+```

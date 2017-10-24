@@ -5,7 +5,7 @@ module.exports = {
   plugins: [
     string({
       // Required to be specified
-      include: '**/*.hbs',
+      include: '**/*.md',
       // Undefined by default
       exclude: ['node_modules/**']
     })

@@ -3,15 +3,15 @@ import DEFAULT_TEMPLATE from './default/template.md'
 import DEFAULT_CONFIG from './default/config'
 
 /**
- * new License([template,] config)
+ * new CircleCI ([template,] config)
  */
-export default class License extends Component {
+export default class CircleCI extends Component {
 
   constructor(template, config) {
     super({ template, config, DEFAULT_TEMPLATE, DEFAULT_CONFIG })
   }
 
   static create(...args) {
-    return new License(...args).render()
+    return new CircleCI(...args).render()
   }
 }

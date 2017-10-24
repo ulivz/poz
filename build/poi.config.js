@@ -2,7 +2,7 @@ module.exports = {
   extendWebpack(config) {
     config.module
       .rule('compile')
-      .test(/\.hbs$/)
+      .test(/\.(hbs|md)$/)
       // .include
       // .add('src')
       // .end()
