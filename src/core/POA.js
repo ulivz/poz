@@ -2,6 +2,7 @@ import {EventEmitter} from 'events'
 import {getGitUser} from './utils/git'
 import {exists, isDirectory} from './utils/fs'
 import {resolve} from './utils/path'
+import {promptsRunner, promptsTransformer} from './utils/prompts'
 import POAError from './POAError.js'
 
 const LIFE_CYCLE = ['before', 'after']
@@ -54,7 +55,7 @@ export default class POA extends EventEmitter {
     const user = getGitUser()
     const cwd = process.cwd()
     this.context.set({
-      dirname: cwd.slice(cwd.lastIndexOf('/')),
+      dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
       cwd: cwd,
       gituser: user.name,
       gitemail: user.email
@@ -69,8 +70,12 @@ export default class POA extends EventEmitter {
   run() {
     const template = this.template
     template.before && template.before()
-    const prompts = template.prompts()
-    console.log(prompts)
+    const promptsMetadata = template.prompts()
+    const prompts = promptsTransformer(promptsMetadata)
+    return promptsRunner(prompts).then(answers => {
+      console.log(answers)
+      console.log('Finish')
+    })
   }
 
 }

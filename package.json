@@ -30,6 +30,7 @@
   "dependencies": {
     "git-config-path": "^1.0.1",
     "handlebars2": "^0.1.1",
+    "inquirer": "^3.3.0",
     "mitt": "^1.1.2",
     "parse-git-config": "^1.1.1"
   },
