@@ -1,3 +1,3 @@
-import components from './components'
+import components from './components/index'
 export default components
 

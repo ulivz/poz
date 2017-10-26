@@ -1,5 +1,4 @@
 import path from 'path'
 
-export function resolve(...args) {
-  return path.resolve(...args)
-}
+export const resolve = path.resolve
+export const join = path.join
