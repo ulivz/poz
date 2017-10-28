@@ -7,7 +7,7 @@ describe('render', () => {
     const context = { a: 1 }
     const result = render(template, context)
     expect(result.status).toBe(200)
-    expect(result.result).toBe('1')
+    expect(result.out).toBe('1')
     expect(result.error).toBe(undefined)
   })
 

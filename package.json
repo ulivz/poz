@@ -31,6 +31,7 @@
     ]
   },
   "dependencies": {
+    "fs-extra": "^4.0.2",
     "git-config-path": "^1.0.1",
     "handlebars2": "^0.1.1",
     "inquirer": "^3.3.0",

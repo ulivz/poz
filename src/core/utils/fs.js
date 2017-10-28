@@ -1,4 +1,5 @@
-import fs from 'fs'
+import fs from 'fs-extra'
+import {statusWrapper} from './wrapper'
 
 export function exists(path) {
   return fs.existsSync(path)
@@ -18,4 +19,8 @@ export function isDirectory(path) {
   }
   const stat = fs.statSync(path)
   return stat.isDirectory()
+}
+
+export function copy(...args) {
+  return statusWrapper()
 }

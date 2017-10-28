@@ -56,7 +56,6 @@ export default class POA extends EventEmitter {
     if (!exists(entry)) {
       throw new POAError(`Cannot find ${entry}, the template directory must contains a file called 'poa.js'`)
     }
-
     const user = getGitUser()
     const cwd = process.cwd()
     this.context.set({
@@ -85,16 +84,12 @@ export default class POA extends EventEmitter {
 
   run() {
     const template = this.template
-    this.hooks.before()
     const promptsMetadata = template.prompts()
     const prompts = promptsTransformer(promptsMetadata)
     // promptsRunner(prompts).then(answers => {
     //   this.set(answers)
     // })
     // this.hooks.render()
-
-
-
   }
 
 }

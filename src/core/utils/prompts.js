@@ -11,11 +11,9 @@ export function promptsTransformer(promptsMetadata) {
   return prompts
 }
 
-
 export function promptsRunner(prompts) {
   return inquirer.prompt(prompts)
 }
-
 
 export function mockPromptRunner(prompts, promptsAnswers) {
   const promptsPromise = promptsRunner(prompts)
