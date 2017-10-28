@@ -30,7 +30,7 @@ export const isBuffer = Buffer.isBuffer
 
 export const isGeneralizedObject = x => typeof x === 'object'
 
-export const isPlainObject = x => toString.call(x) === '[object Object]'
+export const isPlainObject = isObjectOfType('Object')
 
 export const isObject = x => !isNullOrUndefined(x) && (isFunction(x) || isGeneralizedObject(x))
 
