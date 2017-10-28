@@ -18,7 +18,7 @@ import {
   isPromise,
   isIterable,
   isGenerator
-} from './datatypes'
+} from '../datatypes'
 
 
 describe('datatype', () => {

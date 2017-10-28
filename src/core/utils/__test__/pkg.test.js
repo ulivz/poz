@@ -1,5 +1,5 @@
-import {resolve} from './path'
-import {getPkg} from './pkg'
+import {resolve} from '../path'
+import {getPkg} from '../pkg'
 
 describe('pkg', () => {
 

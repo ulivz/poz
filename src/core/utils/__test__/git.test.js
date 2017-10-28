@@ -1,4 +1,4 @@
-import {getGitUser} from './git'
+import {getGitUser} from '../git'
 
 describe('git', () => {
   test('getGitUser', () => {

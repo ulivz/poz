@@ -1,7 +1,7 @@
 import {
   promptsTransformer,
   mockPromptRunner
-} from './prompts'
+} from '../prompts'
 
 describe('prompts', () => {
 

@@ -1,4 +1,4 @@
-import {noop} from './function'
+import {noop} from '../function'
 
 describe('function', () => {
 

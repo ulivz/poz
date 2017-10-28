@@ -1,17 +1,16 @@
-import {resolve} from './path'
-import {exists, isFile, isDirectory} from './fs'
+import {exists, isFile, isDirectory} from '../fs'
 
 describe('fs', () => {
 
   test('exists', () => {
-    let dir = __dirname + '/poa'
+    let dir = __dirname + '/fixtures/dist'
     expect(exists(dir)).toBe(false)
   })
 
   test('isFile && isDirectory', () => {
 
-    let file = __dirname + '/fs.js'
-    let dir = resolve(__dirname, '../utils')
+    let file = __dirname + '/fixtures/.gitconfig'
+    let dir = __dirname + '/fixtures/src'
     let unexistFile = __dirname + '/fs2.js'
     let unexistDir = __dirname + '/fs2'
 
