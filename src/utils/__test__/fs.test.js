@@ -1,4 +1,12 @@
-import {exists, isFile, isDirectory} from '../fs'
+import {
+  exists,
+  isFile,
+  isDirectory,
+  readdirSync,
+  isDirEmpty,
+  copy,
+  unlinkSync
+} from '../fs'
 
 describe('fs', () => {
 
@@ -22,5 +30,22 @@ describe('fs', () => {
     expect(isDirectory(unexistDir)).toBe(null)
 
   })
+  
+  let source = __dirname + '/fixtures/fs/source'
+  let target = __dirname + '/fixtures/fs/target'
+
+  test('isDirEmpty', () => {
+    expect(isDirEmpty(source)).toBe(false)
+    expect(isDirEmpty(target)).toBe(true)
+  })
+
+  test('copy', () => {
+    return copy(source, target).then(() => {
+      let files = readdirSync(target)
+      expect(files[0]).toBe('.gitignore')
+      unlinkSync(target + '/' + files[0])
+    })
+  })
+
 
 })

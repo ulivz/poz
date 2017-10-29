@@ -1,5 +1,5 @@
 import POA from './POA'
-import {resolve} from './utils/path'
+import {resolve} from '../utils/path'
 
 describe('POA', () => {
 

@@ -1,5 +1,4 @@
 import fs from 'fs-extra'
-import {statusWrapper} from './wrapper'
 
 export function exists(path) {
   return fs.existsSync(path)
@@ -21,6 +20,18 @@ export function isDirectory(path) {
   return stat.isDirectory()
 }
 
-export function copy(...args) {
-  return statusWrapper()
+export const readdirSync = fs.readdirSync
+
+export function isDirEmpty(path) {
+  if (!exists(path)) {
+    throw new Error(`${path} not exist!`)
+  }
+  const files = readdirSync(path)
+  return !files.length
 }
+
+export const copy = fs.copy
+
+export const unlinkSync = fs.unlinkSync
+
+
