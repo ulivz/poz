@@ -1,0 +1,31 @@
+{
+  "name": "fixtures",
+  "version": "0.0.0",
+  "description": "my awesome project",
+  "repository": {
+    "url": "ulivz/fixtures",
+    "type": "git"
+  },
+  "main": "index.js",
+  "files": ["index.js"
+  ],
+  "scripts": {
+    "test": "jest --coveragenpm run lint&& echo 'no tests!'",
+    "lint": "xo",
+    "lint:fix": "npm run lint -- -fix"
+  },
+  "author": "ulivz <chl814@foxmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=4"
+  },
+  "dependencies": { 
+  },
+  "devDependencies": { 
+    "eslint-config-rem": "^3.0.0",
+    "xo": "^0.18.0", 
+  }, 
+  "xo": {
+    "extends": "rem"
+  } 
+}

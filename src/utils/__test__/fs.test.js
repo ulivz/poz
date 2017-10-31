@@ -30,7 +30,7 @@ describe('fs', () => {
     expect(isDirectory(unexistDir)).toBe(null)
 
   })
-  
+
   let source = __dirname + '/fixtures/fs/source'
   let target = __dirname + '/fixtures/fs/target'
 

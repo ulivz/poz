@@ -15,16 +15,16 @@ export function promptsRunner(prompts) {
   return inquirer.prompt(prompts)
 }
 
-export function mockPromptRunner(prompts, promptsAnswers) {
+export function mockPromptsRunner(prompts, promptsAnswers) {
   const promptsPromise = promptsRunner(prompts)
   const ui = promptsPromise.ui
   let idx = 0;
   ui.process.subscribe(() => {
     // Use setTimeout because async properties on the following question object will still
     // be processed when we receive the subscribe event.
-    process.nextTick(() => {
+    setTimeout(() => {
       ui.rl.emit('line', promptsAnswers && promptsAnswers[idx++])
-    })
+    }, 5)
   })
   ui.rl.emit('line', promptsAnswers && promptsAnswers[idx++])
   return promptsPromise
