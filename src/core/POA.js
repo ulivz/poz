@@ -7,8 +7,7 @@ import {noop} from '../utils/function'
 import {render} from '../utils/render'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
 import POAError from './POAError.js'
-import vfs from 'vinyl-fs'
-import map from 'map-stream'
+
 
 const IS_TEST_ENV =
   process.env.BABEL_ENV === 'test' ||
@@ -97,30 +96,6 @@ export default class POA extends EventEmitter {
   initLifeCycle() {
     LIFE_CYCLE.forEach(hookName => {
       this.hooks[hookName] = this.template[hookName] || noop
-    })
-  }
-
-  generate(sourceDir, targetDir) {
-    let globs = [sourceDir + '/**']
-    const V = vfs;
-    return new Promise(resolve => {
-      V.src(globs)
-        .pipe(map((file, cb) => {
-          if (!file.isDirectory()) {
-            let res = render(file.contents.toString(), this.context)
-            let filePath = relative(this.context.get('tmplDir'), file.path)
-            if (res.status === 200) {
-              console.log(`SUCCESS: render ${filePath}`)
-              file.contents = new Buffer(res.out)
-            } else {
-              console.log(`ERROR: render ${filePath}, please check the template`)
-              console.log(res.error)
-            }
-          }
-          cb(null, file)
-        }))
-        .pipe(V.dest(targetDir))
-        .on('finish', resolve)
     })
   }
 
