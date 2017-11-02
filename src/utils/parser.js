@@ -1,17 +1,17 @@
-import {isFunction, isR} from './datatypes'
+import {isFunction, isRegExp} from './datatypes'
 
 /**
  * Simple string parser
  * @param str
- * @param options
- * @property options.reg Regualr Expression to match the tag
- * @property options.onMatch called when finding the match part, matching part will be passed in
- * @returns {string}
+ * @param options {object}
+ * @property options.reg {regexp} Regualr Expression to match the tag
+ * @property options.onMatch {function} called when finding the match part, matching part will be passed in
+ * @returns {string} new string
  */
 export const simpleStringParser = (str, options) => {
   const reg = options.reg
   const onMatch = options.onMatch
-  if (!isFunction(onMatch)) {
+  if (!isRegExp(reg) || !isFunction(onMatch)) {
     return str
   }
   let match, nStr = ''
