@@ -17,7 +17,8 @@ import {
   isNativePromise,
   isPromise,
   isIterable,
-  isGenerator
+  isGenerator,
+  isRegExp
 } from '../datatypes'
 
 
@@ -208,6 +209,13 @@ describe('datatype', () => {
     }
     expect(isGenerator(g)).toBe(false)
     expect(isGenerator(g())).toBe(true)
+  })
+
+  test('isRegExp', () => {
+    const reg = /a/g
+    const reg2 = new RegExp('a', 'i')
+    expect(isRegExp(reg)).toBe(true)
+    expect(isRegExp(reg2)).toBe(true)
   })
 
 })

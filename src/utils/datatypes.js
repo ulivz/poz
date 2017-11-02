@@ -49,3 +49,5 @@ export const isPromise = x => isNativePromise(x) || hasPromiseAPI(x)
 export const isIterable = x => !isNullOrUndefined(x) && isFunction(x[Symbol.iterator])
 
 export const isGenerator = x => isIterable(x) && isFunction(x.next) && isFunction(x.throw)
+
+export const isRegExp = isObjectOfType('RegExp')
