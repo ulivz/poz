@@ -47,7 +47,7 @@ describe('prompts', () => {
     const prompts = promptsTransformer(promptsMetadata);
     return mockPromptsRunner(prompts).then(answers => {
       expect(answers.name).toBe(promptsMetadata.name.default)
-      expect(answers.description).toBe(promptsMetadata.description.default)
+      expect(answers.description).toBe(undefined) // skipped
       expect(answers.author).toBe(promptsMetadata.author.default)
     })
   })
@@ -66,17 +66,17 @@ describe('prompts', () => {
     })
   })
 
-  test.only('progressivePromptsRunner', async () => {
-    const promptsMetadata = promptsMetadata2
-    const prompts = promptsTransformer(promptsMetadata);
-    return progressivePromptsRunner(prompts, [
-      'poa.js',
-      'awesome poa',
-      'ULIVZ'
-    ]).then(answers => {
-      console.log(answers)
-    })
-  })
+  // test('progressivePromptsRunner', async () => {
+  //   const promptsMetadata = promptsMetadata2
+  //   const prompts = promptsTransformer(promptsMetadata);
+  //   return progressivePromptsRunner(prompts, [
+  //     'poa.js',
+  //     'awesome poa',
+  //     'ULIVZ'
+  //   ]).then(answers => {
+  //     console.log(answers)
+  //   })
+  // })
 
 
 
