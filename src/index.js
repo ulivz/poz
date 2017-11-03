@@ -1,3 +1,3 @@
 import components from './components/index'
-export default components
-
+import POA from './core/POA'
+export {POA as default, components}

@@ -1,7 +1,9 @@
-import fsStream from 'vinyl-fs'
+import VFS from 'vinyl-fs'
 import map from 'map-stream'
 import {isString, isPlainObject} from './datatypes'
-import {success, error} from './log'
+import {success, error, echo} from './log'
+import {render} from './render'
+import {relative} from './path'
 
 /**
  * Generate
@@ -19,13 +21,12 @@ export function generate(sourceDir, targetDir, options) {
     throw new Error('Expected "targetDir" to be string')
   }
   if (options && !isPlainObject(options)) {
-    options = { context: options }
+    options = { context: options, render: true }
   }
 
   let globs = [sourceDir + '/**']
-
   return new Promise(resolve => {
-    fsStream.src(globs)
+    VFS.src(globs)
       .pipe(map((file, cb) => {
         // render file by context
         if (options.render) {
@@ -35,17 +36,17 @@ export function generate(sourceDir, targetDir, options) {
             let filePath = relative(sourceDir, file.path)
 
             if (res.status === 200) {
-              success(`render ${filePath}`)
+              success(`render <cyan>${filePath}</cyan>`)
               file.contents = new Buffer(res.out)
             } else {
-              error(`render <red>${filePath}</red>, please check the template`)
-              console.log(res.error)
+              error(`render <red>${filePath}</red>`)
+              echo(res.error)
             }
           }
         }
         cb(null, file)
       }))
-      .pipe(fsStream.dest(targetDir))
+      .pipe(VFS.dest(targetDir))
       .on('finish', resolve)
   })
 }

@@ -9,7 +9,8 @@
 {{else}}
 # {{ name }}
 > {{ description }}
-  {{/if}}
+{{/if}}
+
 {{#if badges}}
 
 ## Badges
@@ -121,8 +122,7 @@
     <br>
     Authored and maintained by {{ author.name }} with help from contributors ([list](https://github.com/{{ username }}/{{ name }}/contributors)).
 
-    > [{{normalizeurl
-      author.website}}]({{ author.website }}) · GitHub [@{{ author.name }}](https://github.com/{{ username }}){{#if
+    > [{{normalizeurl author.website}}]({{ author.website }}) · GitHub [@{{ author.name }}](https://github.com/{{ username }}){{#if
       author.twitter}} · Twitter [@{{ author.twitter }}](https://twitter.com/{{ author.twitter }}) {{/if}}
   {{/noindent}}
 {{/if}}

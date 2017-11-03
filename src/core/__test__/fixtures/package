@@ -7,10 +7,11 @@
     "type": "git"
   },
   "main": "index.js",
-  "files": ["index.js"
+  "files": [
+    "index.js"
   ],
   "scripts": {
-    "test": "jest --coveragenpm run lint&& echo 'no tests!'",
+    "test": "jest --coverage && npm run lint && echo 'no tests!'",
     "lint": "xo",
     "lint:fix": "npm run lint -- -fix"
   },

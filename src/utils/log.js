@@ -3,8 +3,7 @@ import {simpleStringParser} from './parser'
 
 const GLOBAL_INDENT = ' '
 const COLOR_REG = /<([\w]+)>([^<>]*)<\/\1>/g
-const echo = (...args) => console.log(...[GLOBAL_INDENT, ...args])
-
+export const echo = (...args) => console.log(...[GLOBAL_INDENT, ...args])
 export const COLOR = chalk
 
 export const simplelogMsgParser = msg => {

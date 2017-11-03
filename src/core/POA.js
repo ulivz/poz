@@ -1,17 +1,13 @@
 import {EventEmitter} from 'events'
 import {getGitUser} from '../utils/git'
-import {isString, isPlainObject} from '../utils/datatypes'
-import {exists, isDirectory, copy} from '../utils/fs'
-import {resolve, relative} from '../utils/path'
+import {isPlainObject} from '../utils/datatypes'
+import {exists, isDirectory} from '../utils/fs'
+import {resolve} from '../utils/path'
+import {generate} from '../utils/stream'
 import {noop} from '../utils/function'
-import {render} from '../utils/render'
+import {POA_ENV_TEST} from '../utils/env'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
 import POAError from './POAError.js'
-
-
-const IS_TEST_ENV =
-  process.env.BABEL_ENV === 'test' ||
-  process.env.NODE_ENV === 'test'
 
 const LIFE_CYCLE = [
   'before',
@@ -109,20 +105,23 @@ export default class POA extends EventEmitter {
     const promptsMetadata = template.prompts()
     const prompts = promptsTransformer(promptsMetadata)
 
-    let envPromptsRunner = IS_TEST_ENV
+    let envPromptsRunner = POA_ENV_TEST
       ? mockPromptsRunner
       : promptsRunner
 
     return envPromptsRunner(prompts).then(answers => {
       this.context.assign(answers)
-      return this.generate(
+      return generate(
         this.context.tmplDir,
         this.context.cwd,
+        {
+          render: true,
+          context: this.context
+        }
       )
     }).then(() => {
       console.log('Go hacking!')
     })
-
 
     // render
     // this.hooks.render()

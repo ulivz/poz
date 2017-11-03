@@ -1,6 +1,7 @@
 import {
   promptsTransformer,
-  mockPromptRunner
+  mockPromptsRunner,
+  progressivePromptsRunner,
 } from '../prompts'
 
 describe('prompts', () => {
@@ -21,7 +22,8 @@ describe('prompts', () => {
     },
     description: {
       message: 'How would you describe the new project',
-      default: `my awesome project`
+      default: `my awesome project`,
+      when: answers => answers.name !== 'POA'
     },
     author: {
       message: 'What is your name',
@@ -43,7 +45,7 @@ describe('prompts', () => {
   test('promptsRunner - default value', async () => {
     const promptsMetadata = promptsMetadata2
     const prompts = promptsTransformer(promptsMetadata);
-    return mockPromptRunner(prompts).then(answers => {
+    return mockPromptsRunner(prompts).then(answers => {
       expect(answers.name).toBe(promptsMetadata.name.default)
       expect(answers.description).toBe(promptsMetadata.description.default)
       expect(answers.author).toBe(promptsMetadata.author.default)
@@ -53,7 +55,7 @@ describe('prompts', () => {
   test('promptsRunner - mock value', async () => {
     const promptsMetadata = promptsMetadata2
     const prompts = promptsTransformer(promptsMetadata);
-    return mockPromptRunner(prompts, [
+    return mockPromptsRunner(prompts, [
       'poa.js',
       'awesome poa',
       'ULIVZ'
@@ -63,5 +65,20 @@ describe('prompts', () => {
       expect(answers.author).toBe('ULIVZ')
     })
   })
+
+  test.only('progressivePromptsRunner', async () => {
+    const promptsMetadata = promptsMetadata2
+    const prompts = promptsTransformer(promptsMetadata);
+    return progressivePromptsRunner(prompts, [
+      'poa.js',
+      'awesome poa',
+      'ULIVZ'
+    ]).then(answers => {
+      console.log(answers)
+    })
+  })
+
+
+
 
 })
