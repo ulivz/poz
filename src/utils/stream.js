@@ -42,7 +42,6 @@ export function generate(sourceDir, targetDir, options) {
               console.log(res.error)
             }
           }
-
         }
         cb(null, file)
       }))

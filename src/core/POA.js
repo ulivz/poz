@@ -13,10 +13,6 @@ const IS_TEST_ENV =
   process.env.BABEL_ENV === 'test' ||
   process.env.NODE_ENV === 'test'
 
-export function generate(source, target) {
-}
-
-
 const LIFE_CYCLE = [
   'before',
   'render',

@@ -1,42 +1,28 @@
-// import chalk from 'chalk'
-var chalk = require('chalk')
+import chalk from 'chalk'
+import {simpleStringParser} from './parser'
 
 const GLOBAL_INDENT = ' '
 const COLOR_REG = /<([\w]+)>([^<>]*)<\/\1>/g
 const echo = (...args) => console.log(...[GLOBAL_INDENT, ...args])
 
-const simpleStringTagParser = (str, options) => {
-  const reg = options.reg
-  const lib = options.lib
-  const onKnownTag = options.onKnownTag
-  const onUnknownTag = options.onUnknownTag
-  let match, nStr = ''
-  let start = reg.lastIndex
-  while (match = reg.exec(str)) {
-    let [, tag, content] = match
-    if (!lib[tag]) {
-      onKnownTag && onKnownTag(tag)
-      nStr = nStr + str.slice(start, match.index) + content
-    } else {
-      onKnownTag && onUnknownTag(tag)
-      nStr = nStr + str.slice(start, match.index) + lib[tag](content)
-    }
-    start = reg.lastIndex
-  }
-  return nStr
-}
+export const COLOR = chalk
 
-const parselogMessage = msg => {
-  return simpleStringTagParser(msg, {
+export const simplelogMsgParser = msg => {
+  return simpleStringParser(msg, {
     reg: COLOR_REG,
-    lib: chalk,
-    onKnownTag: tag => echo(`Find not support color tag: ${tag}`),
-    onUnknownTag: tag => null
+    onMatch: (matchPart, tagName, tagContent) => {
+      if (!COLOR[tagName]) {
+        echo(`Skipped unknown tag ${tagName}`)
+        return tagContent
+      } else {
+        return COLOR[tagName](tagContent)
+      }
+    }
   })
 }
 
-const simpleColorLog = (color, text) => {
-  return (msg) => echo(chalk[color](text), parselogMessage(msg))
+export const simpleColorLog = (color, text) => {
+  return (msg) => echo(chalk[color](text), simplelogMsgParser(msg))
 }
 
 export const success = simpleColorLog('green', 'success')
