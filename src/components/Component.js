@@ -1,6 +1,6 @@
 import POAError from '../core/POAError'
 import H2 from 'handlebars2'
-import {isPlainObject, isString, isUndefined} from '../utils/utils'
+import {isPlainObject, isString, isUndefined} from '../utils/datatypes'
 
 const GLOBAL_CONFIG = {
   __start__: '```handlebars',

@@ -1,7 +1,6 @@
 import {
   promptsTransformer,
   mockPromptsRunner,
-  progressivePromptsRunner,
 } from '../prompts'
 
 describe('prompts', () => {
@@ -65,20 +64,5 @@ describe('prompts', () => {
       expect(answers.author).toBe('ULIVZ')
     })
   })
-
-  // test('progressivePromptsRunner', async () => {
-  //   const promptsMetadata = promptsMetadata2
-  //   const prompts = promptsTransformer(promptsMetadata);
-  //   return progressivePromptsRunner(prompts, [
-  //     'poa.js',
-  //     'awesome poa',
-  //     'ULIVZ'
-  //   ]).then(answers => {
-  //     console.log(answers)
-  //   })
-  // })
-
-
-
 
 })

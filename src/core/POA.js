@@ -1,49 +1,19 @@
-import {EventEmitter} from 'events'
 import {getGitUser} from '../utils/git'
 import {isPlainObject} from '../utils/datatypes'
 import {exists, isDirectory} from '../utils/fs'
 import {resolve} from '../utils/path'
 import {generate} from '../utils/stream'
-import {noop} from '../utils/function'
-import {POA_ENV_TEST} from '../utils/env'
+import {env} from '../utils/env'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
 import POAError from './POAError.js'
+import POAContext from './POAContext.js'
+import POAEventEmitter from './POAEventEmitter.js'
 
-const LIFE_CYCLE = [
-  'before',
-  'render',
-  'after'
-]
-
-export class POAContext {
-  constructor() {
-
-  }
-
-  set(key, val) {
-    this[key] = val
-    return this
-  }
-
-  assign(kVs) {
-    Object.keys(kVs).forEach(_key => {
-      this.set(_key, kVs[_key])
-    })
-    return this
-  }
-
-  get(key) {
-    return this[key]
-  }
-}
-
-export default class POA extends EventEmitter {
+export default class POA extends POAEventEmitter {
 
   constructor(tmplPkgDir) {
     super()
     this.context = new POAContext()
-    this.template = null
-    this.hooks = {}
     this.initContext(tmplPkgDir)
     this.initLifeCycle()
   }
@@ -59,36 +29,32 @@ export default class POA extends EventEmitter {
 
     // poa.js
     if (!exists(poaEntry)) {
-      throw new POAError(
-        `Cannot find ${poaEntry}, A POA template package should contains at least a file called 'poa.js' at root directory`
+      this.emit('error',
+        `Cannot find <cyan>${poaEntry}</cyan>, ` +
+        `A POA template package should contains at least a file called <cyan>'poa.js'</cyan> at root directory`
       )
     }
 
     // template/
-    const tmplDir = resolve(tmplPkgDir, 'template')
-    if (!exists(tmplDir)) {
-      throw new POAError(
-        `Cannot find ${poaEntry}, A POA template package should contains a template directory which used to store the template files`
+    const tplDir = resolve(tmplPkgDir, 'template')
+    if (!exists(tplDir)) {
+      this.emit('error',
+        `Cannot find <cyan>${poaEntry}/template</cyan>, ` +
+        `A POA template package should contains a template directory which used to store the template files`
       )
     }
 
     const user = getGitUser()
     const cwd = process.cwd()
     this.context.assign({
-      IS_TEST_ENV,
-      tmplDir,
-      dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
+      env: env.POA_ENV,
+      tplDir,
       cwd: cwd,
-      gituser: user.name,
-      gitemail: user.email
+      $dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
+      $gituser: user.name,
+      $gitemail: user.email
     })
-    this.template = require(poaEntry)(this.context, this)
-  }
-
-  initLifeCycle() {
-    LIFE_CYCLE.forEach(hookName => {
-      this.hooks[hookName] = this.template[hookName] || noop
-    })
+    this.__TEMPLATE__ = require(poaEntry)(this.context, this)
   }
 
   set(key, value) {
@@ -100,19 +66,22 @@ export default class POA extends EventEmitter {
   }
 
   run() {
-    this.hooks.before()
-    const template = this.template
+    this.emit('onStart')
+    const template = this.__TEMPLATE__
     const promptsMetadata = template.prompts()
     const prompts = promptsTransformer(promptsMetadata)
 
-    let envPromptsRunner = POA_ENV_TEST
+    const envPromptsRunner = env.IS_TEST
       ? mockPromptsRunner
       : promptsRunner
 
+    this.emit('onPromptsStart')
     return envPromptsRunner(prompts).then(answers => {
+      this.emit('onPromptsEnd')
       this.context.assign(answers)
+      this.emit('onSpawnStart')
       return generate(
-        this.context.tmplDir,
+        this.context.tplDir,
         this.context.cwd,
         {
           render: true,
@@ -120,11 +89,9 @@ export default class POA extends EventEmitter {
         }
       )
     }).then(() => {
-      console.log('Go hacking!')
+      this.emit('onSpawnEnd')
+      this.emit('onExit')
     })
-
-    // render
-    // this.hooks.render()
   }
 
 }

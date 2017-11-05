@@ -1,5 +1,11 @@
-import POA from '../src/core/POA'
-import path from 'path'
+const POA = require('../dist/poa.common')
+const path = require('path')
 
-const ins = new POA(path.resolve(__dirname, '../packages/nm'))
-ins.run()
+const prevCwd = process.cwd()
+
+process.chdir(path.resolve(__dirname, 'fixtures'))
+
+const POAInstance = new POA(path.resolve(__dirname, '../packages/nm'))
+POAInstance.run()
+
+process.chdir(prevCwd)

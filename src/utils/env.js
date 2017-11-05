@@ -1,8 +1,31 @@
-export const POA_ENV_TEST =
-  process.env.BABEL_ENV === 'test' ||
-  process.env.NODE_ENV === 'test'
+export const ENV = {
+  DEV: 'develop',
+  TEST: 'test',
+  DEBUG: 'debug',
+  PROD: 'production'
+}
 
+class POAEnv {
+  get POA_ENV() {
+    return process.env.NODE_ENV ||
+      process.env.BABEL_ENV
+  }
 
-export const POA_ENV_DEBUG =
-  process.env.BABEL_ENV === 'debug' ||
-  process.env.NODE_ENV === 'debug'
+  get IS_TEST() {
+    return this.POA_ENV === ENV.TEST
+  }
+
+  get IS_DEBUG() {
+    return this.POA_ENV === ENV.DEBUG
+  }
+
+  get IS_DEV() {
+    return this.POA_ENV === ENV.DEBUG || this.POA_ENV === ENV.TEST
+  }
+
+  get IS_PRODUCTION() {
+    return this.POA_ENV === ENV.PROD
+  }
+}
+
+export const env = new POAEnv()

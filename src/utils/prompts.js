@@ -1,7 +1,4 @@
 import inquirer from 'inquirer'
-import {isFunction} from './datatypes'
-import {info} from './log'
-import {POA_ENV_TEST} from './env'
 
 /**
  * Transform prompts metadata to standard prompt data structrue
