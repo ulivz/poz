@@ -12,7 +12,7 @@
     "dist"
   ],
   "scripts": {
-    "test:cov": "BABEL_ENV=test jest src/core/__test__/POA.test.js --coverage",
+    "test:cov": "BABEL_ENV=test jest src/utils/__test__/fs.test.js --coverage",
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
@@ -31,6 +31,8 @@
     ]
   },
   "dependencies": {
+    "archy": "^1.0.0",
+    "chalk": "^2.3.0",
     "fs-extra": "^4.0.2",
     "git-config-path": "^1.0.1",
     "handlebars2": "^0.1.1",
@@ -38,9 +40,11 @@
     "map-stream": "0.0.7",
     "mitt": "^1.1.2",
     "parse-git-config": "^1.1.1",
+    "recursive-readdir": "^2.2.1",
     "vinyl-fs": "^2.4.4"
   },
   "devDependencies": {
+    "@types/node": "^8.0.47",
     "babel-plugin-inline-import": "^2.0.6",
     "babel-preset-env": "^1.4.0",
     "cross-spawn": "^5.1.0",

@@ -23,6 +23,8 @@ export const simplelogMsgParser = msg => {
   })
 }
 
+export const parseColor = simplelogMsgParser
+
 export const simpleColorLog = (color, text) => {
   return (msg) => echo(chalk[color](text), simplelogMsgParser(msg))
 }
