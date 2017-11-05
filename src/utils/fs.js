@@ -73,19 +73,22 @@ export const getFileTree = (dirname, depth) => {
     return Promise.resolve(fileTree)
   }
   fileTree.nodes = []
+  fileTree.depth = 0
 
-  const mapDir = (dir, nodes) => {
+  const mapDir = (dir, nodes, dep) => {
+    dep++
     return Promisify(fs.readdir, dir).then(files => {
       const subPromises = []
       for (let i = 0, l = files.length; i < l; i++) {
         const file = files[i]
         const fullPath = resolve(dir, file)
         const node = FileNode.create(fullPath, dir)
+        node.depth = dep
         nodes.push(node)
-        if (isDirectory(fullPath)) {
+        if (node.depth <= depth && isDirectory(fullPath)) {
           node.nodes = []
           subPromises.push(
-            mapDir(fullPath, node.nodes)
+            mapDir(fullPath, node.nodes, dep)
           )
         }
       }
@@ -93,7 +96,7 @@ export const getFileTree = (dirname, depth) => {
     })
   }
 
-  return mapDir(dirname, fileTree.nodes)
+  return mapDir(dirname, fileTree.nodes, fileTree.depth)
     .then(() => fileTree)
 }
 

@@ -67,6 +67,7 @@ describe('fs', () => {
   test('getFileTree', () => {
     return getFileTree(__dirname)
       .then(result => {
+        console.log(result)
         console.log(parseColor(`<yellow>${archy(result)}</yellow>`))
       })
       .catch(err => {
