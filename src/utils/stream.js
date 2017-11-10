@@ -24,29 +24,24 @@ export function generate(sourceDir, targetDir, options) {
     options = { context: options, render: true }
   }
 
-  let globs = [sourceDir + '/**']
-  return new Promise(resolve => {
-    VFS.src(globs)
-      .pipe(map((file, cb) => {
-        // render file by context
-        if (options.render) {
-
-          if (!file.isDirectory()) {
-            let res = render(file.contents.toString(), options.context)
-            let filePath = relative(sourceDir, file.path)
-
-            if (res.status === 200) {
-              success(`render <cyan>${filePath}</cyan>`)
-              file.contents = new Buffer(res.out)
-            } else {
-              error(`render <red>${filePath}</red>`)
-              echo(res.error)
-            }
-          }
+  const globs = [sourceDir + '/**']
+  const stream = VFS.src(globs)
+  stream.pipe(map((file, cb) => {
+    // render file by context
+    if (options.render) {
+      if (!file.isDirectory()) {
+        let res = render(file.contents.toString(), options.context)
+        if (res.status === 200) {
+          stream.emit('renderSuccess', file)
+          file.contents = new Buffer(res.out)
+        } else {
+          stream.emit('renderFailure', file)
+          echo(res.error)
         }
-        cb(null, file)
-      }))
-      .pipe(VFS.dest(targetDir))
-      .on('finish', resolve)
-  })
+      }
+    }
+    cb(null, file)
+  }))
+    .pipe(VFS.dest(targetDir))
+  return stream
 }

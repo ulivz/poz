@@ -1,7 +1,7 @@
 import {getGitUser} from '../utils/git'
 import {isPlainObject} from '../utils/datatypes'
-import {exists, isDirectory} from '../utils/fs'
-import {resolve} from '../utils/path'
+import {exists, isDirectory, getFileTree} from '../utils/fs'
+import {resolve, relative} from '../utils/path'
 import {generate} from '../utils/stream'
 import {env} from '../utils/env'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
@@ -66,32 +66,67 @@ export default class POA extends POAEventEmitter {
   }
 
   run() {
+
     this.emit('onStart')
-    const template = this.__TEMPLATE__
-    const promptsMetadata = template.prompts()
-    const prompts = promptsTransformer(promptsMetadata)
 
-    const envPromptsRunner = env.IS_TEST
-      ? mockPromptsRunner
-      : promptsRunner
+    const setFileTree = tree => {
+      console.log(tree)
+      this.__TEMPLATE__TREE__ = tree
+    }
 
-    this.emit('onPromptsStart')
-    return envPromptsRunner(prompts).then(answers => {
+    const promptsTask = () => {
+      this.emit('log', 'prompts task', 'info')
+      this.emit('onPromptsStart')
+      const template = this.__TEMPLATE__
+      const promptsMetadata = template.prompts()
+      const prompts = promptsTransformer(promptsMetadata)
+      const envPromptsRunner = env.IS_TEST
+        ? mockPromptsRunner
+        : promptsRunner
+      return envPromptsRunner(prompts)
+    }
+
+    const handlePromptsAnswers = answers => {
+      this.emit('log', 'start handlePromptsAnswers', 'info')
       this.emit('onPromptsEnd')
       this.context.assign(answers)
+    }
+
+    const spawnTask = () => {
+      this.emit('log', 'start spawnTask', 'info')
       this.emit('onSpawnStart')
-      return generate(
-        this.context.tplDir,
-        this.context.cwd,
-        {
-          render: true,
-          context: this.context
-        }
-      )
-    }).then(() => {
-      this.emit('onSpawnEnd')
-      this.emit('onExit')
-    })
+      return new Promise((resolve, reject) => {
+        const spawnStream = generate(
+          this.context.tplDir,
+          this.context.cwd,
+          {
+            render: true,
+            context: this.context
+          }
+        )
+        spawnStream.on('renderSuccess', file => {
+          this.emit('renderSuccess', file)
+        })
+        spawnStream.on('renderFailure', file => {
+          this.emit('renderFailure', file)
+        })
+        spawnStream.on('finish', () => {
+          this.emit('onSpawnEnd')
+          this.emit('logFileTree')
+          resolve()
+        })
+      })
+    }
+
+    return getFileTree(this.context.tplDir)
+      .then(setFileTree)
+      .then(promptsTask)
+      .then(handlePromptsAnswers)
+      .then(spawnTask)
+      .then(() => {
+        this.emit('log', '<cyan>Go hacking!</cyan>')
+        this.emit('onExit')
+      })
   }
 
 }

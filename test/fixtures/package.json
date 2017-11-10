@@ -1,5 +1,5 @@
 {
-  "name": "poa",
+  "name": "--",
   "version": "0.0.0",
   "description": "project omnipresent amenities",
   "repository": {
@@ -9,7 +9,7 @@
   "main": "dist/index.common.js",
   "bin": "cli.js",
   "files": [
-    "dist", 
+    "dist",
     "cli.js"
   ],
   "scripts": {
@@ -52,22 +52,22 @@
       }
     }
   },
-  "dependencies": { 
+  "dependencies": {
     "cac": "^4.0.0"
   },
-  "devDependencies": { 
+  "devDependencies": {
     "jest-cli": "^19.0.0",
     "eslint-config-rem": "^3.0.0",
-    "xo": "^0.18.0",  
+    "xo": "^0.18.0",
     "babel-preset-env": "^1.4.0",
     "gh-pages": "^1.0.0",
     "poi": "^9.1.4",
     "roly": "^1.1.1"
-  }, 
+  },
   "xo": {
     "extends": "rem",
     "envs": [
       "jest"
-    ]  
-  } 
+    ]
+  }
 }

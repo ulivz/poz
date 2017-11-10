@@ -1,6 +1,8 @@
 import {EventEmitter} from 'events'
+import archy from 'archy'
 import {isPlainObject, isFunction} from '../utils/datatypes'
 import {env} from '../utils/env'
+import {relative} from '../utils/path'
 import POAError from './POAError'
 import * as logger from '../utils/log'
 
@@ -23,8 +25,24 @@ export default  class POAEventEmitter extends EventEmitter {
       if (msgType) {
         logger[msgType](msg)
       } else {
-        logger.echo(msg)
+        logger.print(msg)
       }
+      logger.echo()
+    })
+    this.on('renderSuccess', file => {
+      // let filePath = relative(this.context.tplDir, file.path)
+      // this.emit('log', `render <cyan>${filePath}</cyan>`, 'success')
+    })
+    this.on('renderFailure', file => {
+      let filePath = relative(this.context.tplDir, file.path)
+      this.emit('log', `render <cyan>${filePath}</cyan>`, 'error')
+      const targetNode = this.__TEMPLATE__TREE__.findByFullPath(file.path)
+      targetNode.label = targetNode.label + ' ' + logger.parseColor('<gray>[Render Error!]</gray>')
+    })
+    this.on('logFileTree', () => {
+      logger.echo()
+      console.log(this.__TEMPLATE__TREE__)
+      logger.print(`<yellow>${archy(this.__TEMPLATE__TREE__)}</yellow>`)
     })
   }
 

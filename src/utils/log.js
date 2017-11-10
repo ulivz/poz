@@ -2,9 +2,9 @@ import chalk from 'chalk'
 import {simpleStringParser} from './parser'
 import {env} from './env'
 
-const GLOBAL_INDENT = ' '
+const GLOBAL_INDENT = '  '
 const COLOR_REG = /<([\w]+)>([^<>]*)<\/\1>/g
-export const echo = (...args) => console.log(...[GLOBAL_INDENT, ...args])
+export const echo = (...args) => console.log(...args)
 export const COLOR = chalk
 
 export const simplelogMsgParser = msg => {
@@ -25,11 +25,18 @@ export const simplelogMsgParser = msg => {
 
 export const parseColor = simplelogMsgParser
 
-export const simpleColorLog = (color, text) => {
-  return (msg) => echo(chalk[color](text), simplelogMsgParser(msg))
+export const simpleColorLog = (color, type) => {
+  return (msg) => {
+    const msgType = type ? COLOR[color](type) + ' ' : ''
+    const fullMsg = msgType + msg
+    echo(parseColor(
+      fullMsg.replace(/(^)/gm, `$1${GLOBAL_INDENT}`)
+    ))
+  }
 }
 
 export const success = simpleColorLog('green', '[success]')
 export const error = simpleColorLog('red', '[error]')
 export const warn = simpleColorLog('yellow', '[warn]')
 export const info = simpleColorLog('cyan', '[info]')
+export const print = simpleColorLog()
