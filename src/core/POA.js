@@ -1,8 +1,9 @@
 import {resolve} from '../utils/path'
 import {getGitUser} from '../utils/git'
-import {isPlainObject} from '../utils/datatypes'
+import {isPlainObject, isFunction} from '../utils/datatypes'
 import {exists, isDirectory} from '../utils/fs'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
+import * as LOGGER from '../utils/log'
 import POAENV from './POAENV.js'
 import POAError from './POAError.js'
 import POAContext from './POAContext.js'
@@ -67,6 +68,15 @@ export default class POA extends POAEventEmitter {
       $templateDirectory: templateDirectory
     })
     this.templateConfig = require(packageIndexFile)(this.context, this)
+    if (this.templateConfig.render) {
+      if (!isFunction(this.templateConfig.render)) {
+        throw new POAError('Expect "render" to be a function')
+      }
+      LOGGER.info('Use a custom rendering engine')
+      this.renderEngine = this.templateConfig.render
+    } else {
+      this.renderEngine = this.env.POA_RENDER_ENGINE
+    }
   }
 
   set(key, value) {
@@ -103,13 +113,13 @@ export default class POA extends POAEventEmitter {
     const reproduce = () => {
       this.emit('onReproduceStart')
       const transformer = vinylFile => {
-        if (vinylFile.isDirectory()) {
-          let res = render(vinylFile.contents.toString(), this.context)
-          if (res.status === 200) {
-            vinylFile.contents = new Buffer(res.out)
-            this.emit('renderSuccess', { file: vinylFile })
-          } else {
-            this.emit('renderFailure', { file: vinylFile, error: res.error })
+        if (!vinylFile.isDirectory()) {
+          try {
+            let renderResult = this.renderEngine(vinylFile.contents.toString(), this.context)
+            this.emit('renderSuccess', vinylFile)
+            vinylFile.contents = new Buffer(renderResult)
+          } catch (error) {
+            this.emit('renderFailure', error, vinylFile)
           }
         }
       }
@@ -129,12 +139,10 @@ export default class POA extends POAEventEmitter {
       .then(handlePromptsAnswers)
       .then(() => Promise.all([traverse(), reproduce()]))
       .then(() => {
-        this.emit('printTemplateTree')
         this.emit('onExit')
       })
       .catch(error => {
         this.emit('onExit', error)
-        console.log(error)
       })
   }
 

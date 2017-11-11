@@ -22,19 +22,20 @@ const EVNET_LIST = [
 
 export default  class POAEventEmitter extends EventEmitter {
 
-  _renderSuccess(file) {
+  renderSuccess(file) {
     let filePath = relative(this.templateDirectory, file.path)
     LOGGER.success(`render <cyan>${filePath}</cyan>`)
   }
 
-  _renderFailure() {
+  renderFailure(error, file) {
     let filePath = relative(this.templateDirectory, file.path)
     LOGGER.error(`render <cyan>${filePath}</cyan>`)
+    LOGGER.echo(error)
     const targetNode = this.templateDirectoryTree.searchByAbsolutePath(file.path)
     targetNode.label = targetNode.label + ' ' + LOGGER.parseColor('<gray>[Render Error!]</gray>')
   }
 
-  _printTemplateTree() {
+  printTree() {
     LOGGER.echo()
     LOGGER.print(`<yellow>${archy(this.templateDirectoryTree)}</yellow>`)
   }
@@ -43,7 +44,7 @@ export default  class POAEventEmitter extends EventEmitter {
     super()
     for (let event of EVNET_LIST) {
       this.on(event, (...args) => {
-        this['_' + event](...args)
+        this[event](...args)
       })
     }
   }
@@ -56,7 +57,10 @@ export default  class POAEventEmitter extends EventEmitter {
       let hookHandler = this.templateConfig[hook]
       if (hookHandler) {
         if (isFunction(hookHandler)) {
-          this.on(hook, hookHandler)
+          this.on(hook, (...args) => {
+            this.status = hook
+            hookHandler(...args)
+          })
         } else {
           if (this.env.isDev) {
             LOGGER.warn(`<cyan>${hook}</cyan> must be a function, skipped!`)
