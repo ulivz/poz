@@ -2,9 +2,9 @@ import {getGitUser} from '../utils/git'
 import {isPlainObject} from '../utils/datatypes'
 import {exists, isDirectory, getFileTree} from '../utils/fs'
 import {resolve, relative} from '../utils/path'
-import {generate} from '../utils/stream'
 import {env} from '../utils/env'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
+import DirectoryNode from '../class/DirectoryNode'
 import POAError from './POAError.js'
 import POAContext from './POAContext.js'
 import POAEventEmitter from './POAEventEmitter.js'
@@ -54,7 +54,7 @@ export default class POA extends POAEventEmitter {
       $gituser: user.name,
       $gitemail: user.email
     })
-    this.__TEMPLATE__ = require(poaEntry)(this.context, this)
+    this.templateConfig = require(poaEntry)(this.context, this)
   }
 
   set(key, value) {
@@ -68,17 +68,12 @@ export default class POA extends POAEventEmitter {
   run() {
 
     this.emit('onStart')
+    const prompt = () => {
 
-    const setFileTree = tree => {
-      console.log(tree)
-      this.__TEMPLATE__TREE__ = tree
-    }
-
-    const promptsTask = () => {
       this.emit('log', 'prompts task', 'info')
+
       this.emit('onPromptsStart')
-      const template = this.__TEMPLATE__
-      const promptsMetadata = template.prompts()
+      const promptsMetadata = this.templateConfig.prompts()
       const prompts = promptsTransformer(promptsMetadata)
       const envPromptsRunner = env.IS_TEST
         ? mockPromptsRunner
@@ -92,40 +87,43 @@ export default class POA extends POAEventEmitter {
       this.context.assign(answers)
     }
 
-    const spawnTask = () => {
-      this.emit('log', 'start spawnTask', 'info')
-      this.emit('onSpawnStart')
-      return new Promise((resolve, reject) => {
-        const spawnStream = generate(
-          this.context.tplDir,
-          this.context.cwd,
-          {
-            render: true,
-            context: this.context
+    const traverse = () => {
+      return this.templateDirectoryTree.traverse()
+    }
+
+    const reproduce = () => {
+      this.emit('onDuplicateStart')
+
+      const transformer = vinylFile => {
+        if (vinylFile.isDirectory()) {
+          let res = render(vinylFile.contents.toString(), this.context)
+          if (res.status === 200) {
+            vinylFile.contents = new Buffer(res.out)
+            this.emit('renderSuccess', { file: vinylFile })
+          } else {
+            this.emit('renderFailure', { file: vinylFile, error: res.error })
           }
-        )
-        spawnStream.on('renderSuccess', file => {
-          this.emit('renderSuccess', file)
-        })
-        spawnStream.on('renderFailure', file => {
-          this.emit('renderFailure', file)
-        })
-        spawnStream.on('finish', () => {
-          this.emit('onSpawnEnd')
-          this.emit('logFileTree')
-          resolve()
-        })
+        }
+      }
+
+      return new Promise((resolve, reject) => {
+        const reproduceStream = this.templateDirectoryTree.dest(this.context.cwd, transformer)
+        reproduceStream.on('error', reject)
+        reproduceStream.on('finish', resolve)
       })
     }
 
-    return getFileTree(this.context.tplDir)
-      .then(setFileTree)
-      .then(promptsTask)
+    this.templateDirectoryTree = new DirectoryNode(this.context.tplDir)
+
+    return prompt()
       .then(handlePromptsAnswers)
-      .then(spawnTask)
+      .then(() => Promise.all([traverse(), reproduce()]))
       .then(() => {
-        this.emit('log', '<cyan>Go hacking!</cyan>')
-        this.emit('onExit')
+        this.emit('logFileTree')
+        console.log('Finish')
+      })
+      .catch(error => {
+        console.log(error)
       })
   }
 

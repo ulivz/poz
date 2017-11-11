@@ -3,14 +3,23 @@ import path from 'path'
 import FileSystemNode from './FileSystemNode'
 import FileNode from './FileNode'
 import {isFile, isDirectory} from '../utils/fs'
+import {spawnStream} from './FileSystemNode'
+
 
 export default class DirectoryNode extends FileSystemNode {
 
   constructor(abosultePath, cwd, options = {}) {
+    if (!cwd) {
+      cwd = abosultePath
+    }
     super(abosultePath, cwd, options)
     this.isDirectory = true
     this.nodes = this.childNodes = []
     this.isTraversed = false
+  }
+
+  dest(targetPath, transformer) {
+    return spawnStream(this.abosultePath + '/**', targetPath, transformer)
   }
 
   traverse() {

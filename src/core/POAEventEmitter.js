@@ -36,22 +36,22 @@ export default  class POAEventEmitter extends EventEmitter {
     this.on('renderFailure', file => {
       let filePath = relative(this.context.tplDir, file.path)
       this.emit('log', `render <cyan>${filePath}</cyan>`, 'error')
-      const targetNode = this.__TEMPLATE__TREE__.findByFullPath(file.path)
+      const targetNode = this.templateDirectoryTree.findByFullPath(file.path)
       targetNode.label = targetNode.label + ' ' + logger.parseColor('<gray>[Render Error!]</gray>')
     })
     this.on('logFileTree', () => {
       logger.echo()
-      console.log(this.__TEMPLATE__TREE__)
-      logger.print(`<yellow>${archy(this.__TEMPLATE__TREE__)}</yellow>`)
+      console.log(this.templateDirectoryTree)
+      logger.print(`<yellow>${archy(this.templateDirectoryTree)}</yellow>`)
     })
   }
 
   initLifeCycle() {
-    if (!isPlainObject(this.__TEMPLATE__)) {
+    if (!isPlainObject(this.templateConfig)) {
       this.emit('error', '<yellow>poa.js</yellow> must export a plain object')
     }
     for (let hook of LIFE_CYCLE) {
-      let hookHandler = this.__TEMPLATE__[hook]
+      let hookHandler = this.templateConfig[hook]
       if (hookHandler) {
         if (isFunction(hookHandler)) {
           this.on(hook, hookHandler)
