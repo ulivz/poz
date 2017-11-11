@@ -1,54 +1,56 @@
 import {EventEmitter} from 'events'
 import archy from 'archy'
 import {isPlainObject, isFunction} from '../utils/datatypes'
-import {env} from '../utils/env'
 import {relative} from '../utils/path'
+import * as LOGGER from '../utils/log'
 import POAError from './POAError'
-import * as logger from '../utils/log'
 
 const LIFE_CYCLE = [
   'onStart',
-  'onPromptsStart',
-  'onPromptsEnd',
-  'onSpawnStart',
-  'onSpawnEnd',
+  'onPromptStart',
+  'onPromptEnd',
+  'onReproduceStart',
+  'onReproduceEnd',
   'onExit'
 ]
 
+const EVNET_LIST = [
+  'renderSuccess',
+  'renderFailure',
+  'printTemplateTree'
+]
+
 export default  class POAEventEmitter extends EventEmitter {
+
+  _renderSuccess(file) {
+    let filePath = relative(this.templateDirectory, file.path)
+    LOGGER.success(`render <cyan>${filePath}</cyan>`)
+  }
+
+  _renderFailure() {
+    let filePath = relative(this.templateDirectory, file.path)
+    LOGGER.error(`render <cyan>${filePath}</cyan>`)
+    const targetNode = this.templateDirectoryTree.searchByAbsolutePath(file.path)
+    targetNode.label = targetNode.label + ' ' + LOGGER.parseColor('<gray>[Render Error!]</gray>')
+  }
+
+  _printTemplateTree() {
+    LOGGER.echo()
+    LOGGER.print(`<yellow>${archy(this.templateDirectoryTree)}</yellow>`)
+  }
+
   constructor() {
     super()
-    this.on('error', msg => {
-      throw new Error(logger.simplelogMsgParser(msg)) // TODO to research why cannot use POAError
-    })
-    this.on('log', (msg, msgType) => {
-      if (msgType) {
-        logger[msgType](msg)
-      } else {
-        logger.print(msg)
-      }
-      logger.echo()
-    })
-    this.on('renderSuccess', file => {
-      // let filePath = relative(this.context.tplDir, file.path)
-      // this.emit('log', `render <cyan>${filePath}</cyan>`, 'success')
-    })
-    this.on('renderFailure', file => {
-      let filePath = relative(this.context.tplDir, file.path)
-      this.emit('log', `render <cyan>${filePath}</cyan>`, 'error')
-      const targetNode = this.templateDirectoryTree.findByFullPath(file.path)
-      targetNode.label = targetNode.label + ' ' + logger.parseColor('<gray>[Render Error!]</gray>')
-    })
-    this.on('logFileTree', () => {
-      logger.echo()
-      console.log(this.templateDirectoryTree)
-      logger.print(`<yellow>${archy(this.templateDirectoryTree)}</yellow>`)
-    })
+    for (let event of EVNET_LIST) {
+      this.on(event, (...args) => {
+        this['_' + event](...args)
+      })
+    }
   }
 
   initLifeCycle() {
     if (!isPlainObject(this.templateConfig)) {
-      this.emit('error', '<yellow>poa.js</yellow> must export a plain object')
+      throw new POAError('"poa.js" must export a plain object')
     }
     for (let hook of LIFE_CYCLE) {
       let hookHandler = this.templateConfig[hook]
@@ -56,8 +58,8 @@ export default  class POAEventEmitter extends EventEmitter {
         if (isFunction(hookHandler)) {
           this.on(hook, hookHandler)
         } else {
-          if (env.IS_DEV) {
-            this.emit('log', `<cyan>${hook}</cyan> must be a function, skipped!`, 'warn')
+          if (this.env.isDev) {
+            LOGGER.warn(`<cyan>${hook}</cyan> must be a function, skipped!`)
           }
         }
       }

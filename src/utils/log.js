@@ -1,6 +1,5 @@
 import chalk from 'chalk'
 import {simpleStringParser} from './parser'
-import {env} from './env'
 
 const GLOBAL_INDENT = '  '
 const COLOR_REG = /<([\w]+)>([^<>]*)<\/\1>/g
@@ -12,9 +11,6 @@ export const simplelogMsgParser = msg => {
     reg: COLOR_REG,
     onMatch: (matchPart, tagName, tagContent) => {
       if (!COLOR[tagName]) {
-        if (env.IS_DEV) {
-          echo(`Skipped unknown tag ${tagName}`)
-        }
         return tagContent
       } else {
         return COLOR[tagName](tagContent)

@@ -1,4 +1,3 @@
-import handlebar2 from 'handlebars2'
 import {statusWrapper} from './wrapper'
 
 export function render(template, context) {

@@ -1,60 +1,72 @@
+import {resolve} from '../utils/path'
 import {getGitUser} from '../utils/git'
 import {isPlainObject} from '../utils/datatypes'
-import {exists, isDirectory, getFileTree} from '../utils/fs'
-import {resolve, relative} from '../utils/path'
-import {env} from '../utils/env'
+import {exists, isDirectory} from '../utils/fs'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
-import DirectoryNode from '../class/DirectoryNode'
+import POAENV from './POAENV.js'
 import POAError from './POAError.js'
 import POAContext from './POAContext.js'
 import POAEventEmitter from './POAEventEmitter.js'
+import DirectoryNode from '../class/DirectoryNode'
 
 export default class POA extends POAEventEmitter {
 
-  constructor(tmplPkgDir) {
+  constructor(packageDirectory) {
     super()
+    this.env = new POAENV()
     this.context = new POAContext()
-    this.initContext(tmplPkgDir)
+    this.initContext(packageDirectory)
     this.initLifeCycle()
   }
 
-  initContext(tmplPkgDir) {
-    if (!exists(tmplPkgDir)) {
-      throw new POAError(`${tmplPkgDir} not exist!`)
-    }
-    if (!isDirectory(tmplPkgDir)) {
-      throw new POAError(`${tmplPkgDir} is not a directory!`)
-    }
-    const poaEntry = resolve(tmplPkgDir, 'poa.js')
+  initContext(packageDirectory) {
 
-    // poa.js
-    if (!exists(poaEntry)) {
-      this.emit('error',
-        `Cannot find <cyan>${poaEntry}</cyan>, ` +
-        `A POA template package should contains at least a file called <cyan>'poa.js'</cyan> at root directory`
+    if (!exists(packageDirectory)) {
+      throw new POAError(`${packageDirectory} not exist!`)
+    }
+
+    if (!isDirectory(packageDirectory)) {
+      throw new POAError(`Expect "${packageDirectory}" is a directory!`)
+    }
+
+    const packageIndexFile = resolve(packageDirectory, 'poa.js')
+
+    if (!exists(packageIndexFile)) {
+      throw new POAError(
+        `Cannot resolve "${packageIndexFile}", ` +
+        'For using POA, the root directory of ' +
+        'your POA package must contain a file ' +
+        'named "poa.js".'
       )
     }
 
-    // template/
-    const tplDir = resolve(tmplPkgDir, 'template')
-    if (!exists(tplDir)) {
-      this.emit('error',
-        `Cannot find <cyan>${poaEntry}/template</cyan>, ` +
-        `A POA template package should contains a template directory which used to store the template files`
+    const templateDirectory = resolve(packageDirectory, 'template')
+    if (!exists(templateDirectory)) {
+      throw new POAError(
+        `Cannot resolve ${templateDirectory}, ` +
+        'For using POA, A POA template package ' +
+        'should contains a "template" directory ' +
+        'which used to store the template files.'
       )
     }
 
     const user = getGitUser()
     const cwd = process.cwd()
+
+    this.packageDirectory = packageDirectory
+    this.templateDirectory = templateDirectory
+    this.targetDirectory = this.cwd = cwd
+
     this.context.assign({
-      env: env.POA_ENV,
-      tplDir,
-      cwd: cwd,
+      $cwd: cwd,
+      $env: this.env.POA_ENV,
       $dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
       $gituser: user.name,
-      $gitemail: user.email
+      $gitemail: user.email,
+      $packageDirectory: packageDirectory,
+      $templateDirectory: templateDirectory
     })
-    this.templateConfig = require(poaEntry)(this.context, this)
+    this.templateConfig = require(packageIndexFile)(this.context, this)
   }
 
   set(key, value) {
@@ -68,22 +80,19 @@ export default class POA extends POAEventEmitter {
   run() {
 
     this.emit('onStart')
+
     const prompt = () => {
-
-      this.emit('log', 'prompts task', 'info')
-
-      this.emit('onPromptsStart')
+      this.emit('onPromptStart')
       const promptsMetadata = this.templateConfig.prompts()
       const prompts = promptsTransformer(promptsMetadata)
-      const envPromptsRunner = env.IS_TEST
+      const envPromptsRunner = this.env.isTest
         ? mockPromptsRunner
         : promptsRunner
       return envPromptsRunner(prompts)
     }
 
     const handlePromptsAnswers = answers => {
-      this.emit('log', 'start handlePromptsAnswers', 'info')
-      this.emit('onPromptsEnd')
+      this.emit('onPromptEnd')
       this.context.assign(answers)
     }
 
@@ -92,8 +101,7 @@ export default class POA extends POAEventEmitter {
     }
 
     const reproduce = () => {
-      this.emit('onDuplicateStart')
-
+      this.emit('onReproduceStart')
       const transformer = vinylFile => {
         if (vinylFile.isDirectory()) {
           let res = render(vinylFile.contents.toString(), this.context)
@@ -105,24 +113,27 @@ export default class POA extends POAEventEmitter {
           }
         }
       }
-
       return new Promise((resolve, reject) => {
-        const reproduceStream = this.templateDirectoryTree.dest(this.context.cwd, transformer)
+        const reproduceStream = this.templateDirectoryTree.dest(this.targetDirectory, transformer)
         reproduceStream.on('error', reject)
-        reproduceStream.on('finish', resolve)
+        reproduceStream.on('finish', () => {
+          this.emit('onReproduceEnd')
+          resolve()
+        })
       })
     }
 
-    this.templateDirectoryTree = new DirectoryNode(this.context.tplDir)
+    this.templateDirectoryTree = new DirectoryNode(this.templateDirectory)
 
     return prompt()
       .then(handlePromptsAnswers)
       .then(() => Promise.all([traverse(), reproduce()]))
       .then(() => {
-        this.emit('logFileTree')
-        console.log('Finish')
+        this.emit('printTemplateTree')
+        this.emit('onExit')
       })
       .catch(error => {
+        this.emit('onExit', error)
         console.log(error)
       })
   }
