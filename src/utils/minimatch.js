@@ -1,7 +1,7 @@
 import minimatch from 'minimatch'
 import {isArray, isString} from './datatypes'
 
-export function isPathMatch(path, pattern) {
+export function match(path, pattern) {
   if (isArray(pattern)) {
     return pattern.some(subPattern => minimatch(path, subPattern))
   }

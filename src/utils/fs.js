@@ -1,7 +1,4 @@
-import fs from 'fs'
-import {resolve, relative} from './path'
-import {isUndefined} from './datatypes'
-import {promisify} from './promise'
+import fs from 'fs-extra'
 
 export function exists(path) {
   return fs.existsSync(path)

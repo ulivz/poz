@@ -1,17 +1,24 @@
-import {isPathMatch} from '../minimatch'
+import {match} from '../minimatch'
 
 describe('minimatch', () => {
 
-  test('isPathMatch', () => {
+  test('match', () => {
     let pattern = '*.js'
     let path = 'bar.js'
-    expect(isPathMatch(path, pattern)).toBe(true)
+    expect(match(path, pattern)).toBe(true)
 
     pattern = ['*.js', '*.css']
-    expect(isPathMatch(path, pattern)).toBe(true)
+    expect(match(path, pattern)).toBe(true)
 
     pattern = ['*.html', '*.css']
-    expect(isPathMatch(path, pattern)).toBe(false)
+    expect(match(path, pattern)).toBe(false)
+
+    pattern = ['README*']
+    path = 'README.md'
+    expect(match(path, pattern)).toBe(true)
+
+    pattern = ['!README*']
+    expect(match(path, pattern)).toBe(false)
   })
 
 })

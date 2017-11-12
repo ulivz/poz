@@ -11,9 +11,19 @@ const POAENVCONFIG =
   {
     POA_TEMPLATE_DIRECTORY_NAME: 'template',
     POA_PACKAGE_INDEX_FILE_NAME: 'poa.js',
-    POA_RENDER_ENGINE: handlebar2.render
+    POA_RENDER_ENGINE: handlebar2.render,
+    POA_PRESETS_ACCEPTED_PROPERTIES: {
+      reproduce: {
+        target: 'string',
+        ignore: 'object|string|array',
+        rename: 'object',
+      },
+      render: {
+        engine: 'function',
+        ignore: 'object|string|array'
+      }
+    }
   }
-
 
 export default class POAENV {
 

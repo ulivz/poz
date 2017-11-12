@@ -3,6 +3,7 @@ import path from 'path'
 import FileSystemNode from './FileSystemNode'
 import FileNode from './FileNode'
 import {isFile, isDirectory} from '../utils/fs'
+import {isString, isArray, isPlainObject} from '../utils/datatypes'
 import {spawnStream} from './FileSystemNode'
 
 
@@ -16,10 +17,29 @@ export default class DirectoryNode extends FileSystemNode {
     this.isDirectory = true
     this.nodes = this.childNodes = []
     this.isTraversed = false
+    this.src = [this.abosultePath + '/**']
+  }
+
+  _reversePattern(pattern) {
+    return '!' + this.abosultePath + '/' + pattern
+  }
+
+  setDestIgnore(pattern) {
+    if (isString(pattern)) {
+      this.src.push(this._reversePattern(i))
+    } else if (isArray(pattern)) {
+      this.src = this.src.concat(pattern.map(i => this._reversePattern(i)))
+    } else if (isPlainObject(pattern)) {
+      Object.keys(pattern).forEach(i => {
+        if (pattern[i]) {
+          this.src.push(this._reversePattern(i))
+        }
+      })
+    }
   }
 
   dest(targetPath, transformer) {
-    return spawnStream(this.abosultePath + '/**', targetPath, transformer)
+    return spawnStream(this.src, targetPath, transformer)
   }
 
   traverse() {

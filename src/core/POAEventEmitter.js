@@ -2,7 +2,7 @@ import {EventEmitter} from 'events'
 import archy from 'archy'
 import {isPlainObject, isFunction} from '../utils/datatypes'
 import {relative} from '../utils/path'
-import * as LOGGER from '../utils/log'
+import * as logger from '../utils/log'
 import POAError from './POAError'
 
 const LIFE_CYCLE = [
@@ -17,6 +17,7 @@ const LIFE_CYCLE = [
 const EVNET_LIST = [
   'renderSuccess',
   'renderFailure',
+  'transformIgnore',
   'printTemplateTree'
 ]
 
@@ -24,20 +25,25 @@ export default  class POAEventEmitter extends EventEmitter {
 
   renderSuccess(file) {
     let filePath = relative(this.templateDirectory, file.path)
-    LOGGER.success(`render <cyan>${filePath}</cyan>`)
+    logger.success(`render <cyan>${filePath}</cyan>`)
   }
 
   renderFailure(error, file) {
     let filePath = relative(this.templateDirectory, file.path)
-    LOGGER.error(`render <cyan>${filePath}</cyan>`)
-    LOGGER.echo(error)
+    logger.error(`render <cyan>${filePath}</cyan>`)
+    logger.echo(error)
     const targetNode = this.templateDirectoryTree.searchByAbsolutePath(file.path)
-    targetNode.label = targetNode.label + ' ' + LOGGER.parseColor('<gray>[Render Error!]</gray>')
+    targetNode.label = targetNode.label + ' ' + logger.parseColor('<gray>[Render Error!]</gray>')
   }
 
   printTree() {
-    LOGGER.echo()
-    LOGGER.print(`<yellow>${archy(this.templateDirectoryTree)}</yellow>`)
+    logger.echo()
+    logger.print(`<yellow>${archy(this.templateDirectoryTree)}</yellow>`)
+  }
+
+  transformIgnore(file) {
+    logger.echo()
+    logger.info(`Skip rendering  <cyan>${file.basename}</cyan>`)
   }
 
   constructor() {
@@ -63,7 +69,7 @@ export default  class POAEventEmitter extends EventEmitter {
           })
         } else {
           if (this.env.isDev) {
-            LOGGER.warn(`<cyan>${hook}</cyan> must be a function, skipped!`)
+            logger.warn(`<cyan>${hook}</cyan> must be a function, skipped!`)
           }
         }
       }

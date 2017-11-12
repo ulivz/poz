@@ -2,8 +2,11 @@ import {resolve} from '../utils/path'
 import {getGitUser} from '../utils/git'
 import {isPlainObject, isFunction} from '../utils/datatypes'
 import {exists, isDirectory} from '../utils/fs'
+import {match} from '../utils/minimatch'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
-import * as LOGGER from '../utils/log'
+import * as string from '../utils/string'
+import * as logger from '../utils/log'
+import * as datatypes from '../utils/datatypes'
 import POAENV from './POAENV.js'
 import POAError from './POAError.js'
 import POAContext from './POAContext.js'
@@ -15,9 +18,15 @@ export default class POA extends POAEventEmitter {
   constructor(packageDirectory) {
     super()
     this.env = new POAENV()
+    this.presets = {}
     this.context = new POAContext()
+    this.initUtil()
     this.initContext(packageDirectory)
     this.initLifeCycle()
+  }
+
+  initUtil() {
+    this.util = { string, datatypes, logger }
   }
 
   initContext(packageDirectory) {
@@ -56,7 +65,7 @@ export default class POA extends POAEventEmitter {
 
     this.packageDirectory = packageDirectory
     this.templateDirectory = templateDirectory
-    this.targetDirectory = this.cwd = cwd
+    this.destDirectory = this.cwd = cwd
 
     this.context.assign({
       $cwd: cwd,
@@ -68,16 +77,22 @@ export default class POA extends POAEventEmitter {
       $templateDirectory: templateDirectory
     })
     this.templateConfig = require(packageIndexFile)(this.context, this)
-    if (this.templateConfig.render) {
-      if (!isFunction(this.templateConfig.render)) {
-        throw new POAError('Expect "render" to be a function')
-      }
-      LOGGER.info('Use a custom rendering engine')
-      this.renderEngine = this.templateConfig.render
-    } else {
-      this.renderEngine = this.env.POA_RENDER_ENGINE
-    }
+    this.renderEngine = this.env.POA_RENDER_ENGINE
   }
+
+  setRenderEngine(render) {
+    if (!isFunction(render)) {
+      throw new POAError('Expect "render" to be a function')
+    }
+    logger.info('Use a custom rendering engine')
+    this.renderEngine = render
+  }
+
+  // rename(renameConfig) {
+  //   for (let matchString of renameConfig) {
+  //
+  //   }
+  // }
 
   set(key, value) {
     if (isPlainObject(key)) {
@@ -85,6 +100,28 @@ export default class POA extends POAEventEmitter {
     } else {
       this.context.set(key, value)
     }
+  }
+
+  _validate(source, type) {
+  }
+
+  parsePresets(presets) {
+    let { dest, transform } = presets
+    if (!isPlainObject(dest)) {
+      dest = {}
+    }
+    if (!isPlainObject(transform)) {
+      transform = {}
+    }
+    this.presets.dest = Object.assign({
+      target: this.destDirectory,
+      ignore: {},
+      rename: {}
+    }, dest)
+    this.presets.transform = Object.assign({
+      engine: this.env.POA_RENDER_ENGINE,
+      ignore: {}
+    }, transform)
   }
 
   run() {
@@ -106,16 +143,31 @@ export default class POA extends POAEventEmitter {
       this.context.assign(answers)
     }
 
+    const parsePresets = () => {
+      let { presets } = this.templateConfig
+      if (isFunction(presets)) {
+        presets = presets()
+      } else if (isPlainObject(presets)) {
+
+      } else {
+        throw new POAError('Expect "presets" to be a function or a plain object')
+      }
+      this.parsePresets(presets)
+    }
+
     const traverse = () => {
       return this.templateDirectoryTree.traverse()
     }
 
     const reproduce = () => {
       this.emit('onReproduceStart')
+
       const transformer = vinylFile => {
-        if (!vinylFile.isDirectory()) {
+        if (match(vinylFile.path, this.presets.transform.ignore)) {
+          this.transformIgnore(vinylFile)
+        } else if (!vinylFile.isDirectory()) {
           try {
-            let renderResult = this.renderEngine(vinylFile.contents.toString(), this.context)
+            let renderResult = this.renderEngine(vinylFile.contents.toString(), this.context, vinylFile)
             this.emit('renderSuccess', vinylFile)
             vinylFile.contents = new Buffer(renderResult)
           } catch (error) {
@@ -124,7 +176,8 @@ export default class POA extends POAEventEmitter {
         }
       }
       return new Promise((resolve, reject) => {
-        const reproduceStream = this.templateDirectoryTree.dest(this.targetDirectory, transformer)
+        this.templateDirectoryTree.setDestIgnore(this.presets.dest.ignore)
+        const reproduceStream = this.templateDirectoryTree.dest(this.presets.dest.target, transformer)
         reproduceStream.on('error', reject)
         reproduceStream.on('finish', () => {
           this.emit('onReproduceEnd')
@@ -137,7 +190,9 @@ export default class POA extends POAEventEmitter {
 
     return prompt()
       .then(handlePromptsAnswers)
+      .then(parsePresets)
       .then(() => Promise.all([traverse(), reproduce()]))
+      .then()
       .then(() => {
         this.emit('onExit')
       })
