@@ -4,6 +4,7 @@ import {isPlainObject, isFunction} from '../utils/datatypes'
 import {relative} from '../utils/path'
 import * as logger from '../utils/log'
 import POAError from './POAError'
+import DirectoryNode from '../class/DirectoryNode'
 
 const LIFE_CYCLE = [
   'onStart',
@@ -38,7 +39,11 @@ export default  class POAEventEmitter extends EventEmitter {
 
   printTree() {
     logger.echo()
-    logger.print(`<yellow>${archy(this.templateDirectoryTree)}</yellow>`)
+    this.destDirectoryTree = new DirectoryNode(this.presets.dest.target);
+    return this.destDirectoryTree.traverse()
+      .then(() => {
+        logger.print(`<yellow>${archy(this.destDirectoryTree)}</yellow>`)
+      })
   }
 
   transformIgnore(file) {

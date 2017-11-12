@@ -181,7 +181,7 @@ export default class POA extends POAEventEmitter {
         let newName = getNewName(vinylFile.basename)
         if (vinylFile.basename !== newName) {
           vinylFile.basename = newName
-          logger.info(`Rename <yellow>${oldRelative}</yellow> ==> <yellow>${vinylFile.relative}</yellow>`)
+          logger.info(`Rename <gray>${oldRelative}</gray> ==> <gray>${vinylFile.relative}</gray>`)
         }
 
         // 2. render
