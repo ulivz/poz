@@ -30,17 +30,14 @@ export default class POA extends POAEventEmitter {
   }
 
   initContext(packageDirectory) {
-
     if (!exists(packageDirectory)) {
       throw new POAError(`${packageDirectory} not exist!`)
     }
-
     if (!isDirectory(packageDirectory)) {
       throw new POAError(`Expect "${packageDirectory}" is a directory!`)
     }
 
     const packageIndexFile = resolve(packageDirectory, 'poa.js')
-
     if (!exists(packageIndexFile)) {
       throw new POAError(
         `Cannot resolve "${packageIndexFile}", ` +
@@ -79,23 +76,12 @@ export default class POA extends POAEventEmitter {
     this.templateConfig = require(packageIndexFile)(this.context, this)
   }
 
-  setRenderEngine(render) {
-    if (!isFunction(render)) {
-      throw new POAError('Expect "render" to be a function')
-    }
-    logger.info('Use a custom rendering engine')
-    this.renderEngine = render
-  }
-
   set(key, value) {
     if (isPlainObject(key)) {
       this.context.assign(key)
     } else {
       this.context.set(key, value)
     }
-  }
-
-  _validate(source, type) {
   }
 
   parsePresets(presets) {
@@ -120,11 +106,8 @@ export default class POA extends POAEventEmitter {
     }
   }
 
-
   run() {
-
     this.emit('onStart')
-
     const prompt = () => {
       this.emit('onPromptStart')
       const promptsMetadata = this.templateConfig.prompts()
@@ -165,12 +148,11 @@ export default class POA extends POAEventEmitter {
         renameConfig = {}
       }
 
-      const getNewName = oldName => {
-        // TODO support regexp
+      const getNewName = name => {
         Object.keys(renameConfig).forEach(pattern => {
-          oldName = oldName.replace(pattern, renameConfig[pattern])
+          name = name.replace(pattern, renameConfig[pattern])
         })
-        return oldName
+        return name
       }
 
       const render = this.presets.transform.engine
@@ -214,7 +196,6 @@ export default class POA extends POAEventEmitter {
       .then(handlePromptsAnswers)
       .then(parsePresets)
       .then(() => Promise.all([traverse(), reproduce()]))
-      .then()
       .then(() => {
         this.emit('onExit')
       })
