@@ -5,7 +5,6 @@ import {isString, isFunction, isArray} from '../utils/datatypes'
 
 export function spawnStream(sourcePath, targetPath, transformer) {
 
-  console.log(sourcePath)
   if (!isString(sourcePath) && !isArray(sourcePath)) {
     throw new Error('Expected "sourcePath" to be string or array')
   }

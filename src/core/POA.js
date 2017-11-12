@@ -77,7 +77,6 @@ export default class POA extends POAEventEmitter {
       $templateDirectory: templateDirectory
     })
     this.templateConfig = require(packageIndexFile)(this.context, this)
-    this.renderEngine = this.env.POA_RENDER_ENGINE
   }
 
   setRenderEngine(render) {
@@ -87,12 +86,6 @@ export default class POA extends POAEventEmitter {
     logger.info('Use a custom rendering engine')
     this.renderEngine = render
   }
-
-  // rename(renameConfig) {
-  //   for (let matchString of renameConfig) {
-  //
-  //   }
-  // }
 
   set(key, value) {
     if (isPlainObject(key)) {
@@ -122,7 +115,11 @@ export default class POA extends POAEventEmitter {
       engine: this.env.POA_RENDER_ENGINE,
       ignore: {}
     }, transform)
+    if (!isFunction(this.presets.transform.engine)) {
+      throw new POAError('Expect "transform.engine" to be a function')
+    }
   }
+
 
   run() {
 
@@ -162,12 +159,37 @@ export default class POA extends POAEventEmitter {
     const reproduce = () => {
       this.emit('onReproduceStart')
 
+      let renameConfig = this.presets.dest.rename
+      if (!isPlainObject(renameConfig)) {
+        logger.info('Expect "rename" property to be a plain object')
+        renameConfig = {}
+      }
+
+      const getNewName = oldName => {
+        // TODO support regexp
+        Object.keys(renameConfig).forEach(pattern => {
+          oldName = oldName.replace(pattern, renameConfig[pattern])
+        })
+        return oldName
+      }
+
+      const render = this.presets.transform.engine
+
       const transformer = vinylFile => {
+        // 1. renmae
+        let oldRelative = vinylFile.relative
+        let newName = getNewName(vinylFile.basename)
+        if (vinylFile.basename !== newName) {
+          vinylFile.basename = newName
+          logger.info(`Rename <yellow>${oldRelative}</yellow> ==> <yellow>${vinylFile.relative}</yellow>`)
+        }
+
+        // 2. render
         if (match(vinylFile.path, this.presets.transform.ignore)) {
           this.transformIgnore(vinylFile)
         } else if (!vinylFile.isDirectory()) {
           try {
-            let renderResult = this.renderEngine(vinylFile.contents.toString(), this.context, vinylFile)
+            let renderResult = render(vinylFile.contents.toString(), this.context, vinylFile)
             this.emit('renderSuccess', vinylFile)
             vinylFile.contents = new Buffer(renderResult)
           } catch (error) {
