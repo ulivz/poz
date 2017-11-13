@@ -1,5 +1,5 @@
 # poa
-> Project Omnipresent Amenities Edit
+> Config-programming based CLI
 
 ## Badges
 

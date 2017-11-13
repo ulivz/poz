@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import components from '../src'
-import pj from '../package.json'
+import components from '../index'
+import pj from '../../../package.json'
 const { Readme, Pkg, License } = components
 // const prevCwd = process.cwd()
 

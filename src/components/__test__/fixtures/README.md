@@ -33,7 +33,7 @@ npm i poa --save-dev
 
 ## Author
 
-**poa** © [ULIVZ](https://github.com/ulivz), Released under the [MIT](./LICENSE) License.
+**poa** © [ULIVZ](https://github.com/ulivz), Released under the [MIT](LICENSE) License.
 
 Authored and maintained by ULIVZ with help from contributors ([list](https://github.com/ulivz/poa/contributors)).
 

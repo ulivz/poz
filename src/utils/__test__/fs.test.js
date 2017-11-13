@@ -8,10 +8,7 @@ isFile,
 isDirectory,
 readdirSync,
 isDirEmpty,
-copy,
 unlinkSync,
-FileNode,
-getFileTree
 } from '../fs'
 
 

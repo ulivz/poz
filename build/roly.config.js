@@ -11,13 +11,11 @@ module.exports = [
         exclude: ['node_modules/**']
       })
     ],
-    // resolve: true,
     exports: 'default',
     moduleName: pkg.name,
     format: 'cjs',
-    // compress: 'cjs',
     banner: {
-      name: 'handlebars2',
+      name: pkg.name.toUpperCase(),
       version: pkg.version,
       author: pkg.author,
       license: pkg.license,

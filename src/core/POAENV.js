@@ -11,18 +11,7 @@ const POAENVCONFIG =
   {
     POA_TEMPLATE_DIRECTORY_NAME: 'template',
     POA_PACKAGE_INDEX_FILE_NAME: 'poa.js',
-    POA_RENDER_ENGINE: handlebar2.render,
-    POA_PRESETS_ACCEPTED_PROPERTIES: {
-      reproduce: {
-        target: 'string',
-        ignore: 'object|string|array',
-        rename: 'object',
-      },
-      render: {
-        engine: 'function',
-        ignore: 'object|string|array'
-      }
-    }
+    POA_RENDER_ENGINE: handlebar2.render
   }
 
 export default class POAENV {
@@ -32,7 +21,7 @@ export default class POAENV {
   }
 
   get POA_ENV() {
-    return process.env.POA_ENV || process.env.NODE_ENV || process.env.BABEL_ENV
+    return process.env.POA_ENV || process.env.NODE_ENV || process.env.BABEL_ENV || null
   }
 
   get isTest() {

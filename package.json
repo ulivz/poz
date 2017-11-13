@@ -12,7 +12,7 @@
     "dist"
   ],
   "scripts": {
-    "test:cov": "BABEL_ENV=test jest src/utils/__test__/minimatch.test.js --coverage",
+    "test:cov": "BABEL_ENV=test jest src/** --coverage",
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@types/node": "^8.0.47",
+    "@types/vinyl": "^2.0.1",
     "babel-plugin-inline-import": "^2.0.6",
     "babel-preset-env": "^1.4.0",
     "cross-spawn": "^5.1.0",

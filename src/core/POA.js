@@ -15,13 +15,13 @@ import DirectoryNode from '../class/DirectoryNode'
 
 export default class POA extends POAEventEmitter {
 
-  constructor(packageDirectory) {
+  constructor(POAPackageDirectory) {
     super()
     this.env = new POAENV()
     this.presets = {}
     this.context = new POAContext()
     this.initUtil()
-    this.initContext(packageDirectory)
+    this.initContext(POAPackageDirectory)
     this.initLifeCycle()
   }
 
@@ -29,15 +29,15 @@ export default class POA extends POAEventEmitter {
     this.util = { string, datatypes, logger }
   }
 
-  initContext(packageDirectory) {
-    if (!exists(packageDirectory)) {
-      throw new POAError(`${packageDirectory} not exist!`)
+  initContext(POAPackageDirectory) {
+    if (!exists(POAPackageDirectory)) {
+      throw new POAError(`${POAPackageDirectory} not exist!`)
     }
-    if (!isDirectory(packageDirectory)) {
-      throw new POAError(`Expect "${packageDirectory}" is a directory!`)
+    if (!isDirectory(POAPackageDirectory)) {
+      throw new POAError(`Expect "${POAPackageDirectory}" is a directory!`)
     }
 
-    const packageIndexFile = resolve(packageDirectory, 'poa.js')
+    const packageIndexFile = resolve(POAPackageDirectory, 'poa.js')
     if (!exists(packageIndexFile)) {
       throw new POAError(
         `Cannot resolve "${packageIndexFile}", ` +
@@ -47,7 +47,7 @@ export default class POA extends POAEventEmitter {
       )
     }
 
-    const templateDirectory = resolve(packageDirectory, 'template')
+    const templateDirectory = resolve(POAPackageDirectory, 'template')
     if (!exists(templateDirectory)) {
       throw new POAError(
         `Cannot resolve ${templateDirectory}, ` +
@@ -60,7 +60,7 @@ export default class POA extends POAEventEmitter {
     const user = getGitUser()
     const cwd = process.cwd()
 
-    this.packageDirectory = packageDirectory
+    this.POAPackageDirectory = POAPackageDirectory
     this.templateDirectory = templateDirectory
     this.destDirectory = this.cwd = cwd
 
@@ -70,7 +70,7 @@ export default class POA extends POAEventEmitter {
       $dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
       $gituser: user.name,
       $gitemail: user.email,
-      $packageDirectory: packageDirectory,
+      $POAPackageDirectory: POAPackageDirectory,
       $templateDirectory: templateDirectory
     })
     this.templateConfig = require(packageIndexFile)(this.context, this)
