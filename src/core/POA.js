@@ -19,6 +19,9 @@ export default class POA extends POAEventEmitter {
     super()
     this.env = new POAENV()
     this.presets = {}
+    this.cwd = null
+    this.POAPackageDirectory = null
+    this.POATemplateDirectory = null
     this.context = new POAContext()
     this.initUtil()
     this.initContext(POAPackageDirectory)
@@ -47,10 +50,10 @@ export default class POA extends POAEventEmitter {
       )
     }
 
-    const templateDirectory = resolve(POAPackageDirectory, 'template')
-    if (!exists(templateDirectory)) {
+    const POATemplateDirectory = resolve(POAPackageDirectory, 'template')
+    if (!exists(POATemplateDirectory)) {
       throw new POAError(
-        `Cannot resolve ${templateDirectory}, ` +
+        `Cannot resolve ${POATemplateDirectory}, ` +
         'For using POA, A POA template package ' +
         'should contains a "template" directory ' +
         'which used to store the template files.'
@@ -61,8 +64,8 @@ export default class POA extends POAEventEmitter {
     const cwd = process.cwd()
 
     this.POAPackageDirectory = POAPackageDirectory
-    this.templateDirectory = templateDirectory
-    this.destDirectory = this.cwd = cwd
+    this.POATemplateDirectory = POATemplateDirectory
+    this.cwd = cwd
 
     this.context.assign({
       $cwd: cwd,
@@ -71,7 +74,7 @@ export default class POA extends POAEventEmitter {
       $gituser: user.name,
       $gitemail: user.email,
       $POAPackageDirectory: POAPackageDirectory,
-      $templateDirectory: templateDirectory
+      $POATemplateDirectory: POATemplateDirectory
     })
     this.templateConfig = require(packageIndexFile)(this.context, this)
   }
@@ -93,7 +96,7 @@ export default class POA extends POAEventEmitter {
       transform = {}
     }
     this.presets.dest = Object.assign({
-      target: this.destDirectory,
+      target: this.cwd,
       ignore: {},
       rename: {}
     }, dest)
@@ -136,7 +139,7 @@ export default class POA extends POAEventEmitter {
     }
 
     const traverse = () => {
-      return this.templateDirectoryTree.traverse()
+      return this.POATemplateDirectoryTree.traverse()
     }
 
     const reproduce = () => {
@@ -180,8 +183,8 @@ export default class POA extends POAEventEmitter {
         }
       }
       return new Promise((resolve, reject) => {
-        this.templateDirectoryTree.setDestIgnore(this.presets.dest.ignore)
-        const reproduceStream = this.templateDirectoryTree.dest(this.presets.dest.target, transformer)
+        this.POATemplateDirectoryTree.setDestIgnore(this.presets.dest.ignore)
+        const reproduceStream = this.POATemplateDirectoryTree.dest(this.presets.dest.target, transformer)
         reproduceStream.on('error', reject)
         reproduceStream.on('finish', () => {
           this.emit('onReproduceEnd')
@@ -190,7 +193,7 @@ export default class POA extends POAEventEmitter {
       })
     }
 
-    this.templateDirectoryTree = new DirectoryNode(this.templateDirectory)
+    this.POATemplateDirectoryTree = new DirectoryNode(this.POATemplateDirectory)
 
     return prompt()
       .then(handlePromptsAnswers)

@@ -45,6 +45,7 @@
     "vinyl-fs": "^2.4.4"
   },
   "devDependencies": {
+    "@types/inquirer": "0.0.35",
     "@types/node": "^8.0.47",
     "@types/vinyl": "^2.0.1",
     "babel-plugin-inline-import": "^2.0.6",
