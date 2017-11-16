@@ -17,9 +17,7 @@ interface POAContextConstructor {
 
 interface POAContext<T> {
   set(key: string, val: T): POAContext
-
   assign(key: { key: string, value: T }): POAContext
-
   get(key: string): T
 }
 
@@ -32,15 +30,11 @@ interface POAEventEmitterConstructor {
 }
 
 interface POAEventEmitter extends NodeJS.EventEmitter {
-  renderSuccess(file: File): void
-
-  renderFailure(error: Error, file: File): void
-
   printTree(): Promise<void>
-
-  transformIgnore(file: File): void
-
   initLifeCycle(): void
+  renderSuccess(file: File): void
+  renderFailure(error: Error, file: File): void
+  transformIgnore(file: File): void
 }
 
 type POADestConfigIgnoreFunction = () => boolean
@@ -58,17 +52,11 @@ export interface POAENVConstructor {
 export interface POAENV {
   POA_TEMPLATE_DIRECTORY_NAME: string
   POA_PACKAGE_INDEX_FILE_NAME: string
-
   POA_RENDER_ENGINE: POARenderFunction
-
   POA_ENV: string | null
-
   isTest: boolean
-
   isDebug: boolean
-
   isDev: boolean
-
   isProduction: boolean
 }
 
@@ -97,16 +85,11 @@ export interface POA extends POAEventEmitter {
   cwd: string
   POAPackageDirectory: string
   POATemplateDirectory: string
-
   initContext(POAPackageDirectory: string): void
-
   set(key: { key: string, value: any }): void
   set(key: string, value: string): void
-
   parsePresets(presets: POADestConfig): void
-
   run(): Promise<void>
-
 }
 
 /**
