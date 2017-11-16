@@ -43,8 +43,9 @@ interface POAEventEmitter extends NodeJS.EventEmitter {
   initLifeCycle(): void
 }
 
+type POADestConfigIgnoreFunction = () => boolean
 type POARenderFunction = (template: string, context: { key: string, value: any }) => string
-type POAPresetsIgnore = { key: string, value: string } | string | string[]
+type POADestConfigIgnore = { key: string, value: boolean | POADestConfigIgnoreFunction } | string | string[]
 
 /**
  * POA Environment
@@ -72,18 +73,13 @@ export interface POAENV {
 }
 
 /**
- * POA Presets
+ * POA Dest Options
  */
-export interface POAPresets {
-  reproduce?: {
-    target?: string;
-    ignore?: POAPresetsIgnore;
-    rename?: { key: string, value: string };
-  },
-  transform?: {
-    render?: POARenderFunction;
-    ignore?: POAPresetsIgnore;
-  }
+export interface POADestConfig {
+  dest?: string;
+  ignore?: POADestConfigIgnore | null;
+  render?: POARenderFunction;
+  rename?: { key: string, value: string } | null;
 }
 
 /**
@@ -96,7 +92,7 @@ export interface POAConstructor {
 
 export interface POA extends POAEventEmitter {
   env: POAENV
-  presets: POAPresets
+  destConfig: POADestConfig
   context: POAContext
   cwd: string
   POAPackageDirectory: string
@@ -107,7 +103,7 @@ export interface POA extends POAEventEmitter {
   set(key: { key: string, value: any }): void
   set(key: string, value: string): void
 
-  parsePresets(presets: POAPresets): void
+  parsePresets(presets: POADestConfig): void
 
   run(): Promise<void>
 
@@ -116,10 +112,11 @@ export interface POA extends POAEventEmitter {
 /**
  * POA config
  */
+type POADestConfigFunction = () => POADestConfig;
 export interface POAConfig {
   // Base Config
   prompts(): inquirer.Question;
-  presets?(): POAPresets
+  dest?: string | POADestConfig | POADestConfigFunction;
   // Life Cycle
   onStart?(): void
   onPromptStart?(): void

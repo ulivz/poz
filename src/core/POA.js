@@ -1,6 +1,6 @@
 import {resolve} from '../utils/path'
 import {getGitUser} from '../utils/git'
-import {isPlainObject, isFunction} from '../utils/datatypes'
+import {isPlainObject, isFunction, isUndefined} from '../utils/datatypes'
 import {exists, isDirectory} from '../utils/fs'
 import {match} from '../utils/minimatch'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
@@ -8,6 +8,7 @@ import * as string from '../utils/string'
 import * as logger from '../utils/log'
 import * as datatypes from '../utils/datatypes'
 import POAENV from './POAENV.js'
+import {mergePOADestConfig} from './POAUtils.js'
 import POAError from './POAError.js'
 import POAContext from './POAContext.js'
 import POAEventEmitter from './POAEventEmitter.js'
@@ -18,7 +19,7 @@ export default class POA extends POAEventEmitter {
   constructor(POAPackageDirectory) {
     super()
     this.env = new POAENV()
-    this.presets = {}
+    this.destConfig = {}
     this.cwd = null
     this.POAPackageDirectory = null
     this.POATemplateDirectory = null
@@ -87,120 +88,94 @@ export default class POA extends POAEventEmitter {
     }
   }
 
-  parsePresets(presets) {
-    let { dest, transform } = presets
-    if (!isPlainObject(dest)) {
-      dest = {}
-    }
-    if (!isPlainObject(transform)) {
-      transform = {}
-    }
-    this.presets = {
-      dest: Object.assign({
-        target: this.cwd,
-        ignore: {},
-        rename: {}
-      }, dest),
-      transform: Object.assign({
-        render: this.env.POA_RENDER_ENGINE,
-        ignore: {}
-      }, transform)
-    }
-    if (!isFunction(this.presets.transform.render)) {
-      throw new POAError('Expect "transform.engine" to be a function')
-    }
+  prompt() {
+    this.emit('onPromptStart')
+    const promptsMetadata = this.templateConfig.prompts()
+    const prompts = promptsTransformer(promptsMetadata)
+    const envPromptsRunner = this.env.isTest
+      ? mockPromptsRunner
+      : promptsRunner
+    return envPromptsRunner(prompts)
   }
 
-  run() {
-    this.emit('onStart')
-    const prompt = () => {
-      this.emit('onPromptStart')
-      const promptsMetadata = this.templateConfig.prompts()
-      const prompts = promptsTransformer(promptsMetadata)
-      const envPromptsRunner = this.env.isTest
-        ? mockPromptsRunner
-        : promptsRunner
-      return envPromptsRunner(prompts)
+  handlePromptsAnswers(answers) {
+    this.emit('onPromptEnd')
+    this.context.assign(answers)
+  }
+
+  setupDestConfig() {
+    // default
+    this.destConfig = {
+      target: this.cwd,
+      ignore: null,
+      rename: null,
+      render: this.env.POA_RENDER_ENGINE,
+    }
+    let { dest } = this.templateConfig
+    mergePOADestConfig(this.destConfig, dest)
+  }
+
+  dest() {
+    this.emit('onDestStart')
+
+    let renameConfig = this.destConfig.rename
+
+    if (!isPlainObject(renameConfig)) {
+      logger.info('Expect "rename" property to be a plain object')
+      renameConfig = {}
     }
 
-    const handlePromptsAnswers = answers => {
-      this.emit('onPromptEnd')
-      this.context.assign(answers)
-    }
-
-    const parsePresets = () => {
-      let { presets } = this.templateConfig
-      if (isFunction(presets)) {
-        presets = presets()
-      } else if (isPlainObject(presets)) {
-
-      } else {
-        throw new POAError('Expect "presets" to be a function or a plain object')
-      }
-      this.parsePresets(presets)
-    }
-
-    const traverse = () => {
-      return this.POATemplateDirectoryTree.traverse()
-    }
-
-    const reproduce = () => {
-      this.emit('onReproduceStart')
-
-      let renameConfig = this.presets.dest.rename
-      if (!isPlainObject(renameConfig)) {
-        logger.info('Expect "rename" property to be a plain object')
-        renameConfig = {}
-      }
-
-      const getNewName = name => {
-        Object.keys(renameConfig).forEach(pattern => {
-          name = name.replace(pattern, renameConfig[pattern])
-        })
-        return name
-      }
-
-      const render = this.presets.transform.engine
-
-      const transformer = vinylFile => {
-        // 1. renmae
-        let oldRelative = vinylFile.relative
-        let newName = getNewName(vinylFile.basename)
-        if (vinylFile.basename !== newName) {
-          vinylFile.basename = newName
-          logger.info(`Rename <gray>${oldRelative}</gray> ==> <gray>${vinylFile.relative}</gray>`)
-        }
-
-        // 2. render
-        if (match(vinylFile.path, this.presets.transform.ignore)) {
-          this.transformIgnore(vinylFile)
-        } else if (!vinylFile.isDirectory()) {
-          try {
-            let renderResult = render(vinylFile.contents.toString(), this.context, vinylFile)
-            this.emit('renderSuccess', vinylFile)
-            vinylFile.contents = new Buffer(renderResult)
-          } catch (error) {
-            this.emit('renderFailure', error, vinylFile)
-          }
-        }
-      }
-      return new Promise((resolve, reject) => {
-        this.POATemplateDirectoryTree.setDestIgnore(this.presets.dest.ignore)
-        const reproduceStream = this.POATemplateDirectoryTree.dest(this.presets.dest.target, transformer)
-        reproduceStream.on('error', reject)
-        reproduceStream.on('finish', () => {
-          this.emit('onReproduceEnd')
-          resolve()
-        })
+    const getNewName = name => {
+      Object.keys(renameConfig).forEach(pattern => {
+        name = name.replace(pattern, renameConfig[pattern])
       })
+      return name
     }
 
-    this.POATemplateDirectoryTree = new DirectoryNode(this.POATemplateDirectory)
+    const render = this.destConfig.render
 
-    return prompt()
-      .then(handlePromptsAnswers)
-      .then(parsePresets)
-      .then(() => Promise.all([traverse(), reproduce()]))
+    const transformer = vinylFile => {
+      // 1. renmae
+      let oldRelative = vinylFile.relative
+      let newName = getNewName(vinylFile.basename)
+      if (vinylFile.basename !== newName) {
+        vinylFile.basename = newName
+        logger.info(`Rename <gray>${oldRelative}</gray> ==> <gray>${vinylFile.relative}</gray>`)
+      }
+
+      // 2. render
+      if (!vinylFile.isDirectory()) {
+        try {
+          let renderResult = render(vinylFile.contents.toString(), this.context, vinylFile)
+          this.emit('renderSuccess', vinylFile)
+          vinylFile.contents = new Buffer(renderResult)
+        } catch (error) {
+          this.emit('renderFailure', error, vinylFile)
+        }
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      this.POATemplateDirectoryTree.setDestIgnore(this.destConfig.ignore)
+      const destStream = this.POATemplateDirectoryTree.dest(this.destConfig.target, transformer)
+      destStream.on('error', reject)
+      destStream.on('finish', () => {
+        this.emit('onDestEnd')
+        resolve()
+      })
+    })
+  }
+
+  start() {
+    this.emit('onStart')
+    this.POATemplateDirectoryTree = new DirectoryNode(this.POATemplateDirectory)
+    return this.prompt()
+      .then(this.handlePromptsAnswers.bind(this))
+      .then(this.setupDestConfig.bind(this))
+      .then(() => Promise.all([
+        this.POATemplateDirectoryTree.traverse(),
+        this.dest()
+      ]))
       .then(() => {
         this.emit('onExit')
       })

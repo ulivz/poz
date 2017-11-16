@@ -2,9 +2,9 @@ import fs from 'fs'
 import path from 'path'
 import FileSystemNode from './FileSystemNode'
 import FileNode from './FileNode'
-import {isFile, isDirectory} from '../utils/fs'
-import {isString, isArray, isPlainObject} from '../utils/datatypes'
-import {spawnStream} from './FileSystemNode'
+import {isFile} from '../utils/fs'
+import {isString, isArray, isPlainObject, isFunction} from '../utils/datatypes'
+import {dest} from './FileSystemNode'
 
 
 export default class DirectoryNode extends FileSystemNode {
@@ -31,7 +31,12 @@ export default class DirectoryNode extends FileSystemNode {
       this.src = this.src.concat(pattern.map(i => this._reversePattern(i)))
     } else if (isPlainObject(pattern)) {
       Object.keys(pattern).forEach(i => {
-        if (pattern[i]) {
+        let condition = pattern[i]
+        if (isFunction(condition)) {
+          if (condition()) {
+            this.src.push(this._reversePattern(i))
+          }
+        } else if (pattern[i]) {
           this.src.push(this._reversePattern(i))
         }
       })
@@ -39,7 +44,7 @@ export default class DirectoryNode extends FileSystemNode {
   }
 
   dest(targetPath, transformer) {
-    return spawnStream(this.src, targetPath, transformer)
+    return dest(this.src, targetPath, transformer)
   }
 
   traverse() {

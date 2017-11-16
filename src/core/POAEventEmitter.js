@@ -10,8 +10,8 @@ const LIFE_CYCLE = [
   'onStart',
   'onPromptStart',
   'onPromptEnd',
-  'onReproduceStart',
-  'onReproduceEnd',
+  'onDestStart',
+  'onDestEnd',
   'onExit'
 ]
 
@@ -39,7 +39,7 @@ export default  class POAEventEmitter extends EventEmitter {
 
   printTree() {
     logger.echo()
-    this.destDirectoryTree = new DirectoryNode(this.presets.dest.target);
+    this.destDirectoryTree = new DirectoryNode(this.destConfig.target);
     return this.destDirectoryTree.traverse()
       .then(() => {
         logger.print(`<yellow>${archy(this.destDirectoryTree)}</yellow>`)

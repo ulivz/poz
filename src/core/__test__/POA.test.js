@@ -9,14 +9,14 @@ describe('POA', () => {
     process.chdir(resolve(__dirname, 'fixtures'))
   })
 
-  afterAll(() => {
-    process.chdir(prevCwd)
-  })
+  // afterAll(() => {
+  //   process.chdir(prevCwd)
+  // })
 
-  test('base', () => {
-    console.log(resolve(__dirname, '../../../packages/nm'))
-    const ins = new POA(resolve(__dirname, '../../../packages/nm'))
-    return ins.run()
+  test('basic', () => {
+    const POATestPackagePath = __dirname + '/fixtures/POATestPackage'
+    const ins = new POA(POATestPackagePath)
+    return ins.start()
   })
 
 })

@@ -3,7 +3,7 @@ import VFS from 'vinyl-fs'
 import map from 'map-stream'
 import {isString, isFunction, isArray} from '../utils/datatypes'
 
-export function spawnStream(sourcePath, targetPath, transformer) {
+export function dest(sourcePath, targetPath, transformer) {
 
   if (!isString(sourcePath) && !isArray(sourcePath)) {
     throw new Error('Expected "sourcePath" to be string or array')
