@@ -3,11 +3,19 @@
 
 /// <reference path="../node_modules/@types/node/index.d.ts" />
 /// <reference path="../node_modules/@types/vinyl/index.d.ts" />
-/////// <reference path="../node_modules/@types/inquirer/index.d.ts" />
+/// <reference path="../node_modules/@types/inquirer/index.d.ts" />
 
 import inquirer = require('inquirer');
 
-export class POAContext<T> {
+/**
+ * POA Context
+ */
+interface POAContextConstructor {
+  new(): POAContext;
+  prototype: POAContext;
+}
+
+interface POAContext<T> {
   set(key: string, val: T): POAContext
 
   assign(key: { key: string, value: T }): POAContext
@@ -15,12 +23,15 @@ export class POAContext<T> {
   get(key: string): T
 }
 
+/**
+ * POA EventEmitter
+ */
 interface POAEventEmitterConstructor {
   new(): POAEventEmitter;
   prototype: POAEventEmitter;
 }
 
-export class POAEventEmitter extends NodeJS.EventEmitter {
+interface POAEventEmitter extends NodeJS.EventEmitter {
   renderSuccess(file: File): void
 
   renderFailure(error: Error, file: File): void
@@ -38,36 +49,39 @@ type POAPresetsIgnore = { key: string, value: string } | string | string[]
 /**
  * POA Environment
  */
-export class POAENV {
-  constructor()
+export interface POAENVConstructor {
+  new(): POAENV;
+  prototype: POAENV;
+}
 
+export interface POAENV {
   POA_TEMPLATE_DIRECTORY_NAME: string
   POA_PACKAGE_INDEX_FILE_NAME: string
 
   POA_RENDER_ENGINE: POARenderFunction
 
-  get POA_ENV(): string | null
+  POA_ENV: string | null
 
-  get isTest(): boolean
+  isTest: boolean
 
-  get isDebug(): boolean
+  isDebug: boolean
 
-  get isDev(): boolean
+  isDev: boolean
 
-  get isProduction(): boolean
+  isProduction: boolean
 }
 
 /**
  * POA Presets
  */
-interface POAPresets {
+export interface POAPresets {
   reproduce?: {
     target?: string;
     ignore?: POAPresetsIgnore;
     rename?: { key: string, value: string };
   },
   transform?: {
-    engine?: POARenderFunction;
+    render?: POARenderFunction;
     ignore?: POAPresetsIgnore;
   }
 }
@@ -75,7 +89,12 @@ interface POAPresets {
 /**
  * POA Main
  */
-export class POA extends POAEventEmitter {
+export interface POAConstructor {
+  new(): POA;
+  prototype: POA;
+}
+
+export interface POA extends POAEventEmitter {
   env: POAENV
   presets: POAPresets
   context: POAContext
@@ -98,8 +117,10 @@ export class POA extends POAEventEmitter {
  * POA config
  */
 export interface POAConfig {
+  // Base Config
   prompts(): inquirer.Question;
   presets?(): POAPresets
+  // Life Cycle
   onStart?(): void
   onPromptStart?(): void
   onPromptEnd?(): void

@@ -95,16 +95,18 @@ export default class POA extends POAEventEmitter {
     if (!isPlainObject(transform)) {
       transform = {}
     }
-    this.presets.dest = Object.assign({
-      target: this.cwd,
-      ignore: {},
-      rename: {}
-    }, dest)
-    this.presets.transform = Object.assign({
-      engine: this.env.POA_RENDER_ENGINE,
-      ignore: {}
-    }, transform)
-    if (!isFunction(this.presets.transform.engine)) {
+    this.presets = {
+      dest: Object.assign({
+        target: this.cwd,
+        ignore: {},
+        rename: {}
+      }, dest),
+      transform: Object.assign({
+        render: this.env.POA_RENDER_ENGINE,
+        ignore: {}
+      }, transform)
+    }
+    if (!isFunction(this.presets.transform.render)) {
       throw new POAError('Expect "transform.engine" to be a function')
     }
   }
