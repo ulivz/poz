@@ -15,25 +15,18 @@ const LIFE_CYCLE = [
   'onExit'
 ]
 
-const EVNET_LIST = [
-  'renderSuccess',
-  'renderFailure',
-  'transformIgnore',
-  'printTemplateTree'
-]
-
 export default  class POAEventEmitter extends EventEmitter {
 
-  renderSuccess(file) {
-    let filePath = relative(this.templateDirectory, file.path)
+  handleRenderSuccess(file) {
+    let filePath = relative(this.POATemplateDirectory, file.path)
     logger.success(`render <cyan>${filePath}</cyan>`)
   }
 
-  renderFailure(error, file) {
-    let filePath = relative(this.templateDirectory, file.path)
+  handleRenderFailure(error, file) {
+    let filePath = relative(this.POATemplateDirectory, file.path)
     logger.error(`render <cyan>${filePath}</cyan>`)
     logger.echo(error)
-    const targetNode = this.templateDirectoryTree.searchByAbsolutePath(file.path)
+    const targetNode = this.POATemplateDirectoryTree.searchByAbsolutePath(file.path)
     targetNode.label = targetNode.label + ' ' + logger.parseColor('<gray>[Render Error!]</gray>')
   }
 
@@ -53,11 +46,6 @@ export default  class POAEventEmitter extends EventEmitter {
 
   constructor() {
     super()
-    for (let event of EVNET_LIST) {
-      this.on(event, (...args) => {
-        this[event](...args)
-      })
-    }
   }
 
   initLifeCycle() {

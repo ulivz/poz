@@ -1,6 +1,6 @@
 import fs from 'fs'
 import FileSystemNode from './FileSystemNode'
-import {spawnStream} from './FileSystemNode'
+import {dest} from './FileSystemNode'
 
 export default class FileNode extends FileSystemNode {
 
@@ -19,7 +19,7 @@ export default class FileNode extends FileSystemNode {
   }
 
   dest(targetPath, transformer) {
-    return spawnStream(this.abosultePath, targetPath, transformer)
+    return dest(this.abosultePath, targetPath, transformer)
   }
 
 }

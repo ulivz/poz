@@ -50,6 +50,8 @@ export default class DirectoryNode extends FileSystemNode {
   traverse() {
     return this.recursiveTraverse().then(() => {
       this.isTraversed = true;
+    }).catch(error => {
+      console.log(error)
     })
   }
 

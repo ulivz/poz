@@ -1,8 +1,7 @@
 import {resolve} from '../utils/path'
 import {getGitUser} from '../utils/git'
-import {isPlainObject, isFunction, isUndefined} from '../utils/datatypes'
+import {isPlainObject} from '../utils/datatypes'
 import {exists, isDirectory} from '../utils/fs'
-import {match} from '../utils/minimatch'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
 import * as string from '../utils/string'
 import * as logger from '../utils/log'
@@ -147,10 +146,10 @@ export default class POA extends POAEventEmitter {
       if (!vinylFile.isDirectory()) {
         try {
           let renderResult = render(vinylFile.contents.toString(), this.context, vinylFile)
-          this.emit('renderSuccess', vinylFile)
           vinylFile.contents = new Buffer(renderResult)
+          this.handleRenderSuccess(vinylFile)
         } catch (error) {
-          this.emit('renderFailure', error, vinylFile)
+          this.handleRenderFailure(error, vinylFile)
         }
       }
     }
@@ -159,10 +158,19 @@ export default class POA extends POAEventEmitter {
       this.POATemplateDirectoryTree.setDestIgnore(this.destConfig.ignore)
       const destStream = this.POATemplateDirectoryTree.dest(this.destConfig.target, transformer)
       destStream.on('error', reject)
+      destStream.on('unExpectedTransformer', () => {
+        logger.error(`unexpected transformer`)
+      })
+      destStream.on('transFormError', error => {
+        console.log(error)
+        logger.error(`transform error`)
+      })
       destStream.on('finish', () => {
         this.emit('onDestEnd')
         resolve()
       })
+    }).catch(error => {
+      console.log(error)
     })
   }
 
@@ -170,16 +178,20 @@ export default class POA extends POAEventEmitter {
     this.emit('onStart')
     this.POATemplateDirectoryTree = new DirectoryNode(this.POATemplateDirectory)
     return this.prompt()
-      .then(this.handlePromptsAnswers.bind(this))
-      .then(this.setupDestConfig.bind(this))
-      .then(() => Promise.all([
-        this.POATemplateDirectoryTree.traverse(),
-        this.dest()
-      ]))
+      .then(answers => {
+        this.handlePromptsAnswers(answers)
+        this.setupDestConfig()
+        let self = this
+        return Promise.all([
+          self.POATemplateDirectoryTree.traverse(),
+          self.dest()
+        ])
+      })
       .then(() => {
         this.emit('onExit')
       })
       .catch(error => {
+        throw error
         this.emit('onExit', error)
       })
   }

@@ -15,7 +15,9 @@ export function mergePOADestConfig(destConfig, userDestConfig) {
   }
 
   Object.keys(destConfig).forEach(key => {
-    destConfig[key] = userDestConfig[key]
+    if (!isUndefined(userDestConfig[key])) {
+      destConfig[key] = userDestConfig[key]
+    }
   });
 
   if (!isFunction(destConfig.render)) {

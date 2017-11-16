@@ -26,10 +26,6 @@ module.exports = function (ctx, poa) {
       }
     },
 
-    onDestEnd() {
-      poa.util.logger.info('finished')
-    },
-
     onExit() {
       poa.util.logger.info('finished')
       poa.printTree()
