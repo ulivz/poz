@@ -1,18 +1,18 @@
 {
-  "name": "poa",
+  "name": "poz",
   "version": "0.0.1",
-  "description": "project omnipresent amenities",
+  "description": "Programmable scaffolding generator",
   "repository": {
-    "url": "ULIVZ/propa",
-    "type": "git"
+    "url": "ULIVZ/poz",
+    "type": "poz"
   },
-  "main": "dist/propa.js",
-  "module": "dist/propa.es.js",
+  "main": "dist/poz.common.js",
+  "module": "dist/poz.es.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "test:cov": "BABEL_ENV=test jest src/core/__test__/POA.test.js --coverage",
+    "test:cov": "BABEL_ENV=test jest src/** --coverage",
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
@@ -33,15 +33,12 @@
   "dependencies": {
     "archy": "^1.0.0",
     "chalk": "^2.3.0",
-    "fs-extra": "^4.0.2",
     "git-config-path": "^1.0.1",
     "handlebars2": "^0.1.1",
     "inquirer": "^3.3.0",
     "map-stream": "0.0.7",
     "minimatch": "^3.0.4",
-    "mitt": "^1.1.2",
     "parse-git-config": "^1.1.1",
-    "recursive-readdir": "^2.2.1",
     "vinyl-fs": "^2.4.4"
   },
   "devDependencies": {

@@ -12,8 +12,8 @@ module.exports = [
       })
     ],
     exports: 'default',
-    moduleName: pkg.name,
-    format: 'cjs',
+    filename: pkg.name,
+    format: 'cjs,es',
     banner: {
       name: pkg.name.toUpperCase(),
       version: pkg.version,

@@ -1,7 +1,3 @@
-import archy from 'archy'
-import chalk from 'chalk'
-import {parseColor, echo} from '../log'
-
 import {
 exists,
 isFile,
@@ -42,35 +38,4 @@ describe('fs', () => {
     expect(isDirEmpty(source)).toBe(false)
     expect(isDirEmpty(target)).toBe(true)
   })
-
-  // test('copy', () => {
-  //   return copy(source, target).then(() => {
-  //     let files = readdirSync(target)
-  //     expect(files[0]).toBe('.gitignore')
-  //     unlinkSync(target + '/' + files[0])
-  //   })
-  // })
-
-  test('FileNode', () => {
-    const baseDir = __dirname
-    const fullpath = baseDir + '/fixtures'
-    const file = FileNode.create(fullpath, baseDir)
-    expect(file.path).toBe('fixtures')
-    expect(file.isFile).toBe(false)
-    expect(file.isDirectory).toBe(true)
-    expect(file.label).toBe('fixtures')
-  })
-
-  test('getFileTree', () => {
-    return getFileTree(__dirname)
-      .then(result => {
-        console.log(result)
-        console.log(parseColor(`<yellow>${archy(result)}</yellow>`))
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  })
-
-
 })

@@ -2,7 +2,7 @@ import fs from 'fs'
 import POZFileTreeNode from './POZFileTreeNode'
 import {dest} from './POZFileTreeNode'
 
-export default class FileNode extends POZFileTreeNode {
+export default class POZFile extends POZFileTreeNode {
 
   constructor(path, cwd) {
     super(path, cwd)
