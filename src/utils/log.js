@@ -23,7 +23,7 @@ export const parseColor = simplelogMsgParser
 
 export const simpleColorLog = (color, type) => {
   return (msg) => {
-    const msgType = type ? chalk.gray(`[POA]`) + ' ' + COLOR[color](type) + ' ' : ''
+    const msgType = type ? chalk.gray(`[POZ]`) + ' ' + COLOR[color](type) + ' ' : ''
     const fullMsg = msgType + msg
     echo(parseColor(fullMsg))
     //   fullMsg.replace(/(^)/gm, `$1${GLOBAL_INDENT}`)

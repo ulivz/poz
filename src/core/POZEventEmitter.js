@@ -3,8 +3,7 @@ import archy from 'archy'
 import {isPlainObject, isFunction} from '../utils/datatypes'
 import {relative} from '../utils/path'
 import * as logger from '../utils/log'
-import POAError from './POAError'
-import POADirectory from '../file-system/POADirectory'
+import POZError from './POZError'
 
 const LIFE_CYCLE = [
   'onStart',
@@ -15,18 +14,18 @@ const LIFE_CYCLE = [
   'onExit'
 ]
 
-export default  class POAEventEmitter extends EventEmitter {
+export default  class POZEventEmitter extends EventEmitter {
 
   handleRenderSuccess(file) {
-    let filePath = relative(this.POATemplateDirectory, file.path)
+    let filePath = relative(this.POZTemplateDirectory, file.path)
     logger.success(`render <cyan>${filePath}</cyan>`)
   }
 
   handleRenderFailure(error, file) {
-    let filePath = relative(this.POATemplateDirectory, file.path)
+    let filePath = relative(this.POZTemplateDirectory, file.path)
     logger.error(`render <cyan>${filePath}</cyan>`)
     logger.echo(error)
-    const targetNode = this.POATemplateDirectoryTree.searchByAbsolutePath(file.path)
+    const targetNode = this.POZTemplateDirectoryTree.searchByAbsolutePath(file.path)
     console.log(targetNode)
     targetNode.label = targetNode.label + ' ' + logger.parseColor('<gray>[Render Error!]</gray>')
   }
@@ -34,9 +33,9 @@ export default  class POAEventEmitter extends EventEmitter {
   printTree() {
     logger.echo()
     setTimeout(() => {
-      this.POADestDirectoryTree.traverse()
+      this.POZDestDirectoryTree.traverse()
         .then(() => {
-          logger.print(`<yellow>${archy(this.POADestDirectoryTree)}</yellow>`)
+          logger.print(`<yellow>${archy(this.POZDestDirectoryTree)}</yellow>`)
         })
     }, 10)
   }
@@ -52,7 +51,7 @@ export default  class POAEventEmitter extends EventEmitter {
 
   initLifeCycle() {
     if (!isPlainObject(this.templateConfig)) {
-      throw new POAError('"poa.js" must export a plain object')
+      throw new POZError('"poz.js" must export a plain object')
     }
     for (let hook of LIFE_CYCLE) {
       let hookHandler = this.templateConfig[hook]

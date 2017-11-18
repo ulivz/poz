@@ -17,12 +17,12 @@ describe('prompts', () => {
   const promptsMetadata2 = {
     name: {
       message: 'What is the name of the new project',
-      default: 'POA'
+      default: 'POZ'
     },
     description: {
       message: 'How would you describe the new project',
       default: `my awesome project`,
-      when: answers => answers.name !== 'POA'
+      when: answers => answers.name !== 'POZ'
     },
     author: {
       message: 'What is your name',
@@ -55,12 +55,12 @@ describe('prompts', () => {
     const promptsMetadata = promptsMetadata2
     const prompts = promptsTransformer(promptsMetadata);
     return mockPromptsRunner(prompts, [
-      'poa.js',
-      'awesome poa',
+      'poz.js',
+      'awesome poz',
       'ULIVZ'
     ]).then(answers => {
-      expect(answers.name).toBe('poa.js')
-      expect(answers.description).toBe('awesome poa')
+      expect(answers.name).toBe('poz.js')
+      expect(answers.description).toBe('awesome poz')
       expect(answers.author).toBe('ULIVZ')
     })
   })

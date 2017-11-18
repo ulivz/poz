@@ -1,11 +1,11 @@
-import POAFile from '../POAFile'
-import POADirectory from '../POADirectory'
+import POZFile from '../POZFile'
+import POZDirectory from '../POZDirectory'
 
 describe('FileNode', () => {
 
   test('FileNode', () => {
     const TEST_DIR = __dirname + '/fixtures'
-    const node = new POADirectory(TEST_DIR, __dirname)
+    const node = new POZDirectory(TEST_DIR, __dirname)
     return node.traverse().then(() => {
       console.log('finished')
     })

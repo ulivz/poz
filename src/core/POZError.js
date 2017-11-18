@@ -1,4 +1,4 @@
-export default class POAError extends Error {
+export default class POZError extends Error {
 
   constructor(msg) {
     super(msg)

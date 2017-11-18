@@ -1,12 +1,12 @@
 import fs from 'fs'
 import PATH from 'path'
-import POAFileTreeNode from './POAFileTreeNode'
-import {dest} from './POAFileTreeNode'
-import POAFile from './POAFile'
+import POZFileTreeNode from './POZFileTreeNode'
+import {dest} from './POZFileTreeNode'
+import POZFile from './POZFile'
 import {isFile} from '../utils/fs'
 import {isString, isArray, isPlainObject, isFunction} from '../utils/datatypes'
 
-export default class POADirectory extends POAFileTreeNode {
+export default class POZDirectory extends POZFileTreeNode {
 
   constructor(path, cwd) {
     if (!cwd) {
@@ -73,13 +73,13 @@ export default class POADirectory extends POAFileTreeNode {
         for (let childNodeName of childNodeNames) {
           let childNodePath = PATH.resolve(parentNode.path, childNodeName)
           let isChildNodeFile = isFile(childNodePath)
-          let ChildNodeConstructor = isChildNodeFile ? POAFile : POADirectory
+          let ChildNodeConstructor = isChildNodeFile ? POZFile : POZDirectory
           let childNode = new ChildNodeConstructor(childNodePath, parentNode.path)
 
           childNode.parentNode = parentNode
           parentNode.childNodes.push(childNode)
 
-          if (childNode instanceof POADirectory) {
+          if (childNode instanceof POZDirectory) {
             traverseChildNodesPromises.push(
               childNode.recursiveTraverse().then(() => {
                 childNode.isTraversed = true;

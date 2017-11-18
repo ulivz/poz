@@ -1,4 +1,4 @@
-module.exports = function (ctx, poa) {
+module.exports = function (ctx, poz) {
 
   return {
 
@@ -21,14 +21,14 @@ module.exports = function (ctx, poa) {
         },
         author: {
           message: "What's your name",
-          default: 'POA',
+          default: 'POZ',
         }
       }
     },
 
     onExit() {
-      poa.util.logger.info('finished')
-      poa.printTree()
+      poz.util.logger.info('finished')
+      poz.printTree()
     }
   }
 

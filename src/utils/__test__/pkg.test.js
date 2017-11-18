@@ -13,7 +13,7 @@ describe('pkg', () => {
 
   test('getPkg', () => {
     const result = getPkg(resolve(__dirname, 'fixtures'))
-    expect(result.name).toBe('poa')
+    expect(result.name).toBe('poz')
   })
 
   test('getPkg - not exist - return null', () => {

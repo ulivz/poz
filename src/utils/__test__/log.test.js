@@ -10,23 +10,23 @@ import {
 describe('log', () => {
 
   test('simplelogMsgParser - simple', () => {
-    const msg = '<red>POA</red>'
-    expect(simplelogMsgParser(msg)).toBe(COLOR.red('POA'))
+    const msg = '<red>POZ</red>'
+    expect(simplelogMsgParser(msg)).toBe(COLOR.red('POZ'))
   })
 
   test('simplelogMsgParser - complex', () => {
-    const msg = '<red>POA</red>POA<cyan>POA</cyan>'
+    const msg = '<red>POZ</red>POZ<cyan>POZ</cyan>'
     expect(simplelogMsgParser(msg)).toBe(
-      COLOR.red('POA') + 'POA' + COLOR.cyan('POA')
+      COLOR.red('POZ') + 'POZ' + COLOR.cyan('POZ')
     )
   })
 
   // Now logger does not support nested structure
   // TODO support nested color
   test('simplelogMsgParser - complex', () => {
-    const msg = '<white><red>POA</red>POA<cyan>POA</cyan></white>'
+    const msg = '<white><red>POZ</red>POZ<cyan>POZ</cyan></white>'
     expect(simplelogMsgParser(msg)).toBe(
-      '<white>' + COLOR.red('POA') + 'POA' + COLOR.cyan('POA') + '</white>'
+      '<white>' + COLOR.red('POZ') + 'POZ' + COLOR.cyan('POZ') + '</white>'
     )
   })
 

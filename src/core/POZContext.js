@@ -1,4 +1,4 @@
-export default class POAContext {
+export default class POZContext {
 
   set(key, val) {
     this[key] = val

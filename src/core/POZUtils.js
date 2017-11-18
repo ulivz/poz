@@ -1,7 +1,7 @@
 import {isString, isPlainObject, isFunction, isUndefined} from '../utils/datatypes'
-import POAError from './POAError.js'
+import POZError from './POZError.js'
 
-export function mergePOADestConfig(destConfig, userDestConfig) {
+export function mergePOZDestConfig(destConfig, userDestConfig) {
 
   if (isString(userDestConfig)) {
     destConfig.target = userDestConfig
@@ -11,7 +11,7 @@ export function mergePOADestConfig(destConfig, userDestConfig) {
   if (isFunction(userDestConfig)) {
     userDestConfig = userDestConfig()
   } else if (!isPlainObject(userDestConfig)) {
-    throw new POAError('Expect "dest" to be a string, function or a plain object')
+    throw new POZError('Expect "dest" to be a string, function or a plain object')
   }
 
   Object.keys(destConfig).forEach(key => {
@@ -21,6 +21,6 @@ export function mergePOADestConfig(destConfig, userDestConfig) {
   });
 
   if (!isFunction(destConfig.render)) {
-    throw new POAError('Expect "dest.render" to be a function')
+    throw new POZError('Expect "dest.render" to be a function')
   }
 }

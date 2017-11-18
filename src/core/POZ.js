@@ -6,25 +6,25 @@ import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/pro
 import * as string from '../utils/string'
 import * as logger from '../utils/log'
 import * as datatypes from '../utils/datatypes'
-import POAENV from './POAENV.js'
-import {mergePOADestConfig} from './POAUtils.js'
-import POAError from './POAError.js'
-import POAContext from './POAContext.js'
-import POAEventEmitter from './POAEventEmitter.js'
-import POADirectory from '../file-system/POADirectory'
+import POZENV from './POZENV.js'
+import {mergePOZDestConfig} from './POZUtils.js'
+import POZError from './POZError.js'
+import POZContext from './POZContext.js'
+import POZEventEmitter from './POZEventEmitter.js'
+import POZDirectory from '../file-system/POZDirectory'
 
-export default class POA extends POAEventEmitter {
+export default class POZ extends POZEventEmitter {
 
-  constructor(POAPackageDirectory) {
+  constructor(POZPackageDirectory) {
     super()
-    this.env = new POAENV()
+    this.env = new POZENV()
     this.destConfig = {}
     this.cwd = null
-    this.POAPackageDirectory = null
-    this.POATemplateDirectory = null
-    this.context = new POAContext()
+    this.POZPackageDirectory = null
+    this.POZTemplateDirectory = null
+    this.context = new POZContext()
     this.initUtil()
-    this.initContext(POAPackageDirectory)
+    this.initContext(POZPackageDirectory)
     this.initLifeCycle()
   }
 
@@ -32,29 +32,29 @@ export default class POA extends POAEventEmitter {
     this.util = { string, datatypes, logger }
   }
 
-  initContext(POAPackageDirectory) {
-    if (!exists(POAPackageDirectory)) {
-      throw new POAError(`${POAPackageDirectory} not exist!`)
+  initContext(POZPackageDirectory) {
+    if (!exists(POZPackageDirectory)) {
+      throw new POZError(`${POZPackageDirectory} not exist!`)
     }
-    if (!isDirectory(POAPackageDirectory)) {
-      throw new POAError(`Expect "${POAPackageDirectory}" is a directory!`)
+    if (!isDirectory(POZPackageDirectory)) {
+      throw new POZError(`Expect "${POZPackageDirectory}" is a directory!`)
     }
 
-    const packageIndexFile = resolve(POAPackageDirectory, 'poa.js')
+    const packageIndexFile = resolve(POZPackageDirectory, 'poz.js')
     if (!exists(packageIndexFile)) {
-      throw new POAError(
+      throw new POZError(
         `Cannot resolve "${packageIndexFile}", ` +
-        'For using POA, the root directory of ' +
-        'your POA package must contain a file ' +
-        'named "poa.js".'
+        'For using POZ, the root directory of ' +
+        'your POZ package must contain a file ' +
+        'named "poz.js".'
       )
     }
 
-    const POATemplateDirectory = resolve(POAPackageDirectory, 'template')
-    if (!exists(POATemplateDirectory)) {
-      throw new POAError(
-        `Cannot resolve ${POATemplateDirectory}, ` +
-        'For using POA, A POA template package ' +
+    const POZTemplateDirectory = resolve(POZPackageDirectory, 'template')
+    if (!exists(POZTemplateDirectory)) {
+      throw new POZError(
+        `Cannot resolve ${POZTemplateDirectory}, ` +
+        'For using POZ, A POZ template package ' +
         'should contains a "template" directory ' +
         'which used to store the template files.'
       )
@@ -63,18 +63,18 @@ export default class POA extends POAEventEmitter {
     const user = getGitUser()
     const cwd = process.cwd()
 
-    this.POAPackageDirectory = POAPackageDirectory
-    this.POATemplateDirectory = POATemplateDirectory
+    this.POZPackageDirectory = POZPackageDirectory
+    this.POZTemplateDirectory = POZTemplateDirectory
     this.cwd = cwd
 
     this.context.assign({
       $cwd: cwd,
-      $env: this.env.POA_ENV,
+      $env: this.env.POZ_ENV,
       $dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
       $gituser: user.name,
       $gitemail: user.email,
-      $POAPackageDirectory: POAPackageDirectory,
-      $POATemplateDirectory: POATemplateDirectory
+      $POZPackageDirectory: POZPackageDirectory,
+      $POZTemplateDirectory: POZTemplateDirectory
     })
     this.templateConfig = require(packageIndexFile)(this.context, this)
   }
@@ -108,10 +108,10 @@ export default class POA extends POAEventEmitter {
       target: this.cwd,
       ignore: null,
       rename: null,
-      render: this.env.POA_RENDER_ENGINE,
+      render: this.env.POZ_RENDER_ENGINE,
     }
     let { dest } = this.templateConfig
-    mergePOADestConfig(this.destConfig, dest)
+    mergePOZDestConfig(this.destConfig, dest)
   }
 
   dest() {
@@ -155,8 +155,8 @@ export default class POA extends POAEventEmitter {
     }
 
     return new Promise((resolve, reject) => {
-      this.POATemplateDirectoryTree.setDestIgnore(this.destConfig.ignore)
-      const destStream = this.POATemplateDirectoryTree.dest(this.destConfig.target, transformer)
+      this.POZTemplateDirectoryTree.setDestIgnore(this.destConfig.ignore)
+      const destStream = this.POZTemplateDirectoryTree.dest(this.destConfig.target, transformer)
       destStream.on('error', error => {
         logger.error(error)
         reject()
@@ -166,7 +166,7 @@ export default class POA extends POAEventEmitter {
       })
       destStream.on('end', () => {
         console.log('Dest END')
-        this.POADestDirectoryTree = new POADirectory(this.destConfig.target);
+        this.POZDestDirectoryTree = new POZDirectory(this.destConfig.target);
         this.emit('onDestEnd')
         resolve()
       })
@@ -177,13 +177,13 @@ export default class POA extends POAEventEmitter {
 
   start() {
     this.emit('onStart')
-    this.POATemplateDirectoryTree = new POADirectory(this.POATemplateDirectory)
+    this.POZTemplateDirectoryTree = new POZDirectory(this.POZTemplateDirectory)
     return this.prompt()
       .then(answers => {
         this.handlePromptsAnswers(answers)
         this.setupDestConfig()
         return Promise.all([
-          this.POATemplateDirectoryTree.traverse(),
+          this.POZTemplateDirectoryTree.traverse(),
           this.dest()
         ])
       })

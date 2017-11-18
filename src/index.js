@@ -1,3 +1,3 @@
-import POA from './core/POA'
+import POZ from './core/POZ'
 
-export default POA
+export default POZ

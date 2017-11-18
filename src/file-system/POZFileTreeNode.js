@@ -35,7 +35,7 @@ export function dest(sourcePath, targetPath, transformer) {
   return stream
 }
 
-export default class POAFileTreeNode {
+export default class POZFileTreeNode {
 
   constructor(path, cwd) {
     this.path = path

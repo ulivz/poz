@@ -1,7 +1,7 @@
-import POA from '../POA'
+import POZ from '../POZ'
 import {resolve} from '../../utils/path'
 
-describe('POA', () => {
+describe('POZ', () => {
 
   let prevCwd = process.cwd()
 
@@ -14,8 +14,8 @@ describe('POA', () => {
   // })
 
   test('basic', () => {
-    const POATestPackagePath =  __dirname + '/fixtures/POATestPackage'
-    const ins = new POA(POATestPackagePath)
+    const POZTestPackagePath =  __dirname + '/fixtures/POZTestPackage'
+    const ins = new POZ(POZTestPackagePath)
     return ins.start()
   })
 

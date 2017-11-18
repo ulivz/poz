@@ -1,4 +1,4 @@
-# poa
+# poz
 > Config-programming based CLI
 
 ## Badges

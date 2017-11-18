@@ -1,8 +1,8 @@
 import fs from 'fs'
-import POAFileTreeNode from './POAFileTreeNode'
-import {dest} from './POAFileTreeNode'
+import POZFileTreeNode from './POZFileTreeNode'
+import {dest} from './POZFileTreeNode'
 
-export default class FileNode extends POAFileTreeNode {
+export default class FileNode extends POZFileTreeNode {
 
   constructor(path, cwd) {
     super(path, cwd)
