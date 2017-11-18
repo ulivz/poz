@@ -1,9 +1,8 @@
 <p align="center">
-<img src=".media/poz.png" width="150" />
+<img src=".media/poz.png" width="180" />
 </p>
 
 <p align="center">
-Programmable scaffolding generator
 <br>
 <a href="https://npmjs.com/package/poz"><img src="https://img.shields.io/npm/v/sao.svg?style=flat" alt="NPM version"></a> 
 <a href="https://npmjs.com/package/poz"><img src="https://img.shields.io/npm/dm/poz.svg?style=flat" alt="NPM downloads"></a> 
@@ -12,6 +11,61 @@ Programmable scaffolding generator
 <a href="https://codecov.io/gh/ulivz/poz" alt="codecov"> <img src="https://codecov.io/gh/ulivz/poz/branch/master/graph/badge.svg?maxAge=2592000&amp;style=flat"></img>
 </p>
 
+
+## Overview
+
+All along, I always hope to have a tool which can do some __'generate'__ work for me intelligently, it should be friendly, so it should be as simple as possible to use. It should be flexible enough so it should be given the ability to write plugin and program. At the same time, it should also have some self-management capabilities, so I do not have to consider the complexity of mulitple template. So I made **POZ**.
+
+POA is a programmable scaffolding generator, you just need to write a [POZ package](#POZ-package) which can help you quickly implement a scaffolding that reuses project templates like [https://github.com/vuejs/vue-cli](vue-cli).
+
+**POZ** support package:
+
+- `POZ package` in git repo
+- `POZ package` in npm package
+- `POZ package` in local folder
+
+## POZ Package
+
+A simple POZ package might have the following structure:
+
+```
+|____poz.js
+|____README.md
+|____template
+| |____file-01
+| |____file-02
+```
+
+You have to provide at least the `poz.js` file and `template` folder, where the `template` folder are used to store your project's template files, and the `poz.js` will be the entry file you configure and program, a simple `poz.js` as follows:
+
+```js
+module.exports = function (context, poz) {
+  return {
+    prompts() {
+      return {
+        name: {
+          message: "What's your name?",
+          validate: v => v ? true : 'name cannot be empty'
+        },
+        age: {
+          message: 'Which language do you usually write?',
+          type: 'list',
+          choices: ['javascript', 'go', 'rust'],
+          default: 'javascript'
+        }
+      }
+    },
+    dest() {
+      return {
+        target: '/' + context.name,
+        rename: {
+          '{age}': context.age,
+        }
+      }
+    }
+  }
+}
+```
 
 ## Install
 
