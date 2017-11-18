@@ -8,15 +8,15 @@
 <a href="https://npmjs.com/package/poz"><img src="https://img.shields.io/npm/dm/poz.svg?style=flat" alt="NPM downloads"></a> 
 <a href="https://circleci.com/gh/ulivz/poz"><img src="https://img.shields.io/circleci/project/ulivz/poz/master.svg?style=flat" alt="Build Status"></a> 
 <a href="https://github.com/ulivz/donate"><img src="https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat" alt="donate"></a> 
-<a href="https://codecov.io/gh/ulivz/poz" alt="codecov"> <img src="https://codecov.io/gh/ulivz/poz/branch/master/graph/badge.svg?maxAge=2592000&amp;style=flat"></img>
+<a href="https://codecov.io/gh/ulivz/poz" alt="codecov"> <img src="https://codecov.io/gh/ulivz/poz/branch/master/graph/badge.svg?maxAge=2592000&amp;style=flat"></img> </a>
 </p>
 
 
 ## Overview
 
-All along, I always hope to have a tool which can do some __'generate'__ work for me intelligently, it should be friendly, so it should be as simple as possible to use. It should be flexible enough so it should be given the ability to write plugin and program. At the same time, it should also have some self-management capabilities, so I do not have to consider the complexity of mulitple template. So I made **POZ**.
+All along, I always hope to have a _intelligent_ tool which can do some __GENERRATE__ work for me. It should be friendly, so it should be as simple as possible to use. It should be flexible enough, so it should be given the ability to _program_ and _extend_. At the same time, it should also have some _self-management capabilities_, so I do not have to consider the complexity of mulitple templates. With these considerations in mind, I made **POZ**.
 
-POA is a programmable scaffolding generator, you just need to write a [POZ package](#POZ-package) which can help you quickly implement a scaffolding that reuses project templates like [https://github.com/vuejs/vue-cli](vue-cli).
+__POZ__ is a programmable scaffolding generator, you just need to write a [POZ package](#POZ-package) which can help you quickly implement a scaffolding that reuses project templates like [https://github.com/vuejs/vue-cli](vue-cli).
 
 **POZ** support package:
 
@@ -32,8 +32,8 @@ A simple POZ package might have the following structure:
 |____poz.js
 |____README.md
 |____template
-| |____file-01
-| |____file-02
+  |____file-01
+  |____file-02
 ```
 
 You have to provide at least the `poz.js` file and `template` folder, where the `template` folder are used to store your project's template files, and the `poz.js` will be the entry file you configure and program, a simple `poz.js` as follows:
@@ -47,25 +47,40 @@ module.exports = function (context, poz) {
           message: "What's your name?",
           validate: v => v ? true : 'name cannot be empty'
         },
-        age: {
+        lang: {
           message: 'Which language do you usually write?',
           type: 'list',
-          choices: ['javascript', 'go', 'rust'],
-          default: 'javascript'
+          choices: ['js', 'go', 'py'],
+          default: 'js'
         }
       }
     },
     dest() {
       return {
-        target: '/' + context.name,
+        target: context.name,
         rename: {
-          '{age}': context.age,
+          '{age}': context.lang,
         }
       }
     }
   }
 }
 ```
+
+If your template folder is this:
+
+```bash
+my-first-poz
+|____poz.js
+|____README.md
+|____template
+  |____index.{lang}  # contents: 'My name is {{ name }}'
+```
+
+Then run `my-first-poz`:
+
+
+
 
 ## Install
 

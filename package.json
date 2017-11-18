@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "archy": "^1.0.0",
+    "cac": "^4.2.4",
     "chalk": "^2.3.0",
     "git-config-path": "^1.0.1",
     "handlebars2": "^0.1.1",
