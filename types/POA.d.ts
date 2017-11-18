@@ -7,9 +7,9 @@
 
 import inquirer = require('inquirer');
 
-/**
- * POA Context
- */
+// ***************************************************
+// POA Context
+// ***************************************************
 interface POAContextConstructor {
   new(): POAContext;
   prototype: POAContext;
@@ -21,9 +21,9 @@ interface POAContext<T> {
   get(key: string): T
 }
 
-/**
- * POA EventEmitter
- */
+// ***************************************************
+// POA EventEmitter
+// ***************************************************
 interface POAEventEmitterConstructor {
   new(): POAEventEmitter;
   prototype: POAEventEmitter;
@@ -41,9 +41,10 @@ type POADestConfigIgnoreFunction = () => boolean
 type POARenderFunction = (template: string, context: { key: string, value: any }) => string
 type POADestConfigIgnore = { key: string, value: boolean | POADestConfigIgnoreFunction } | string | string[]
 
-/**
- * POA Environment
- */
+
+// ***************************************************
+// POA Environment
+// ***************************************************
 export interface POAENVConstructor {
   new(): POAENV;
   prototype: POAENV;
@@ -60,9 +61,10 @@ export interface POAENV {
   isProduction: boolean
 }
 
-/**
- * POA Dest Options
- */
+
+// ***************************************************
+// POA Dest Options
+// ***************************************************
 export interface POADestConfig {
   dest?: string;
   ignore?: POADestConfigIgnore | null;
@@ -70,9 +72,10 @@ export interface POADestConfig {
   rename?: { key: string, value: string } | null;
 }
 
-/**
- * POA Main
- */
+
+// ***************************************************
+// POA Main
+// ***************************************************
 export interface POAConstructor {
   new(): POA;
   prototype: POA;
@@ -92,9 +95,10 @@ export interface POA extends POAEventEmitter {
   run(): Promise<void>
 }
 
-/**
- * POA config
- */
+
+// ***************************************************
+// POA config
+// ***************************************************
 type POADestConfigFunction = () => POADestConfig;
 export interface POAConfig {
   // Base Config
@@ -109,7 +113,66 @@ export interface POAConfig {
   onExit?(): void
 }
 
-/**
- * POA config construct function
- */
+
+// ***************************************************
+// POA config construct function
+// ***************************************************
 export function POAConfigFunction(context: POAContext, POA: POA): POAConfig
+
+
+// ***************************************************
+// POA File System
+// ***************************************************
+
+interface POAFileTreeNodeConstructor {
+  new(): POAFileTreeNode
+  prototype: POAFileTreeNode
+}
+
+interface POAFileTreeNode {
+  path: string;
+  cwd: string;
+  relative: string;
+  label: string;
+  basename: string;
+  stem: string;
+  extname: string;
+}
+
+interface POAFileConstructor {
+  new(): POAFile;
+  prototype: POAFile;
+}
+
+interface POAFileContentsTransformer {
+  (file: File): void;
+}
+
+interface POAFile extends POAFileTreeNode {
+  isFile: boolean;
+  contents: string;
+  dest(target: string, transformer: POAFileContentsTransformer): NodeJS.WritableStream;
+}
+
+interface POADirectoryConstructor {
+  new(): POAFileTreeNode;
+  prototype: POAFileTreeNode;
+}
+
+interface POADirectory extends POAFileTreeNode {
+  isDirectory: boolean;
+  nodes: Array<POADirectory | POAFile>;
+  childNodes: Array<POADirectory | POAFile>;
+  // A flag used to record whether this node's children has been get from calling 'traverse'
+  isTraversed: boolean;
+  // Traverse
+  traverse(): Promise<void>;
+  recursiveTraverse(): Promise<void>;
+  // Util
+  children(): Array<POADirectory | POAFile>;
+  siblings(): Array<POADirectory | POAFile>;
+  // Find
+  findByPath(path: string): POADirectory | POAFile;
+  findByRelative(relative: string): POADirectory | POAFile;
+  findByNodeName(nodeName: string): POADirectory | POAFile;
+}

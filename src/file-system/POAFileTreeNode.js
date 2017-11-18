@@ -1,4 +1,4 @@
-import path from 'path'
+import PATH from 'path'
 import VFS from 'vinyl-fs'
 import map from 'map-stream'
 import {isString, isFunction, isArray} from '../utils/datatypes'
@@ -35,17 +35,17 @@ export function dest(sourcePath, targetPath, transformer) {
   return stream
 }
 
-export default class FileSystemNode {
+export default class POAFileTreeNode {
 
-  constructor(abosultePath, cwd, options = {}) {
-    this.abosultePath = abosultePath
+  constructor(path, cwd) {
+    this.path = path
     this.cwd = cwd
-    this.isRoot = this.abosultePath === this.cwd
-    this.relativePath = path.relative(abosultePath, cwd)
-    this.nodeName = this.label = options.nodeName || abosultePath.split('/').pop()
+    this.relative = PATH.relative(cwd, path)
+    this.basename = this.label = path.split('/').pop()
+
+    const BaseNameSplitList = this.basename.split('.')
+    this.stem = BaseNameSplitList[0]
+    this.extname = BaseNameSplitList[1]
   }
 
-  dest() {
-    throw new Error('No implementation')
-  }
 }

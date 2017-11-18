@@ -14,7 +14,8 @@ describe('POA', () => {
   // })
 
   test('basic', () => {
-    const POATestPackagePath = __dirname + '/fixtures/POATestPackage'
+    // const POATestPackagePath = resolve(__dirname, '../../../packages/bolt-component')
+    const POATestPackagePath =  __dirname + '/fixtures/POATestPackage'
     const ins = new POA(POATestPackagePath)
     return ins.start()
   })

@@ -11,7 +11,7 @@ import {mergePOADestConfig} from './POAUtils.js'
 import POAError from './POAError.js'
 import POAContext from './POAContext.js'
 import POAEventEmitter from './POAEventEmitter.js'
-import DirectoryNode from '../class/DirectoryNode'
+import POADirectory from '../file-system/POADirectory'
 
 export default class POA extends POAEventEmitter {
 
@@ -166,6 +166,7 @@ export default class POA extends POAEventEmitter {
         logger.error(`transform error`)
       })
       destStream.on('finish', () => {
+        this.destDirectoryTree = new POADirectory(this.destConfig.target);
         this.emit('onDestEnd')
         resolve()
       })
@@ -176,15 +177,14 @@ export default class POA extends POAEventEmitter {
 
   start() {
     this.emit('onStart')
-    this.POATemplateDirectoryTree = new DirectoryNode(this.POATemplateDirectory)
+    this.POATemplateDirectoryTree = new POADirectory(this.POATemplateDirectory)
     return this.prompt()
       .then(answers => {
         this.handlePromptsAnswers(answers)
         this.setupDestConfig()
-        let self = this
         return Promise.all([
-          self.POATemplateDirectoryTree.traverse(),
-          self.dest()
+          this.POATemplateDirectoryTree.traverse(),
+          this.dest()
         ])
       })
       .then(() => {

@@ -1,43 +1,44 @@
 import fs from 'fs'
-import path from 'path'
-import FileSystemNode from './FileSystemNode'
-import FileNode from './FileNode'
+import PATH from 'path'
+import POAFileTreeNode from './POAFileTreeNode'
+import {dest} from './POAFileTreeNode'
+import POAFile from './POAFile'
 import {isFile} from '../utils/fs'
 import {isString, isArray, isPlainObject, isFunction} from '../utils/datatypes'
-import {dest} from './FileSystemNode'
 
+export default class POADirectory extends POAFileTreeNode {
 
-export default class DirectoryNode extends FileSystemNode {
-
-  constructor(abosultePath, cwd, options = {}) {
+  constructor(path, cwd) {
     if (!cwd) {
-      cwd = abosultePath
+      cwd = path
     }
-    super(abosultePath, cwd, options)
+    super(path, cwd)
     this.isDirectory = true
     this.nodes = this.childNodes = []
     this.isTraversed = false
-    this.src = [this.abosultePath + '/**']
+    this.src = [this.path + '/**']
   }
 
   _reversePattern(pattern) {
-    return '!' + this.abosultePath + '/' + pattern
+    return '!' + this.path + '/' + pattern
   }
 
   setDestIgnore(pattern) {
+    let reversePattern = this._reversePattern.bind(this)
+
     if (isString(pattern)) {
-      this.src.push(this._reversePattern(i))
+      this.src.push(reversePattern(pattern))
+
     } else if (isArray(pattern)) {
-      this.src = this.src.concat(pattern.map(i => this._reversePattern(i)))
+      this.src = this.src.concat(pattern.map(i => reversePattern(i)))
+
     } else if (isPlainObject(pattern)) {
       Object.keys(pattern).forEach(i => {
         let condition = pattern[i]
-        if (isFunction(condition)) {
-          if (condition()) {
-            this.src.push(this._reversePattern(i))
-          }
+        if (isFunction(condition) && condition()) {
+          this.src.push(reversePattern(i))
         } else if (pattern[i]) {
-          this.src.push(this._reversePattern(i))
+          this.src.push(reversePattern(i))
         }
       })
     }
@@ -55,32 +56,33 @@ export default class DirectoryNode extends FileSystemNode {
     })
   }
 
-  recursiveTraverse(maxDepth) {
+  recursiveTraverse() {
+
     if (this.isTraversed) {
       return Promise.resolve()
     }
+
     let parentNode = this
-    let traverseDepth = parentNode.depth + 1
+
     return new Promise((resolve, reject) => {
-      fs.readdir(parentNode.abosultePath, (error, childNodeNames) => {
+      fs.readdir(parentNode.path, (error, childNodeNames) => {
         if (error) {
           reject(error)
         }
         let traverseChildNodesPromises = []
 
         for (let childNodeName of childNodeNames) {
-          let childNodeabosultePath = path.resolve(parentNode.abosultePath, childNodeName)
-          let isChildNodeFile = isFile(childNodeabosultePath)
-          let ChildNodeConstructor = isChildNodeFile ? FileNode : DirectoryNode
-          let childNode = new ChildNodeConstructor(childNodeabosultePath, parentNode.abosultePath, { nodeName: childNodeName })
+          let childNodepath = PATH.resolve(parentNode.path, childNodeName)
+          let isChildNodeFile = isFile(childNodepath)
+          let ChildNodeConstructor = isChildNodeFile ? POAFile : POADirectory
+          let childNode = new ChildNodeConstructor(childNodepath, parentNode.path)
 
           childNode.parentNode = parentNode
-          childNode.depth = traverseDepth
           parentNode.childNodes.push(childNode)
 
-          if (childNode.isDirectory && (!maxDepth || traverseDepth <= maxDepth)) {
+          if (childNode.isDirectory) {
             traverseChildNodesPromises.push(
-              this.recursiveTraverse.call(childNode, maxDepth).then(() => {
+              this.recursiveTraverse.call(childNode).then(() => {
                 this.isTraversed = true;
               })
             )
@@ -125,15 +127,15 @@ export default class DirectoryNode extends FileSystemNode {
     return null
   }
 
-  searchByAbsolutePath(keyword) {
-    return this._basicSearch('abosultePath', keyword)
+  findByPath(path) {
+    return this._basicSearch('path', path)
   }
 
-  searchByRelativePath(keyword) {
-    return this._basicSearch('relativePath', keyword)
+  findByRelative(relative) {
+    return this._basicSearch('relative', relative)
   }
 
-  searchByNodeName(keyword) {
+  findByNodeName(keyword) {
     return this._basicSearch('nodeName', keyword)
   }
 
