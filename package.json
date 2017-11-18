@@ -12,7 +12,7 @@
     "dist"
   ],
   "scripts": {
-    "test:cov": "BABEL_ENV=test jest src/** --coverage",
+    "test:cov": "BABEL_ENV=test jest src/utils/__test__/download.test.js --coverage",
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
@@ -34,6 +34,9 @@
     "archy": "^1.0.0",
     "cac": "^4.2.4",
     "chalk": "^2.3.0",
+    "download-git-repo": "^1.0.1",
+    "download-npm-package": "^3.1.11",
+    "fs-extra": "^4.0.2",
     "git-config-path": "^1.0.1",
     "handlebars2": "^0.1.1",
     "inquirer": "^3.3.0",

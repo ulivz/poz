@@ -16,13 +16,13 @@
 
 All along, I always hope to have a _intelligent_ tool which can do some __GENERRATE__ work for me. It should be friendly, so it should be as simple as possible to use. It should be flexible enough, so it should be given the ability to _program_ and _extend_. At the same time, it should also have some _self-management capabilities_, so I do not have to consider the complexity of mulitple templates. With these considerations in mind, I made **POZ**.
 
-__POZ__ is a programmable scaffolding generator, you just need to write a [POZ package](#POZ-package) which can help you quickly implement a scaffolding that reuses project templates like [https://github.com/vuejs/vue-cli](vue-cli).
+__POZ__ is a programmable scaffolding generator, you just need to write a [POZ package](#poz-package) which can help you quickly implement a scaffolding that reuses project templates like [vue-cli](https://github.com/vuejs/vue-cli).
 
-**POZ** support package:
+**POZ** support package at:
 
-- `POZ package` in git repo
-- `POZ package` in npm package
-- `POZ package` in local folder
+- __Github__ repo POZ package
+- __NPM__ package POZ package
+- __local folder__ POZ package
 
 ## POZ Package
 
@@ -67,7 +67,7 @@ module.exports = function (context, poz) {
 }
 ```
 
-If your template folder is this:
+If your template folder is as follows:
 
 ```bash
 my-first-poz
