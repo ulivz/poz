@@ -27,16 +27,18 @@ export default  class POAEventEmitter extends EventEmitter {
     logger.error(`render <cyan>${filePath}</cyan>`)
     logger.echo(error)
     const targetNode = this.POATemplateDirectoryTree.searchByAbsolutePath(file.path)
+    console.log(targetNode)
     targetNode.label = targetNode.label + ' ' + logger.parseColor('<gray>[Render Error!]</gray>')
   }
 
   printTree() {
     logger.echo()
-    return this.destDirectoryTree.traverse()
-      .then(() => {
-        console.log(this.destDirectoryTree.childNodes)
-        logger.print(`<yellow>${archy(this.destDirectoryTree)}</yellow>`)
-      })
+    setTimeout(() => {
+      this.POADestDirectoryTree.traverse()
+        .then(() => {
+          logger.print(`<yellow>${archy(this.POADestDirectoryTree)}</yellow>`)
+        })
+    }, 10)
   }
 
   transformIgnore(file) {

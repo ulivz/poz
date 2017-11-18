@@ -157,16 +157,16 @@ export default class POA extends POAEventEmitter {
     return new Promise((resolve, reject) => {
       this.POATemplateDirectoryTree.setDestIgnore(this.destConfig.ignore)
       const destStream = this.POATemplateDirectoryTree.dest(this.destConfig.target, transformer)
-      destStream.on('error', reject)
+      destStream.on('error', error => {
+        logger.error(error)
+        reject()
+      })
       destStream.on('unExpectedTransformer', () => {
         logger.error(`unexpected transformer`)
       })
-      destStream.on('transFormError', error => {
-        console.log(error)
-        logger.error(`transform error`)
-      })
-      destStream.on('finish', () => {
-        this.destDirectoryTree = new POADirectory(this.destConfig.target);
+      destStream.on('end', () => {
+        console.log('Dest END')
+        this.POADestDirectoryTree = new POADirectory(this.destConfig.target);
         this.emit('onDestEnd')
         resolve()
       })
@@ -188,6 +188,7 @@ export default class POA extends POAEventEmitter {
         ])
       })
       .then(() => {
+        console.log('EXIT')
         this.emit('onExit')
       })
       .catch(error => {

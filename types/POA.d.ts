@@ -174,5 +174,5 @@ interface POADirectory extends POAFileTreeNode {
   // Find
   findByPath(path: string): POADirectory | POAFile;
   findByRelative(relative: string): POADirectory | POAFile;
-  findByNodeName(nodeName: string): POADirectory | POAFile;
+  findByBasename(nodeName: string): POADirectory | POAFile;
 }

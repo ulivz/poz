@@ -57,7 +57,6 @@ export default class POADirectory extends POAFileTreeNode {
   }
 
   recursiveTraverse() {
-
     if (this.isTraversed) {
       return Promise.resolve()
     }
@@ -72,18 +71,18 @@ export default class POADirectory extends POAFileTreeNode {
         let traverseChildNodesPromises = []
 
         for (let childNodeName of childNodeNames) {
-          let childNodepath = PATH.resolve(parentNode.path, childNodeName)
-          let isChildNodeFile = isFile(childNodepath)
+          let childNodePath = PATH.resolve(parentNode.path, childNodeName)
+          let isChildNodeFile = isFile(childNodePath)
           let ChildNodeConstructor = isChildNodeFile ? POAFile : POADirectory
-          let childNode = new ChildNodeConstructor(childNodepath, parentNode.path)
+          let childNode = new ChildNodeConstructor(childNodePath, parentNode.path)
 
           childNode.parentNode = parentNode
           parentNode.childNodes.push(childNode)
 
-          if (childNode.isDirectory) {
+          if (childNode instanceof POADirectory) {
             traverseChildNodesPromises.push(
-              this.recursiveTraverse.call(childNode).then(() => {
-                this.isTraversed = true;
+              childNode.recursiveTraverse().then(() => {
+                childNode.isTraversed = true;
               })
             )
           }
@@ -135,8 +134,8 @@ export default class POADirectory extends POAFileTreeNode {
     return this._basicSearch('relative', relative)
   }
 
-  findByNodeName(keyword) {
-    return this._basicSearch('nodeName', keyword)
+  findByBasename(keyword) {
+    return this._basicSearch('basename', keyword)
   }
 
 }

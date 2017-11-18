@@ -34,5 +34,5 @@ export const simpleColorLog = (color, type) => {
 export const success = simpleColorLog('green', '[success]')
 export const error = simpleColorLog('red', '[error]')
 export const warn = simpleColorLog('yellow', '[warn]')
-export const info = simpleColorLog('cyan', '[info]')
+export const info = simpleColorLog('gray', '[info]')
 export const print = simpleColorLog()
