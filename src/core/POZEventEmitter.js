@@ -2,7 +2,7 @@ import {EventEmitter} from 'events'
 import archy from 'archy'
 import {isPlainObject, isFunction} from '../utils/datatypes'
 import {relative} from '../utils/path'
-import * as logger from '../utils/log'
+import * as logger from '../utils/logger'
 
 const LIFE_CYCLE = [
   'onStart',

@@ -1,7 +1,8 @@
 import fs from 'fs-extra'
+import ora from 'ora'
 import {exists} from '../utils/fs'
 import {download} from '../utils/download'
-import * as logger from '../utils/log'
+import * as logger from '../utils/logger'
 import {getPkg} from '../utils/pkg'
 import path from 'path'
 import pkg from '../../package.json'
@@ -45,7 +46,9 @@ export default class POZPackageManager {
     return require(this.pmConfigPath)
   }
 
-
+  getLocalPkgs() {
+    return this.pmConfig.packages
+  }
 
   fetchPkg(requestName) {
     let pmConfig = this.pmConfig
@@ -62,8 +65,11 @@ export default class POZPackageManager {
       logger.debug(`Downloading POZ package <yellow>${requestName}</yellow> ...`)
     }
 
+    const spinner = ora(`Downloading POZ package ${requestName} ....`).start()
+    logger.print()
     return download(requestName, this.pmPkgResourcesDir)
       .then(packageInfo => {
+        spinner.stop()
         let pkg = {
           requestName,
           ...packageInfo,

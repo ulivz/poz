@@ -5,7 +5,7 @@ import {
   error,
   warn,
   info
-} from '../log'
+} from '../logger'
 
 describe('log', () => {
 

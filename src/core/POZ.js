@@ -4,8 +4,10 @@ import {isPlainObject} from '../utils/datatypes'
 import {exists, isDirectory} from '../utils/fs'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
 import * as string from '../utils/string'
-import * as logger from '../utils/log'
+import * as logger from '../utils/logger'
 import * as datatypes from '../utils/datatypes'
+import * as shell from '../utils/child_process'
+import * as prompts from '../utils/prompts'
 import env from './POZENV.js'
 import {mergePOZDestConfig} from './POZUtils.js'
 import POZContext from './POZContext.js'
@@ -13,7 +15,7 @@ import POZEventEmitter from './POZEventEmitter.js'
 import POZDirectory from '../file-system/POZDirectory'
 import POZPackageManager from './POZPackageManager'
 
-export default class POZ extends POZEventEmitter {
+class POZ extends POZEventEmitter {
 
   constructor(POZPackageDirectory) {
     super()
@@ -30,7 +32,7 @@ export default class POZ extends POZEventEmitter {
 
   initUtil() {
     this.debug('initUtil')
-    this.util = { string, datatypes, logger }
+    this.utils = this.constructor.utils
   }
 
   initContext(POZPackageDirectory) {
@@ -204,3 +206,11 @@ export default class POZ extends POZEventEmitter {
 }
 
 POZ.PackageManager = POZPackageManager
+POZ.utils = {
+  string,
+  logger,
+  datatypes,
+  shell,
+  prompts
+}
+export default POZ
