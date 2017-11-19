@@ -15,8 +15,8 @@ const NEED_CLONE_REG = /(bitbucket|gitlab|https?)/
  * @returns Promise<{packageName: string, npm?: boolean, git?: boolean}>
  */
 export function download(url, target, options = { newfolder: true }) {
+
   if (NPM_REG.test(url)) {
-    let actualDestPath = path.join(target, url)
     return downloadNpmPkg({
       arg: url,
       dir: target
@@ -28,7 +28,8 @@ export function download(url, target, options = { newfolder: true }) {
       }
     }).then(() => ({
       packageName: url,
-      npm: true
+      npm: true,
+      path: options.newfolder ? path.join(target, url) : target
     }))
 
   } else if (GIT_REG.test(url)) {
@@ -47,7 +48,8 @@ export function download(url, target, options = { newfolder: true }) {
         } else {
           resolve({
             packageName,
-            git: true
+            git: true,
+            path: options.newfolder ? path.join(target) : target
           })
         }
       })

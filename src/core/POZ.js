@@ -12,6 +12,7 @@ import POZError from './POZError.js'
 import POZContext from './POZContext.js'
 import POZEventEmitter from './POZEventEmitter.js'
 import POZDirectory from '../file-system/POZDirectory'
+import POZPackageManager from './POZPackageManager'
 
 export default class POZ extends POZEventEmitter {
 
@@ -196,5 +197,6 @@ export default class POZ extends POZEventEmitter {
         this.emit('onExit', error)
       })
   }
-
 }
+
+POZ.PackageManager = POZPackageManager
