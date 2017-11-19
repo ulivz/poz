@@ -6,18 +6,21 @@ import {getPkg} from '../utils/pkg'
 import path from 'path'
 import pkg from '../../package.json'
 import home from 'user-home'
+import env from './POZENV'
+import {pkgFinder} from './POZUtils'
 
 export default class POZPackageManager {
   constructor() {
+    this.env = env
     this.rootDir = path.join(home, '.poz')
     this.pmConfigPath = path.join(this.rootDir, 'poz.json')
     this.pmPkgResourcesDir = path.join(this.rootDir, 'packages')
     this.userPmConfigPath = path.join(this.rootDir, 'poz_profile.json')
-    this.initEnv()
+    this.initialize()
   }
 
   // Ensure the core file
-  initEnv() {
+  initialize() {
     if (!exists(this.rootDir)) {
       fs.ensureDirSync(this.rootDir)
     }
@@ -42,12 +45,23 @@ export default class POZPackageManager {
     return require(this.pmConfigPath)
   }
 
+
+
   fetchPkg(requestName) {
     let pmConfig = this.pmConfig
-    if (pmConfig.packages[requestName]) {
+    let pkg = pkgFinder(pmConfig.packages, requestName)
+    if (pkg) {
+      if (this.env.isDebug) {
+        logger.debug(`Use local package <yellow>${requestName}</yellow>`)
+      }
       // TODO check package updates
-      return Promise.resolve(pmConfig.packages[requestName])
+      return Promise.resolve(pkg)
     }
+
+    if (this.env.isDebug) {
+      logger.debug(`Downloading POZ package <yellow>${requestName}</yellow> ...`)
+    }
+
     return download(requestName, this.pmPkgResourcesDir)
       .then(packageInfo => {
         let pkg = {

@@ -24,3 +24,16 @@ export function mergePOZDestConfig(destConfig, userDestConfig) {
     throw new POZError('Expect "dest.render" to be a function')
   }
 }
+
+export function pkgFinder(pkgs, requestName) {
+  if (pkgs[requestName]) {
+    return pkgs[requestName]
+  }
+  for (let pkgName of Object.keys(pkgs)) {
+    let pkg = pkgs[pkgName]
+    if (pkg.requestName === requestName) {
+      return pkg
+    }
+  }
+  return null
+}

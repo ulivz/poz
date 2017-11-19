@@ -6,7 +6,7 @@ import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/pro
 import * as string from '../utils/string'
 import * as logger from '../utils/log'
 import * as datatypes from '../utils/datatypes'
-import POZENV from './POZENV.js'
+import env from './POZENV.js'
 import {mergePOZDestConfig} from './POZUtils.js'
 import POZContext from './POZContext.js'
 import POZEventEmitter from './POZEventEmitter.js'
@@ -17,7 +17,7 @@ export default class POZ extends POZEventEmitter {
 
   constructor(POZPackageDirectory) {
     super()
-    this.env = new POZENV()
+    this.env = env
     this.destConfig = {}
     this.cwd = null
     this.POZPackageDirectory = null

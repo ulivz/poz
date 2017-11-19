@@ -14,7 +14,7 @@ const POZENVCONFIG =
     POZ_RENDER_ENGINE: handlebar2.render
   }
 
-export default class POZENV {
+class POZENV {
 
   constructor() {
     Object.keys(POZENVCONFIG).forEach(key => this[key] = POZENVCONFIG[key])
@@ -40,4 +40,6 @@ export default class POZENV {
     return !this.POZ_ENV || this.POZ_ENV === ENV.PROD
   }
 }
+
+export default new POZENV()
 
