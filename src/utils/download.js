@@ -15,33 +15,42 @@ const NEED_CLONE_REG = /(bitbucket|gitlab|https?)/
  * @returns Promise<{packageName: string, npm?: boolean, git?: boolean}>
  */
 export function download(url, target, options = { newfolder: true }) {
+  let destPath
 
   if (NPM_REG.test(url)) {
     return downloadNpmPkg({
       arg: url,
       dir: target
+
     }).then(() => {
       // Since downloadNpmPkg will download to 'target/url' by default
       // Need to handle when 'newfolder' is false
+      destPath = path.join(target, url)
       if (!options.newfolder) {
-        return fs.copy(actualDestPath, target).then(() => fs.remove(actualDestPath))
+        return fs.copy(actualDestPath, target).then(() => fs.remove(destPath))
       }
+
     }).then(() => ({
       packageName: url,
       npm: true,
-      path: options.newfolder ? path.join(target, url) : target
+      path: options.newfolder ? destPath : target
     }))
 
   } else if (GIT_REG.test(url)) {
     return new Promise((resolve, reject) => {
+
       let packageName = url.split('/').pop()
-      if (options.newfolder) {
-        target = path.join(target, packageName)
-      }
-      let args = [url, target]
+
+      destPath = options.newfolder
+        ? path.join(target, packageName)
+        : target
+
+      let args = [url, destPath]
+
       if (NEED_CLONE_REG.test(url)) {
         args.push({ clone: true })
       }
+
       downloadGitRepo(...args, err => {
         if (err) {
           reject(err)
@@ -49,7 +58,7 @@ export function download(url, target, options = { newfolder: true }) {
           resolve({
             packageName,
             git: true,
-            path: options.newfolder ? path.join(target) : target
+            path: destPath
           })
         }
       })

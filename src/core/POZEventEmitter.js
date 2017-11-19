@@ -3,7 +3,6 @@ import archy from 'archy'
 import {isPlainObject, isFunction} from '../utils/datatypes'
 import {relative} from '../utils/path'
 import * as logger from '../utils/log'
-import POZError from './POZError'
 
 const LIFE_CYCLE = [
   'onStart',
@@ -30,6 +29,12 @@ export default  class POZEventEmitter extends EventEmitter {
     targetNode.label = targetNode.label + ' ' + logger.parseColor('<gray>[Render Error!]</gray>')
   }
 
+  debug(name) {
+    if (this.env.isDebug) {
+      logger.debug(name)
+    }
+  }
+
   printTree() {
     logger.echo()
     setTimeout(() => {
@@ -50,8 +55,9 @@ export default  class POZEventEmitter extends EventEmitter {
   }
 
   initLifeCycle() {
+    this.debug('initLifeCycle')
     if (!isPlainObject(this.templateConfig)) {
-      throw new POZError('"poz.js" must export a plain object')
+      throw new Error('"poz.js" must export a plain object')
     }
     for (let hook of LIFE_CYCLE) {
       let hookHandler = this.templateConfig[hook]

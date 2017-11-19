@@ -8,7 +8,6 @@ import * as logger from '../utils/log'
 import * as datatypes from '../utils/datatypes'
 import POZENV from './POZENV.js'
 import {mergePOZDestConfig} from './POZUtils.js'
-import POZError from './POZError.js'
 import POZContext from './POZContext.js'
 import POZEventEmitter from './POZEventEmitter.js'
 import POZDirectory from '../file-system/POZDirectory'
@@ -30,20 +29,22 @@ export default class POZ extends POZEventEmitter {
   }
 
   initUtil() {
+    this.debug('initUtil')
     this.util = { string, datatypes, logger }
   }
 
   initContext(POZPackageDirectory) {
+    this.debug('initContext')
     if (!exists(POZPackageDirectory)) {
-      throw new POZError(`${POZPackageDirectory} not exist!`)
+      throw new Error(`${POZPackageDirectory} not exist!`)
     }
     if (!isDirectory(POZPackageDirectory)) {
-      throw new POZError(`Expect "${POZPackageDirectory}" is a directory!`)
+      throw new Error(`Expect "${POZPackageDirectory}" is a directory!`)
     }
 
     const packageIndexFile = resolve(POZPackageDirectory, 'poz.js')
     if (!exists(packageIndexFile)) {
-      throw new POZError(
+      throw new Error(
         `Cannot resolve "${packageIndexFile}", ` +
         'For using POZ, the root directory of ' +
         'your POZ package must contain a file ' +
@@ -53,7 +54,7 @@ export default class POZ extends POZEventEmitter {
 
     const POZTemplateDirectory = resolve(POZPackageDirectory, 'template')
     if (!exists(POZTemplateDirectory)) {
-      throw new POZError(
+      throw new Error(
         `Cannot resolve ${POZTemplateDirectory}, ` +
         'For using POZ, A POZ template package ' +
         'should contains a "template" directory ' +
@@ -89,6 +90,7 @@ export default class POZ extends POZEventEmitter {
   }
 
   prompt() {
+    this.debug('prompt')
     this.emit('onPromptStart')
     const promptsMetadata = this.templateConfig.prompts()
     const prompts = promptsTransformer(promptsMetadata)
@@ -99,11 +101,13 @@ export default class POZ extends POZEventEmitter {
   }
 
   handlePromptsAnswers(answers) {
+    this.debug('handlePromptsAnswers')
     this.emit('onPromptEnd')
     this.context.assign(answers)
   }
 
   setupDestConfig() {
+    this.debug('setupDestConfig')
     // default
     this.destConfig = {
       target: this.cwd,
@@ -116,6 +120,7 @@ export default class POZ extends POZEventEmitter {
   }
 
   dest() {
+    this.debug('dest')
     this.emit('onDestStart')
 
     let renameConfig = this.destConfig.rename
@@ -166,7 +171,6 @@ export default class POZ extends POZEventEmitter {
         logger.error(`unexpected transformer`)
       })
       destStream.on('end', () => {
-        console.log('Dest END')
         this.POZDestDirectoryTree = new POZDirectory(this.destConfig.target);
         this.emit('onDestEnd')
         resolve()
@@ -177,6 +181,7 @@ export default class POZ extends POZEventEmitter {
   }
 
   start() {
+    this.debug('start')
     this.emit('onStart')
     this.POZTemplateDirectoryTree = new POZDirectory(this.POZTemplateDirectory)
     return this.prompt()
@@ -189,7 +194,6 @@ export default class POZ extends POZEventEmitter {
         ])
       })
       .then(() => {
-        console.log('EXIT')
         this.emit('onExit')
       })
       .catch(error => {
