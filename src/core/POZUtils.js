@@ -40,5 +40,9 @@ export function pkgFinder(pkgMap, requestName) {
   return null
 }
 
+export function pkgValidator() {
+
+}
+
 
 

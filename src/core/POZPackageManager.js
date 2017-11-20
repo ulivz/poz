@@ -1,5 +1,6 @@
 import fs from 'fs-extra'
 import ora from 'ora'
+import chalk from 'chalk'
 import {exists, isDirectory, isDirEmpty} from '../utils/fs'
 import {download} from '../utils/download'
 import {isFunction, isPlainObject, isPromise} from '../utils/datatypes'
@@ -86,6 +87,7 @@ export default class POZPackageManager {
     let PMConfig = this.PMConfig
     let pkg = pkgFinder(PMConfig.pkgMap, requestName)
 
+    // Find from cache
     if (pkg) {
       if (this.env.isDebug) {
         logger.debug(`Use local package <yellow>${requestName}</yellow>`)
@@ -94,12 +96,13 @@ export default class POZPackageManager {
       return Promise.resolve(pkg)
     }
 
+    // Find from Github/NPM
     if (this.env.isDebug) {
-      logger.debug(`Downloading POZ package <yellow>${requestName}</yellow> ...`)
+      logger.debug(`Fetching POZ package <yellow>${requestName}</yellow> ...`)
     }
 
-    const spinner = ora(`Downloading POZ package ${requestName} ....`).start()
-    console.log()
+    const spinner = ora(`Fetching package ${chalk.yellow(requestName)} ....`).start()
+
     return download(requestName, this.PMPkgResourcesDir)
       .then(packageInfo => {
         spinner.stop()
@@ -113,8 +116,12 @@ export default class POZPackageManager {
         PMConfig.packages[packageInfo.packageName] = pkg
         this.PMConfig = PMConfig
         return pkg
+
       }).catch(error => {
-        console.log(error)
+        if (error.statusCode === 404) {
+          spinner.fail(`404: Cannot find package ${chalk.yellow(requestName)}`)
+        }
+        return null
       })
   }
 

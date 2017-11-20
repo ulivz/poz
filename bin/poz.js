@@ -19,12 +19,12 @@ module.exports = function (cli, POZ) {
         } else {
           let pkgname = input[0]
           pm.fetchPkg(pkgname)
-            .then((pkg) => {
-              const app = new POZ(pkg.path)
-              return app.start()
-            }).catch(err => {
-            console.log(err)
-          })
+            .then(pkg => {
+              if (pkg) {
+                const app = new POZ(pkg.path)
+                return app.start()
+              }
+            })
         }
       }
     },
