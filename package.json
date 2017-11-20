@@ -50,6 +50,7 @@
     "vinyl-fs": "^2.4.4"
   },
   "devDependencies": {
+    "@types/fs-extra": "^4.0.5",
     "@types/inquirer": "0.0.35",
     "@types/node": "^8.0.47",
     "@types/vinyl": "^2.0.1",

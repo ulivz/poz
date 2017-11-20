@@ -10,11 +10,12 @@ module.exports = function (cli, POZ) {
         desc: 'Programmable scaffolding generator',
       },
       handler: function (input, flags) {
+
         let pm = new POZ.PackageManager()
         if (!input.length) {
-          // log existing packages
           cli.showHelp()
-          logLocalPkgs(logger.table, pm.pmConfig.packages)
+          logLocalPkgs(logger.table, pm.PMConfig.pkgMap)
+
         } else {
           let pkgname = input[0]
           pm.fetchPkg(pkgname)

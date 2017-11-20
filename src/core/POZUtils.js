@@ -25,15 +25,20 @@ export function mergePOZDestConfig(destConfig, userDestConfig) {
   }
 }
 
-export function pkgFinder(pkgs, requestName) {
-  if (pkgs[requestName]) {
-    return pkgs[requestName]
+export function pkgFinder(pkgMap, requestName) {
+  if (pkgMap[requestName]) {
+    return pkgMap[requestName]
   }
-  for (let pkgName of Object.keys(pkgs)) {
-    let pkg = pkgs[pkgName]
-    if (pkg.requestName === requestName) {
+  for (let pkgName of Object.keys(pkgMap)) {
+    let pkg = pkgMap[pkgName]
+    if (pkg.requestName === requestName ||
+      pkg.name === requestName
+    ) {
       return pkg
     }
   }
   return null
 }
+
+
+

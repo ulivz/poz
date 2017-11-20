@@ -2,6 +2,7 @@
 // Definitions by: ulivz https://www.github.com/ulivz
 
 /// <reference path="../node_modules/@types/node/index.d.ts" />
+/// <reference path="../node_modules/@types/fs-extra/index.d.ts" />
 /// <reference path="../node_modules/@types/vinyl/index.d.ts" />
 /// <reference path="../node_modules/@types/inquirer/index.d.ts" />
 
@@ -122,7 +123,7 @@ interface POZPackageManager {
 
 interface POZPmConfig {
   __VERSION__: string;
-  packages: POZPackage[];
+  pkgMap: { [key: string]: POZPackage }
 }
 
 interface POZPackage {

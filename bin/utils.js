@@ -5,17 +5,13 @@ const chalk = require('chalk')
  * @param packages {Array[POZPackage]}
  * @returns {Array}
  */
-function flatternPkgs(packages) {
+function getPkgMapLogData(packages) {
   let data = []
   Object.keys(packages).forEach((packageName, idx) => {
     const pkg = packages[packageName]
     let row = []
     row.push(packageName)
-    if (pkg.git) {
-      row.push('git')
-    } else {
-      row.push('npm')
-    }
+    row.push(pkg.origin)
     row.push(pkg.path)
     data.push(row)
   })
@@ -24,12 +20,16 @@ function flatternPkgs(packages) {
 
 /**
  * Log local packages
- * @param packages
+ * @param pkgMap
  */
-function logLocalPkgs(log, packages) {
+function logLocalPkgs(log, pkgMap) {
+  let tabledata = getPkgMapLogData(pkgMap)
+  if (!tabledata.length) {
+    return
+  }
   console.log('  ' + chalk.bold('local packages'.toUpperCase()))
   console.log()
-  log(flatternPkgs(packages))
+  log(tabledata)
   console.log()
 }
 

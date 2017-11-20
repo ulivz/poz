@@ -1,7 +1,8 @@
 import fs from 'fs-extra'
 import ora from 'ora'
-import {exists} from '../utils/fs'
+import {exists, isDirectory, isDirEmpty} from '../utils/fs'
 import {download} from '../utils/download'
+import {isFunction, isPlainObject, isPromise} from '../utils/datatypes'
 import * as logger from '../utils/logger'
 import {getPkg} from '../utils/pkg'
 import path from 'path'
@@ -13,46 +14,78 @@ import {pkgFinder} from './POZUtils'
 export default class POZPackageManager {
   constructor() {
     this.env = env
-    this.rootDir = path.join(home, '.poz')
-    this.pmConfigPath = path.join(this.rootDir, 'poz.json')
-    this.pmPkgResourcesDir = path.join(this.rootDir, 'packages')
-    this.userPmConfigPath = path.join(this.rootDir, 'poz_profile.json')
+    this.PMRootDir = path.join(home, '.poz')
+    this.PMConfigPath = path.join(this.PMRootDir, 'poz.json')
+    this.PMPkgResourcesDir = path.join(this.PMRootDir, 'packages')
+    this.userPMConfigPath = path.join(this.PMRootDir, 'poz_profile.json')
     this.initialize()
   }
 
   // Ensure the core file
   initialize() {
-    if (!exists(this.rootDir)) {
-      fs.ensureDirSync(this.rootDir)
+    if (!exists(this.PMRootDir)) {
+      fs.ensureDirSync(this.PMRootDir)
     }
 
-    if (!exists(this.userPmConfigPath)) {
-      fs.writeJsonSync(this.userPmConfigPath, { __VERSION__: pkg.version }, { spaces: 2 })
-    }
+    // Hide temporarily
+    // if (!exists(this.userPMConfigPath)) {
+    //   fs.writeJsonSync(this.userPMConfigPath, { __VERSION__: pkg.version }, { spaces: 2 })
+    // }
 
-    if (!exists(this.pmConfigPath)) {
-      fs.writeJsonSync(this.pmConfigPath, {
+    if (!exists(this.PMConfigPath)) {
+      fs.writeJsonSync(this.PMConfigPath, {
         __VERSION__: pkg.version,
-        packages: {}
+        pkgMap: {}
       }, { spaces: 2 })
     }
+
+    // Ensure the packages dir was saved in poz.json
+    this.handlePMConfig(PMConfig => {
+      let packages = fs.readdirSync(this.PMPkgResourcesDir)
+      for (let name of packages) {
+        let pkgPath = path.join(this.PMPkgResourcesDir, name)
+        if (isDirectory(pkgPath)
+          && !isDirEmpty(pkgPath)
+          && pkgFinder(PMConfig.pkgMap, name) === null
+        ) {
+          PMConfig.pkgMap[name] = {
+            name: name,
+            requestName: name,
+            origin: 'local',
+            path: pkgPath,
+            pkg: getPkg(pkgPath)
+          }
+        }
+      }
+      return PMConfig
+    })
   }
 
-  set pmConfig(config) {
-    fs.writeJsonSync(this.pmConfigPath, config, { spaces: 2 })
+  handlePMConfig(handler) {
+    let result = handler && handler(this.PMConfig)
+    if (isPromise(result)) {
+      result.then(data => {
+        this.PMConfig = data
+      })
+    } else {
+      this.PMConfig = result
+    }
   }
 
-  get pmConfig() {
-    return require(this.pmConfigPath)
+  get PMConfig() {
+    return require(this.PMConfigPath)
   }
 
-  getLocalPkgs() {
-    return this.pmConfig.packages
+  set PMConfig(config) {
+    if (isPlainObject(config)) {
+      fs.writeJsonSync(this.PMConfigPath, config, { spaces: 2 })
+    }
   }
 
   fetchPkg(requestName) {
-    let pmConfig = this.pmConfig
-    let pkg = pkgFinder(pmConfig.packages, requestName)
+    let PMConfig = this.PMConfig
+    let pkg = pkgFinder(PMConfig.pkgMap, requestName)
+
     if (pkg) {
       if (this.env.isDebug) {
         logger.debug(`Use local package <yellow>${requestName}</yellow>`)
@@ -66,19 +99,19 @@ export default class POZPackageManager {
     }
 
     const spinner = ora(`Downloading POZ package ${requestName} ....`).start()
-    logger.print()
-    return download(requestName, this.pmPkgResourcesDir)
+    console.log()
+    return download(requestName, this.PMPkgResourcesDir)
       .then(packageInfo => {
         spinner.stop()
         let pkg = {
           requestName,
           ...packageInfo,
           pkg: getPkg(
-            path.join(this.pmPkgResourcesDir, packageInfo.packageName)
+            path.join(this.PMPkgResourcesDir, packageInfo.packageName)
           )
         }
-        pmConfig.packages[packageInfo.packageName] = pkg
-        this.pmConfig = pmConfig
+        PMConfig.packages[packageInfo.packageName] = pkg
+        this.PMConfig = PMConfig
         return pkg
       }).catch(error => {
         console.log(error)
@@ -86,14 +119,14 @@ export default class POZPackageManager {
   }
 
   removePkg(packageName) {
-    const pmConfig = this.pmConfig
-    const deletePkg = pmConfig.packages[packageName]
+    const PMConfig = this.PMConfig
+    const deletePkg = PMConfig.packages[packageName]
     if (!deletePkg) {
       logger.warn(`Cannot find package <cyan>${packageName}</cyan>`)
     } else {
-      delete pmConfig.packages[packageName]
-      this.pmConfig = pmConfig
-      fs.removeSync(path.join(this.pmPkgResourcesDir, deletePkg.packageName))
+      delete PMConfig.packages[packageName]
+      this.PMConfig = PMConfig
+      fs.removeSync(path.join(this.PMPkgResourcesDir, deletePkg.packageName))
     }
   }
 

@@ -7,15 +7,23 @@ module.exports = function (cli, POZ) {
     command: {
       name: 'package',
       opts: {
-        desc: 'Show cached POZ packages',
+        desc: 'Manage your cached POZ packages',
       },
       handler: function (input, flags) {
         let pm = new POZ.PackageManager()
         console.log()
-        logLocalPkgs(logger.table, pm.pmConfig.packages)
+        logLocalPkgs(logger.table, pm.PMConfig.pkgMap)
       },
     },
     options: [
+      {
+        name: 'add',
+        opts: {
+          alias: '-a',
+          desc: 'Add a POZ package to local cacehd directory',
+          type: 'boolean'
+        }
+      },
       {
         name: 'delete',
         opts: {
@@ -25,7 +33,6 @@ module.exports = function (cli, POZ) {
         }
       }
     ]
-
   }
 
 }

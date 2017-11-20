@@ -2,6 +2,7 @@ import downloadGitRepo from 'download-git-repo'
 import downloadNpmPkg from 'download-npm-package'
 import path from 'path'
 import fs from 'fs-extra'
+import {exists} from './fs'
 
 const NPM_REG = /^[a-zA-Z0-9@\-]+$/
 const GIT_REG = /^[a-zA-Z0-9\/\-]+$/
@@ -17,7 +18,24 @@ const NEED_CLONE_REG = /(bitbucket|gitlab|https?)/
 export function download(url, target, options = { newfolder: true }) {
   let destPath
 
-  if (NPM_REG.test(url)) {
+  // local package
+  if (exists(url)) {
+    let packageName = url.split('/').pop()
+
+    destPath = options.newfolder
+      ? path.join(target, packageName)
+      : target
+
+    return fs.copy(url, target).then(() => ({
+        name: packageName,
+        origin: 'local',
+        path: destPath
+      })
+    )
+  }
+
+  // NPM package
+  else if (NPM_REG.test(url)) {
     return downloadNpmPkg({
       arg: url,
       dir: target
@@ -31,12 +49,14 @@ export function download(url, target, options = { newfolder: true }) {
       }
 
     }).then(() => ({
-      packageName: url,
-      npm: true,
+      name: url,
+      origin: 'npm',
       path: options.newfolder ? destPath : target
     }))
+  }
 
-  } else if (GIT_REG.test(url)) {
+  // Git package
+  else if (GIT_REG.test(url)) {
     return new Promise((resolve, reject) => {
 
       let packageName = url.split('/').pop()
@@ -56,8 +76,8 @@ export function download(url, target, options = { newfolder: true }) {
           reject(err)
         } else {
           resolve({
-            packageName,
-            git: true,
+            name: packageName,
+            origin: 'git',
             path: destPath
           })
         }
