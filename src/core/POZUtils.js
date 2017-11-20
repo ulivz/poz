@@ -1,5 +1,4 @@
 import {isString, isPlainObject, isFunction, isUndefined} from '../utils/datatypes'
-import POZError from './POZError.js'
 
 export function mergePOZDestConfig(destConfig, userDestConfig) {
 
@@ -11,7 +10,7 @@ export function mergePOZDestConfig(destConfig, userDestConfig) {
   if (isFunction(userDestConfig)) {
     userDestConfig = userDestConfig()
   } else if (!isPlainObject(userDestConfig)) {
-    throw new POZError('Expect "dest" to be a string, function or a plain object')
+    throw new Error('Expect "dest" to be a string, function or a plain object')
   }
 
   Object.keys(destConfig).forEach(key => {
@@ -21,7 +20,7 @@ export function mergePOZDestConfig(destConfig, userDestConfig) {
   });
 
   if (!isFunction(destConfig.render)) {
-    throw new POZError('Expect "dest.render" to be a function')
+    throw new Error('Expect "dest.render" to be a function')
   }
 }
 
@@ -40,9 +39,7 @@ export function pkgFinder(pkgMap, requestName) {
   return null
 }
 
-export function pkgValidator() {
 
-}
 
 
 

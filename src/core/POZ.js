@@ -14,6 +14,7 @@ import POZContext from './POZContext.js'
 import POZEventEmitter from './POZEventEmitter.js'
 import POZDirectory from '../file-system/POZDirectory'
 import POZPackageManager from './POZPackageManager'
+import POZPackageValidator from './POZPackageValidator'
 
 class POZ extends POZEventEmitter {
 
@@ -37,31 +38,15 @@ class POZ extends POZEventEmitter {
 
   initContext(POZPackageDirectory) {
     this.debug('initContext')
-    if (!exists(POZPackageDirectory)) {
-      throw new Error(`${POZPackageDirectory} not exist!`)
-    }
-    if (!isDirectory(POZPackageDirectory)) {
-      throw new Error(`Expect "${POZPackageDirectory}" is a directory!`)
-    }
 
-    const packageIndexFile = resolve(POZPackageDirectory, 'poz.js')
-    if (!exists(packageIndexFile)) {
-      throw new Error(
-        `Cannot resolve "${packageIndexFile}", ` +
-        'For using POZ, the root directory of ' +
-        'your POZ package must contain a file ' +
-        'named "poz.js".'
-      )
-    }
+    let {
+      errorList,
+      POZPackageIndexFile,
+      POZTemplateDirectory
+    } = POZPackageValidator(POZPackageDirectory)
 
-    const POZTemplateDirectory = resolve(POZPackageDirectory, 'template')
-    if (!exists(POZTemplateDirectory)) {
-      throw new Error(
-        `Cannot resolve ${POZTemplateDirectory}, ` +
-        'For using POZ, A POZ template package ' +
-        'should contains a "template" directory ' +
-        'which used to store the template files.'
-      )
+    if (errorList.length) {
+      throw Error(errorList[0])
     }
 
     const user = getGitUser()
@@ -80,7 +65,7 @@ class POZ extends POZEventEmitter {
       $POZPackageDirectory: POZPackageDirectory,
       $POZTemplateDirectory: POZTemplateDirectory
     })
-    this.templateConfig = require(packageIndexFile)(this.context, this)
+    this.templateConfig = require(POZPackageIndexFile)(this.context, this)
   }
 
   set(key, value) {

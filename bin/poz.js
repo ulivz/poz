@@ -25,6 +25,9 @@ module.exports = function (cli, POZ) {
                 return app.start()
               }
             })
+            .catch(error => {
+              console.log(error)
+            })
         }
       }
     },
