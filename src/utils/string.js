@@ -22,3 +22,8 @@ export function hyphenate(str) {
 export function splitCamelCase(str, sep) {
   return str.replace(hyphenateRE, `${sep || ' '}$1`).toLowerCase()
 }
+
+
+export function capitailize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

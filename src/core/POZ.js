@@ -8,54 +8,65 @@ import * as logger from '../utils/logger'
 import * as datatypes from '../utils/datatypes'
 import * as shell from '../utils/child_process'
 import * as prompts from '../utils/prompts'
+import handlebars2 from 'handlebars2'
+import fs from 'fs-extra'
+import * as cfs from '../utils/fs'
+import {assign} from '../utils/assign'
 import env from './POZENV.js'
 import {mergePOZDestConfig} from './POZUtils.js'
 import POZContext from './POZContext.js'
-import POZEventEmitter from './POZEventEmitter.js'
+import POZEventHandler from './POZEventHandler.js'
 import POZDirectory from '../file-system/POZDirectory'
 import POZPackageManager from './POZPackageManager'
 import POZPackageValidator from './POZPackageValidator'
 
-class POZ extends POZEventEmitter {
+class POZ extends POZEventHandler {
 
   constructor(POZPackageDirectory) {
     super()
-    this.env = env
-    this.destConfig = {}
-    this.cwd = null
-    this.POZPackageDirectory = null
-    this.POZTemplateDirectory = null
-    this.context = new POZContext()
-    this.initUtil()
+    const properties = {
+      env: env,
+      cwd: null,
+      utils: null,
+      context: new POZContext(),
+      POZPackageDirectory: null,
+      POZPackageConfig: null,
+      POZTemplateDirectory: null,
+      POZDestDirectoryTree: null,
+      destConfig: null,
+    }
+    Object.assign(this, properties)
+    this.initUtils()
     this.initContext(POZPackageDirectory)
     this.initLifeCycle()
   }
 
-  initUtil() {
-    this.debug('initUtil')
+  initUtils() {
+    this.debug('initUtils')
     this.utils = this.constructor.utils
   }
 
   initContext(POZPackageDirectory) {
     this.debug('initContext')
 
-    let {
+    const {
       errorList,
-      POZPackageIndexFile,
-      POZTemplateDirectory
-    } = POZPackageValidator(POZPackageDirectory)
+      POZTemplateDirectory,
+      POZPackageConfig
+    } = POZPackageValidator(POZPackageDirectory, [this.context, this])
 
     if (errorList.length) {
-      throw Error(errorList[0])
+      throw new Error(errorList.shift())
     }
+
+    this.POZPackageDirectory = POZPackageDirectory
+    this.POZTemplateDirectory = POZTemplateDirectory
+    this.POZPackageConfig = POZPackageConfig
 
     const user = getGitUser()
     const cwd = process.cwd()
 
-    this.POZPackageDirectory = POZPackageDirectory
-    this.POZTemplateDirectory = POZTemplateDirectory
     this.cwd = cwd
-
     this.context.assign({
       $cwd: cwd,
       $env: this.env.POZ_ENV,
@@ -65,7 +76,6 @@ class POZ extends POZEventEmitter {
       $POZPackageDirectory: POZPackageDirectory,
       $POZTemplateDirectory: POZTemplateDirectory
     })
-    this.templateConfig = require(POZPackageIndexFile)(this.context, this)
   }
 
   set(key, value) {
@@ -79,7 +89,7 @@ class POZ extends POZEventEmitter {
   prompt() {
     this.debug('prompt')
     this.emit('onPromptStart')
-    const promptsMetadata = this.templateConfig.prompts()
+    const promptsMetadata = this.POZPackageConfig.prompts()
     const prompts = promptsTransformer(promptsMetadata)
     const envPromptsRunner = this.env.isTest
       ? mockPromptsRunner
@@ -89,8 +99,8 @@ class POZ extends POZEventEmitter {
 
   handlePromptsAnswers(answers) {
     this.debug('handlePromptsAnswers')
-    this.emit('onPromptEnd')
     this.context.assign(answers)
+    this.emit('onPromptEnd')
   }
 
   setupDestConfig() {
@@ -102,8 +112,8 @@ class POZ extends POZEventEmitter {
       rename: null,
       render: this.env.POZ_RENDER_ENGINE,
     }
-    let { dest } = this.templateConfig
-    mergePOZDestConfig(this.destConfig, dest)
+    mergePOZDestConfig(this.destConfig, this.POZPackageConfig.dest)
+    this.set('dest', this.destConfig)
   }
 
   dest() {
@@ -129,9 +139,9 @@ class POZ extends POZEventEmitter {
     const transformer = vinylFile => {
       // 1. renmae
       let oldRelative = vinylFile.relative
-      let newName = getNewName(vinylFile.basename)
-      if (vinylFile.basename !== newName) {
-        vinylFile.basename = newName
+      let newName = getNewName(vinylFile.path)
+      if (vinylFile.path !== newName) {
+        vinylFile.path = newName
         logger.info(`Rename <gray>${oldRelative}</gray> ==> <gray>${vinylFile.relative}</gray>`)
       }
 
@@ -155,10 +165,10 @@ class POZ extends POZEventEmitter {
         reject()
       })
       destStream.on('unExpectedTransformer', () => {
-        logger.error(`unexpected transformer`)
+        logger.error(`Unexpected transformer`)
       })
       destStream.on('end', () => {
-        this.POZDestDirectoryTree = new POZDirectory(this.destConfig.target);
+        this.POZDestDirectoryTree = new POZDirectory(this.destConfig.target)
         this.emit('onDestEnd')
         resolve()
       })
@@ -196,6 +206,11 @@ POZ.utils = {
   logger,
   datatypes,
   shell,
-  prompts
+  prompts,
+  fs,
+  render: handlebars2.render
 }
+
+assign(POZ.utils.fs, cfs)
+
 export default POZ

@@ -13,7 +13,11 @@ const LIFE_CYCLE = [
   'onExit'
 ]
 
-export default  class POZEventEmitter extends EventEmitter {
+export default  class POZEventHandler extends EventEmitter {
+
+  constructor() {
+    super()
+  }
 
   handleRenderSuccess(file) {
     let filePath = relative(this.POZTemplateDirectory, file.path)
@@ -50,17 +54,13 @@ export default  class POZEventEmitter extends EventEmitter {
     logger.info(`Skip rendering  <cyan>${file.basename}</cyan>`)
   }
 
-  constructor() {
-    super()
-  }
-
   initLifeCycle() {
     this.debug('initLifeCycle')
-    if (!isPlainObject(this.templateConfig)) {
+    if (!isPlainObject(this.POZPackageConfig)) {
       throw new Error('"poz.js" must export a plain object')
     }
     for (let hook of LIFE_CYCLE) {
-      let hookHandler = this.templateConfig[hook]
+      let hookHandler = this.POZPackageConfig[hook]
       if (hookHandler) {
         if (isFunction(hookHandler)) {
           this.on(hook, (...args) => {

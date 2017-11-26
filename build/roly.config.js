@@ -13,7 +13,7 @@ module.exports = [
     ],
     exports: 'default',
     filename: pkg.name,
-    format: 'cjs,es',
+    format: 'cjs',
     banner: {
       name: pkg.name.toUpperCase(),
       version: pkg.version,

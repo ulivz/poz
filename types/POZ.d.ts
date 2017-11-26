@@ -83,17 +83,20 @@ export interface POZConstructor {
 }
 
 export interface POZ extends POZEventEmitter {
-  env: POZENV
-  destConfig: POZDestConfig
-  context: POZContext
-  cwd: string
-  POZPackageDirectory: string
-  POZTemplateDirectory: string
-  initContext(POZPackageDirectory: string): void
-  set(key: { key: string, value: any }): void
-  set(key: string, value: string): void
-  parsePresets(presets: POZDestConfig): void
-  run(): Promise<void>
+  env: POZENV;
+  cwd: string;
+  context: POZContext;
+  destConfig: POZDestConfig;
+  POZPackageDirectory: string;
+  POZTemplateDirectory: string;
+  POZPackageConfig: POZConfig;
+  POZDestDirectoryTree: POZDirectory;
+  POZTemplateDirectoryTree: POZDirectory;
+  initContext(POZPackageDirectory: string): void;
+  set(key: { key: string, value: any }): void;
+  set(key: string, value: string): void;
+  parsePresets(presets: POZDestConfig): void;
+  run(): Promise<void>;
 }
 
 
