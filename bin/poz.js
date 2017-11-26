@@ -11,6 +11,13 @@ module.exports = function (cli, POZ) {
       },
       handler: function (input, flags) {
 
+        // Implementation for alias
+        if (cli.aliasMap[input[0]]) {
+          let argv = process.argv.slice(2)
+          argv[0] = cli.aliasMap[input[0]]
+          return cli.parse(argv)
+        }
+
         let pm = new POZ.PackageManager()
         if (!input.length) {
           cli.showHelp()
