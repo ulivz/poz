@@ -36,6 +36,6 @@ describe('fs', () => {
 
   test('isDirEmpty', () => {
     expect(isDirEmpty(source)).toBe(false)
-    expect(isDirEmpty(target)).toBe(true)
+    expect(isDirEmpty(target)).toBe(false)
   })
 })
