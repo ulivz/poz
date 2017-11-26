@@ -45,7 +45,7 @@ export function download(url, target, options = { newfolder: true }) {
       // Need to handle when 'newfolder' is false
       destPath = path.join(target, url)
       if (!options.newfolder) {
-        return fs.copy(actualDestPath, target).then(() => fs.remove(destPath))
+        return fs.copy(destPath, target).then(() => fs.remove(destPath))
       }
 
     }).then(() => ({

@@ -1,10 +1,8 @@
 import handlebar2 from 'handlebars2'
 
 export const ENV = {
-  DEV: 'develop',
   TEST: 'test',
-  DEBUG: 'debug',
-  PROD: 'production'
+  DEBUG: 'debug'
 }
 
 const POZENVCONFIG = {
@@ -37,14 +35,6 @@ class POZENV {
 
   get isDebug() {
     return this.POZ_ENV === ENV.DEBUG
-  }
-
-  get isDev() {
-    return this.POZ_ENV === ENV.DEBUG || this.POZ_ENV === ENV.TEST
-  }
-
-  get isProduction() {
-    return !this.POZ_ENV || this.POZ_ENV === ENV.PROD
   }
 }
 

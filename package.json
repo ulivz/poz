@@ -13,7 +13,7 @@
     "dist"
   ],
   "scripts": {
-    "test:cov": "BABEL_ENV=test jest src/core --coverage",
+    "test:cov": "BABEL_ENV=test jest src/** --coverage",
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",

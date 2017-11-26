@@ -3,22 +3,14 @@ import {getPkg} from '../pkg'
 
 describe('pkg', () => {
 
-  // beforeAll(() => {
-  //   process.chdir('getPkg')
-  // })
-  //
-  // beforeAll(() => {
-  //   process.chdir('getPkg')
-  // })
-
   test('getPkg', () => {
     const result = getPkg(resolve(__dirname, 'fixtures'))
-    expect(result.name).toBe('poz')
+    expect(result.name).toBe('poa')
   })
 
-  test('getPkg - not exist - return null', () => {
+  test('getPkg - not exist - return {}', () => {
     const result = getPkg(resolve(__dirname))
-    expect(result).toBe(null)
+    expect(result).toEqual({})
   })
 
 })

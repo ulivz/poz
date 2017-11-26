@@ -9,40 +9,44 @@ describe('download', () => {
 
   expect(isDirEmpty(target)).toBe(true)
 
-  test('should download Git Repo', () => {
-    return download('ulivz/my-first-poz', target).then((info) => {
-      expect(info.packageName).toBe('my-first-poz')
-      expect(info.git).toBe(true)
-      expect(isDirEmpty(target + '/my-first-poz')).toBe(false)
-      return fs.remove(target + '/my-first-poz')
-    })
+  test('should download Git Repo', async () => {
+    const info = await download('ulivz/my-first-poz', target)
+
+    expect(info.name).toBe('my-first-poz')
+    expect(info.origin).toBe('git')
+    expect(isDirEmpty(target + '/my-first-poz')).toBe(false)
+
+    await fs.remove(target + '/my-first-poz')
   })
 
-  test('should download NPM package', () => {
-    return download('n', target).then((info) => {
-      expect(info.packageName).toBe('n')
-      expect(info.npm).toBe(true)
-      expect(isDirEmpty(target + '/n')).toBe(false)
-      return fs.remove(target + '/n')
-    })
+  test('should download NPM package', async () => {
+    const info = await download('n', target)
+
+    expect(info.name).toBe('n')
+    expect(info.origin).toBe('npm')
+    expect(isDirEmpty(target + '/n')).toBe(false)
+
+    await fs.remove(target + '/n')
   })
 
-  test('should download Git Repo at root dir', () => {
-    return download('ulivz/my-first-poz', target, { newfolder: false }).then((info) => {
-      expect(info.packageName).toBe('my-first-poz')
-      expect(info.git).toBe(true)
-      expect(isDirEmpty(target)).toBe(false)
-      return fs.emptyDir(target)
-    })
+  test('should download Git Repo at root dir', async () => {
+    const info = await download('ulivz/my-first-poz', target, { newfolder: false })
+
+    expect(info.name).toBe('my-first-poz')
+    expect(info.origin).toBe('git')
+    expect(isDirEmpty(target)).toBe(false)
+
+    await fs.emptyDir(target)
   })
 
-  test('should download NPM package at root dir', () => {
-    return download('n', target, { newfolder: false }).then((info) => {
-      expect(info.packageName).toBe('n')
-      expect(info.npm).toBe(true)
-      expect(isDirEmpty(target)).toBe(false)
-      return fs.emptyDir(target)
-    })
+  test('should download NPM package at root dir', async () => {
+    const info = await download('n', target, { newfolder: false })
+
+    expect(info.name).toBe('n')
+    expect(info.origin).toBe('npm')
+    expect(isDirEmpty(target)).toBe(false)
+
+    await fs.emptyDir(target)
   })
 
   expect(isDirEmpty(target)).toBe(true)
