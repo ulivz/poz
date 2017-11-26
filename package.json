@@ -13,7 +13,7 @@
     "dist"
   ],
   "scripts": {
-    "test:cov": "BABEL_ENV=test jest src/** --coverage",
+    "test:cov": "BABEL_ENV=test jest src/core --coverage",
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
@@ -56,6 +56,7 @@
     "@types/vinyl": "^2.0.1",
     "babel-plugin-inline-import": "^2.0.6",
     "babel-preset-env": "^1.4.0",
+    "babel-preset-stage-3": "^6.24.1",
     "cross-spawn": "^5.1.0",
     "eslint-config-ulivz": "^1.0.0",
     "gh-pages": "^1.0.0",

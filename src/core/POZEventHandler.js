@@ -4,15 +4,6 @@ import {isPlainObject, isFunction} from '../utils/datatypes'
 import {relative} from '../utils/path'
 import * as logger from '../utils/logger'
 
-const LIFE_CYCLE = [
-  'onStart',
-  'onPromptStart',
-  'onPromptEnd',
-  'onDestStart',
-  'onDestEnd',
-  'onExit'
-]
-
 export default  class POZEventHandler extends EventEmitter {
 
   constructor() {
@@ -59,7 +50,7 @@ export default  class POZEventHandler extends EventEmitter {
     if (!isPlainObject(this.POZPackageConfig)) {
       throw new Error('"poz.js" must export a plain object')
     }
-    for (let hook of LIFE_CYCLE) {
+    for (let hook of this.env.POZ_LIFE_CYCLE) {
       let hookHandler = this.POZPackageConfig[hook]
       if (hookHandler) {
         if (isFunction(hookHandler)) {

@@ -52,14 +52,15 @@ export interface POZENVConstructor {
 }
 
 export interface POZENV {
-  POZ_TEMPLATE_DIRECTORY_NAME: string
-  POZ_PACKAGE_INDEX_FILE_NAME: string
-  POZ_RENDER_ENGINE: POZRenderFunction
-  POZ_ENV: string | null
-  isTest: boolean
-  isDebug: boolean
-  isDev: boolean
-  isProduction: boolean
+  POZ_TEMPLATE_DIRECTORY_NAME: string;
+  POZ_PACKAGE_INDEX_FILE_NAME: string;
+  POZ_RENDER_ENGINE: POZRenderFunction;
+  POZ_LIFE_CYCLE: string[];
+  POZ_ENV: string | null;
+  isTest: boolean;
+  isDebug: boolean;
+  isDev: boolean;
+  isProduction: boolean;
 }
 
 
@@ -158,12 +159,12 @@ export interface POZConfig {
   prompts(): inquirer.Question;
   dest?: string | POZDestConfig | POZDestConfigFunction;
   // Life Cycle
-  onStart?(): void
-  onPromptStart?(): void
-  onPromptEnd?(): void
-  onReproduceStart?(): void
-  onReproduceEnd?(): void
-  onExit?(): void
+  onStart?(): void;
+  onPromptStart?(): void;
+  onPromptEnd?(): void;
+  onReproduceStart?(): void;
+  onReproduceEnd?(): void;
+  onExit?(): void;
 }
 
 

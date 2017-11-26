@@ -7,12 +7,19 @@ export const ENV = {
   PROD: 'production'
 }
 
-const POZENVCONFIG =
-  {
-    POZ_TEMPLATE_DIRECTORY_NAME: 'template',
-    POZ_PACKAGE_INDEX_FILE_NAME: 'poz.js',
-    POZ_RENDER_ENGINE: handlebar2.render
-  }
+const POZENVCONFIG = {
+  POZ_TEMPLATE_DIRECTORY_NAME: 'template',
+  POZ_PACKAGE_INDEX_FILE_NAME: 'poz.js',
+  POZ_RENDER_ENGINE: handlebar2.render,
+  POZ_LIFE_CYCLE: [
+    'onStart',
+    'onPromptStart',
+    'onPromptEnd',
+    'onDestStart',
+    'onDestEnd',
+    'onExit'
+  ]
+}
 
 class POZENV {
 

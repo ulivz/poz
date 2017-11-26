@@ -1,7 +1,5 @@
-import {resolve} from '../utils/path'
 import {getGitUser} from '../utils/git'
 import {isPlainObject} from '../utils/datatypes'
-import {exists, isDirectory} from '../utils/fs'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
 import * as string from '../utils/string'
 import * as logger from '../utils/logger'
@@ -35,6 +33,7 @@ class POZ extends POZEventHandler {
       POZDestDirectoryTree: null,
       destConfig: null,
     }
+
     Object.assign(this, properties)
     this.initUtils()
     this.initContext(POZPackageDirectory)
@@ -55,8 +54,12 @@ class POZ extends POZEventHandler {
       POZPackageConfig
     } = POZPackageValidator(POZPackageDirectory, [this.context, this])
 
+
     if (errorList.length) {
-      throw new Error(errorList.shift())
+      if (this.env.isTest) {
+        throw new Error(errorList.shift().code)
+      }
+      throw new Error(errorList.shift().message)
     }
 
     this.POZPackageDirectory = POZPackageDirectory

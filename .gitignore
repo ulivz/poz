@@ -7,3 +7,5 @@ npm-debug.log
 packages
 .DS_Store
 examples/fixtures
+*/**/dist
+

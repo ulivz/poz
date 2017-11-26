@@ -4,7 +4,7 @@
 
 <p align="center">
 <br>
-<a href="https://npmjs.com/package/poz"><img src="https://img.shields.io/npm/v/sao.svg?style=flat" alt="NPM version"></a> 
+<a href="https://npmjs.com/package/poz"><img src="https://img.shields.io/npm/v/poz.svg?style=flat" alt="NPM version"></a> 
 <a href="https://npmjs.com/package/poz"><img src="https://img.shields.io/npm/dm/poz.svg?style=flat" alt="NPM downloads"></a> 
 <a href="https://circleci.com/gh/ulivz/poz"><img src="https://img.shields.io/circleci/project/ulivz/poz/master.svg?style=flat" alt="Build Status"></a> 
 <a href="https://github.com/ulivz/donate"><img src="https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat" alt="donate"></a> 
