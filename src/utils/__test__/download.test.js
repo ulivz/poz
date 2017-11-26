@@ -7,8 +7,6 @@ describe('download', () => {
 
   const target = path.resolve(__dirname, 'fixtures/download')
 
-  expect(isDirEmpty(target)).toBe(true)
-
   test('should download Git Repo', async () => {
     const info = await download('ulivz/my-first-poz', target)
 
@@ -48,7 +46,5 @@ describe('download', () => {
 
     await fs.emptyDir(target)
   })
-
-  expect(isDirEmpty(target)).toBe(true)
-
+  
 })
