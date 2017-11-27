@@ -22,6 +22,11 @@ class POZ extends POZEventHandler {
 
   constructor(POZPackageDirectory) {
     super()
+
+    if (!(this instanceof POZ)) {
+      return new POZ(POZPackageDirectory)
+    }
+
     const properties = {
       env: env,
       cwd: null,
@@ -136,7 +141,7 @@ class POZ extends POZEventHandler {
       })
       return name
     }
-
+    
     const render = this.destConfig.render
 
     const transformer = vinylFile => {

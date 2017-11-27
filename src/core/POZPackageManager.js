@@ -14,6 +14,9 @@ import {pkgFinder} from './POZUtils'
 
 export default class POZPackageManager {
   constructor() {
+    if (!(this instanceof POZPackageManager)) {
+      return new POZPackageManager()
+    }
     this.env = env
     this.PMRootDir = path.join(home, '.poz')
     this.PMConfigPath = path.join(this.PMRootDir, 'poz.json')
