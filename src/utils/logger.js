@@ -1,46 +1,42 @@
-import chalk from 'chalk'
+import _ from 'chalk'
 import textable from 'text-table'
-import {simpleStringParser} from './parser'
 import {isPlainObject, isArray} from './datatypes'
 
 const GLOBAL_INDENT = '  '
-const COLOR_REG = /<([\w]+)>([^<>]*)<\/\1>/g
-export const echo = (...args) => console.log(...args)
-export const COLOR = chalk
+export const echo = console.log
+export const COLOR = _
 
-export const simplelogMsgParser = msg => {
-  return simpleStringParser(msg, {
-    reg: COLOR_REG,
-    onMatch: (matchPart, tagName, tagContent) => {
-      if (!COLOR[tagName]) {
-        return tagContent
-      } else {
-        return COLOR[tagName](tagContent)
-      }
-    }
-  })
+const __ = {
+  'success': v => _.bgGreen(_.black(v)),
+  'warning': v => _.bgYellow(_.black(v)),
+  'error': v => _.bgRed(_.black(v)),
+  'info': v => _.bgWhiteBright(_.black(v)),
+  'debug': v => _.bgBlackBright(_.black(v)),
 }
 
-export const parseColor = simplelogMsgParser
-
-export const simpleColorLog = (color, type) => {
+const getLogFunction = (type) => {
   return (msg) => {
-    const msgType = type ? chalk.gray(`[POZ]`) + ' ' + COLOR[color](type) + ' ' : ''
+    const msgType = type ? __[type](type.toUpperCase()) + ' ' : ''
     const fullMsg = msgType + msg
-    echo(parseColor(fullMsg))
-    //   fullMsg.replace(/(^)/gm, `$1${GLOBAL_INDENT}`)
-    // ))
+    echo(fullMsg)
   }
 }
 
-export const success = simpleColorLog('green', '[success]')
-export const error = simpleColorLog('red', '[error]')
-export const warn = simpleColorLog('yellow', '[warn]')
-export const info = simpleColorLog('gray', '[info]')
-export const debug = simpleColorLog('gray', '[debug]')
-export const print = simpleColorLog()
+_.success = getLogFunction('success')
+_.error = getLogFunction('error')
+_.warn = getLogFunction('warning')
+_.info = getLogFunction('info')
 
-export function table(raw) {
+_.debug = getLogFunction('debug')
+_.debug.only = msg => {
+  if (process.env.NODE_ENV === 'debug') {
+    debug(msg)
+  }
+}
+
+_.print = getLogFunction()
+
+_.table = raw => {
   let data = []
   if (isPlainObject(raw)) {
     Object.keys(raw).forEach(key => {
@@ -66,3 +62,5 @@ export function table(raw) {
   var t = textable(data, { align: ['l', 'l'] })
   console.log(t)
 }
+
+export default _

@@ -3,7 +3,7 @@ const cac = require('cac')
 const POZ = require('../dist/poz.common.js')
 
 const pozCommand = require('./poz')
-const pozStatusCommand = require('./poz-package')
+const pozPackageCommand = require('./poz-package')
 
 const cli = cac()
 
@@ -41,7 +41,12 @@ cli.use = function (commandFn) {
   return cli
 }
 
+
+cli.logger = POZ.utils.logger
+cli.pm = () => new POZ.PackageManager()
+
 cli
   .use(pozCommand)
-  .use(pozStatusCommand)
+  .use(pozPackageCommand)
   .parse()
+

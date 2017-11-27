@@ -22,7 +22,7 @@ function getPkgMapLogData(packages) {
  * Log local packages
  * @param pkgMap
  */
-function logLocalPkgs(log, pkgMap) {
+function localPackagesLogger(log, pkgMap) {
   let tabledata = getPkgMapLogData(pkgMap)
   if (!tabledata.length) {
     return
@@ -34,5 +34,5 @@ function logLocalPkgs(log, pkgMap) {
 }
 
 module.exports = {
-  logLocalPkgs
+  localPackagesLogger
 }

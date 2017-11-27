@@ -2,7 +2,7 @@ import {EventEmitter} from 'events'
 import archy from 'archy'
 import {isPlainObject, isFunction} from '../utils/datatypes'
 import {relative} from '../utils/path'
-import * as logger from '../utils/logger'
+import logger from '../utils/logger'
 
 export default  class POZEventHandler extends EventEmitter {
 

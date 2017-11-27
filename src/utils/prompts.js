@@ -26,6 +26,11 @@ export function promptsRunner(prompts) {
 }
 
 
+export function prompt(promptsMetadata) {
+  return promptsRunner(promptsTransformer(promptsMetadata))
+}
+
+
 function _mockAnswerByPromptPromise(promptPromise, answers) {
   const ui = promptPromise.ui
   let idx = 0
@@ -50,3 +55,11 @@ export function mockPromptsRunner(prompts, promptsAnswers) {
   _mockAnswerByPromptPromise(promptsPromise, promptsAnswers)
   return promptsPromise
 }
+
+
+export function mockPrompt(promptsMetadata, promptsAnswers) {
+  const promptsPromise = prompt(promptsMetadata)
+  _mockAnswerByPromptPromise(promptsPromise, promptsAnswers)
+  return promptsPromise
+}
+

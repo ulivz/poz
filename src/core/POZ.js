@@ -2,7 +2,7 @@ import {getGitUser} from '../utils/git'
 import {isPlainObject} from '../utils/datatypes'
 import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
 import * as string from '../utils/string'
-import * as logger from '../utils/logger'
+import logger from '../utils/logger'
 import * as datatypes from '../utils/datatypes'
 import * as shell from '../utils/child_process'
 import * as prompts from '../utils/prompts'
@@ -141,7 +141,7 @@ class POZ extends POZEventHandler {
       })
       return name
     }
-    
+
     const render = this.destConfig.render
 
     const transformer = vinylFile => {

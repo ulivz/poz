@@ -1,7 +1,7 @@
-const { logLocalPkgs } = require('./utils')
+const { localPackagesLogger } = require('./utils')
 
 module.exports = function (cli, POZ) {
-  const { logger } = POZ.utils
+  const { logger, chalk } = POZ.utils
 
   return {
     command: {
@@ -21,7 +21,7 @@ module.exports = function (cli, POZ) {
         let pm = new POZ.PackageManager()
         if (!input.length) {
           cli.showHelp()
-          logLocalPkgs(logger.table, pm.PMConfig.pkgMap)
+          localPackagesLogger(logger.table, pm.PMConfig.pkgMap)
 
         } else {
           let pkgname = input[0]

@@ -1,11 +1,13 @@
-const { logLocalPkgs } = require('./utils')
+'use strict';
+
+const { localPackagesLogger } = require('./utils')
 
 module.exports = function (cli, POZ) {
-  const { logger } = POZ.utils
+  const { logger, prompts } = POZ.utils
 
-  function log() {
+  function logPkgs() {
     let pm = POZ.PackageManager()
-    logLocalPkgs(logger.table, pm.PMConfig.pkgMap)
+    localPackagesLogger(logger.table, pm.PMConfig.pkgMap)
   }
 
   return {
@@ -17,7 +19,7 @@ module.exports = function (cli, POZ) {
         desc: 'Manage your cached POZ packages',
       },
       handler: function (input, flags) {
-        return log()
+        return logPkgs()
       },
     },
 
@@ -32,7 +34,7 @@ module.exports = function (cli, POZ) {
           desc: 'Show local POZ packages'
         },
         handler(input, flags) {
-          return log()
+          return logPkgs()
         }
       },
 
@@ -46,7 +48,29 @@ module.exports = function (cli, POZ) {
           desc: 'Remove a specific POZ package'
         },
         handler(input, flags) {
-          console.log('delete')
+          let packageName = flags.delete
+
+          if (!packageName.length) {
+            logger.error('Please enter the name of the POZ package you want to delete')
+          }
+
+          let pm = cli.pm()
+          let pkg = pm.getPkgByName(packageName)
+          if (!pkg) {
+            return logger.error(`Cannot delete a nonexistent package: ${logger.magenta(packageName)}`)
+          }
+
+          return prompts.prompt({
+            deleteConfirm: {
+              message: `Are you sure you want to delete ${logger.magenta(packageName)}?`,
+              type: 'confirm'
+            }
+          }).then((answers) => {
+            if (answers.deleteConfirm) {
+              let pm = cli.pm()
+
+            }
+          })
         }
       },
 

@@ -3,8 +3,8 @@ import ora from 'ora'
 import chalk from 'chalk'
 import {exists, isDirectory, isDirEmpty} from '../utils/fs'
 import {download} from '../utils/download'
-import {isFunction, isPlainObject, isPromise} from '../utils/datatypes'
-import * as logger from '../utils/logger'
+import {isPlainObject, isPromise} from '../utils/datatypes'
+import logger from '../utils/logger'
 import {getPkg} from '../utils/pkg'
 import path from 'path'
 import pkg from '../../package.json'
@@ -88,7 +88,7 @@ export default class POZPackageManager {
 
   fetchPkg(requestName) {
     let PMConfig = this.PMConfig
-    let pkg = pkgFinder(PMConfig.pkgMap, requestName)
+    let pkg = this.getPkgByName(requestName, PMConfig)
 
     // Find from cache
     if (pkg) {
@@ -128,20 +128,17 @@ export default class POZPackageManager {
       })
   }
 
-  removePkg(packageName) {
-    const PMConfig = this.PMConfig
-    const deletePkg = PMConfig.packages[packageName]
-    if (!deletePkg) {
-      logger.warn(`Cannot find package <cyan>${packageName}</cyan>`)
+  getPkgByName(packageName, PMConfig) {
+    let _PMConfig
+    if (PMConfig) {
+      _PMConfig = PMConfig
     } else {
-      delete PMConfig.packages[packageName]
-      this.PMConfig = PMConfig
-      fs.removeSync(path.join(this.PMPkgResourcesDir, deletePkg.packageName))
+      _PMConfig = this.PMConfig
     }
+    let pkg = pkgFinder(_PMConfig.pkgMap, packageName)
+    return pkg
   }
 
-  saveConfig() {
 
-  }
 
 }
