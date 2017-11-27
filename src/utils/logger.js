@@ -16,7 +16,7 @@ const __ = {
 
 const getLogFunction = (type) => {
   return (msg) => {
-    const msgType = type ? __[type](type.toUpperCase()) + ' ' : ''
+    const msgType = type ? __[type](' ' + type.toUpperCase() + ' ') + ' ' : ''
     const fullMsg = msgType + msg
     echo(fullMsg)
   }
@@ -26,7 +26,6 @@ _.success = getLogFunction('success')
 _.error = getLogFunction('error')
 _.warn = getLogFunction('warning')
 _.info = getLogFunction('info')
-
 _.debug = getLogFunction('debug')
 _.debug.only = msg => {
   if (process.env.NODE_ENV === 'debug') {
@@ -53,9 +52,9 @@ _.table = raw => {
     for (var i = 0, l = row.length; i < l; i++) {
       let item = row[i]
       if (i === 0) {
-        row[i] = GLOBAL_INDENT + '  ' + chalk.yellow(item)
+        row[i] = GLOBAL_INDENT + '  ' + _.yellow(item)
       } else {
-        row[i] = chalk.gray(item)
+        row[i] = _.gray(item)
       }
     }
   })
