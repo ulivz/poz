@@ -9,6 +9,9 @@ function getPkgMapLogData(packages) {
   let data = []
   Object.keys(packages).forEach((packageName, idx) => {
     const pkg = packages[packageName]
+    if (pkg.hide) {
+      return;
+    }
     let row = []
     row.push(packageName)
     row.push(pkg.origin)
@@ -27,6 +30,7 @@ function localPackagesLogger(log, pkgMap) {
   if (!tabledata.length) {
     return
   }
+  console.log()
   console.log('  ' + chalk.bold('local packages'.toUpperCase()))
   console.log()
   log(tabledata)

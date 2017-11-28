@@ -4,9 +4,7 @@ import path from 'path'
 import fs from 'fs-extra'
 import {exists} from './fs'
 
-const NPM_REG = /^[a-zA-Z0-9@\-]+$/
-const GIT_REG = /^[a-zA-Z0-9\/\-]+$/
-const NEED_CLONE_REG = /(bitbucket|gitlab|https?)/
+
 
 /**
  * Download package from Github / NPM / Gitlab / bitbucket

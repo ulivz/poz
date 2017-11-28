@@ -100,56 +100,6 @@ export interface POZ extends POZEventEmitter {
   run(): Promise<void>;
 }
 
-
-// ***************************************************
-//
-// ***************************************************
-interface POZPackageManageConstructorr {
-  new(): POZPackageManager;
-  prototype: POZPackageManager;
-}
-
-interface POZPackageManager {
-  // root working directory
-  rootDir: string;
-  pmConfigPath: string;
-  pmPkgResourcesDir: string;
-  userPmConfigPath: string;
-  pmConfig: POZPmConfig;
-  initEnv(): Promise<void>;
-  getPkgs(): Promise<POZPackage[]>;
-  parsePkgName(pkgName: string): void;
-  savePkg(pkgName: string): Promise<void>;
-  removePkg(pkgName: string): Promise<void>;
-  update(pkgName: string): Promise<void>;
-  checkUpdate(): Promise<POZPackageUpdateInfo[] | null>;
-}
-
-interface POZPmConfig {
-  __VERSION__: string;
-  pkgMap: { [key: string]: POZPackage }
-}
-
-interface POZPackage {
-  downloadURL: string;
-  // POZ package full path
-  path: string;
-  // package.json
-  pkg?: {
-    author: string;
-    name: string;
-    version: string;
-    description: string;
-  }
-}
-
-interface POZPackageUpdateInfo {
-  downloadURL: string;
-  currentVersion: string;
-  newVersion: string;
-}
-
-
 // ***************************************************
 // POZ config
 // ***************************************************

@@ -14,6 +14,10 @@ const __ = {
   'debug': v => _.bgBlackBright(_.black(v)),
 }
 
+_.POZ = {
+  word: v => _.bold(_.cyan(v)),
+}
+
 const getLogFunction = (type) => {
   return (msg) => {
     const msgType = type ? __[type](' ' + type.toUpperCase() + ' ') + ' ' : ''

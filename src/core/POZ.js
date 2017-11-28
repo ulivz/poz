@@ -15,7 +15,7 @@ import {mergePOZDestConfig} from './POZUtils.js'
 import POZContext from './POZContext.js'
 import POZEventHandler from './POZEventHandler.js'
 import POZDirectory from '../file-system/POZDirectory'
-import POZPackageManager from './POZPackageManager'
+import POZPackageManager from '../package-manager/POZPackageManager'
 import POZPackageValidator from './POZPackageValidator'
 
 class POZ extends POZEventHandler {
