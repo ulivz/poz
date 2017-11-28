@@ -1,1 +1,0 @@
-My name is chenhaol, I like js.

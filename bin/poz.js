@@ -21,14 +21,14 @@ module.exports = function (cli, POZ) {
         let pm = new POZ.PackageManager()
         if (!input.length) {
           cli.showHelp()
-          localPackagesLogger(logger.table, pm.PMConfig.pkgMap)
+          localPackagesLogger(logger.table, pm.cache.getItem('packagesMap'))
 
         } else {
           let pkgname = input[0]
           pm.fetchPkg(pkgname)
             .then(pkg => {
               if (pkg) {
-                const app = new POZ(pkg.path)
+                const app = new POZ(pkg.cachePath)
                 return app.start()
               }
             })

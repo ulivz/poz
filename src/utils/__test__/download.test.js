@@ -3,7 +3,7 @@ import {isDirEmpty} from '../fs'
 import path from 'path'
 import fs from 'fs-extra'
 
-describe('download', () => {
+describe.skip('download', () => {
 
   const target = path.resolve(__dirname, 'fixtures/download')
 
@@ -46,5 +46,5 @@ describe('download', () => {
 
     await fs.emptyDir(target)
   })
-  
+
 })

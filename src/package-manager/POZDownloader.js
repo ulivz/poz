@@ -2,7 +2,6 @@ import downloadGitRepo from 'download-git-repo'
 import downloadNpmPkg from 'download-npm-package'
 import path from 'path'
 import fs from 'fs-extra'
-import {exists} from './fs'
 
 export default function POZDownloader(pozPackage) {
 

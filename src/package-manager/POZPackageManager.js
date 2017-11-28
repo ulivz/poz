@@ -1,15 +1,14 @@
 import fs from 'fs-extra'
 import ora from 'ora'
-import chalk from 'chalk'
 import {exists} from '../utils/fs'
-import {download} from '../utils/download'
 import logger from '../utils/logger'
-import {getPkg} from '../utils/pkg'
 import path from 'path'
 import pkg from '../../package.json'
 import home from 'user-home'
 import env from '../core/POZENV'
 import POZPackage from './POZPackage'
+import POZPackageCache from './POZPackageCache'
+import POZDownloader from './POZDownloader'
 
 export default class POZPackageManager {
 
@@ -29,14 +28,14 @@ export default class POZPackageManager {
     this.cache.setItem('__VERSION__', pkg.version)
   }
 
-  fetchPackage(requestName) {
+  parseRequest(requestName) {
     let packageName, origin, cachePath
     const NPM_REG = /^[a-zA-Z0-9@\-]+$/
     const GIT_REG = /^[a-zA-Z0-9\/\-]+$/
-    
+
     // local package
     if (exists(requestName)) {
-      packageName = url.split('/').pop()
+      packageName = requestName.split('/').pop()
       origin = 'local'
 
     } else if (NPM_REG.test(requestName)) {
@@ -44,14 +43,14 @@ export default class POZPackageManager {
       origin = 'npm'
 
     } else if (GIT_REG.test(requestName)) {
-      packageName = url.split('/').pop()
+      packageName = requestName.split('/').pop()
       origin = 'git'
 
     } else {
-      throw new Error('Invalid package request string:' + requestName)
+      return null
     }
 
-    cachePath = path.join(this.PATH.packageCacheDir, packageName)
+    cachePath = path.join(this.cache.packageDirPath, packageName)
     return new POZPackage({
       requestName,
       packageName,
@@ -60,50 +59,34 @@ export default class POZPackageManager {
     })
   }
 
-  download() {
-
-  }
 
   fetchPkg(requestName) {
-    let PMConfig = this.PMConfig
-    let pkg = this.getPkgByName(requestName, PMConfig)
+    let _package
+    _package = this.cache.getPackageByName(requestName)
 
-    // Find from cache
-    if (pkg) {
-      if (this.env.isDebug) {
-        logger.debug(`Use local package <yellow>${requestName}</yellow>`)
-      }
-      // TODO check package updates
-      return Promise.resolve(pkg)
+    // 1. Find from cache
+    if (_package) {
+      logger.debug.only(`Use local package ${logger.yellow(requestName)}`)
+      return Promise.resolve(_package)
     }
 
-    // Find from Github/NPM
-    if (this.env.isDebug) {
-      logger.debug(`Fetching POZ package <yellow>${requestName}</yellow> ...`)
+    // 2. Find from Github / NPM
+    const spinner = ora(`Fetching package ${logger.yellow(requestName)} ....`).start()
+    _package = this.parseRequest(requestName)
+
+    if (!_package) {
+      return Promise.reject(null)
+    } else {
+      return POZDownloader(_package)
+        .then(() => {
+          spinner.stop()
+          return _package
+        })
+        .catch(error => {
+          if (error.statusCode === 404) {
+            spinner.fail(`404: Cannot find package ${logger.yellow(requestName)}`)
+          }
+        })
     }
-
-    const spinner = ora(`Fetching package ${chalk.yellow(requestName)} ....`).start()
-
-    return download(requestName, this.PMPkgResourcesDir)
-      .then(packageInfo => {
-        spinner.stop()
-        let pkg = {
-          requestName,
-          ...packageInfo,
-          pkg: getPkg(
-            path.join(this.PMPkgResourcesDir, packageInfo.packageName)
-          )
-        }
-        PMConfig.packages[packageInfo.packageName] = pkg
-        this.PMConfig = PMConfig
-        return pkg
-
-      }).catch(error => {
-        if (error.statusCode === 404) {
-          spinner.fail(`404: Cannot find package ${chalk.yellow(requestName)}`)
-        }
-        return null
-      })
   }
-
 }

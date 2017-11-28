@@ -1,6 +1,12 @@
 import path from 'path'
 import fs from 'fs-extra'
+import {exists} from '../utils/fs'
+import logger from '../utils/logger'
 import POZPackageValidator from '../core/POZPackageValidator'
+
+const IGNORE_FILES = [
+  '.DS_Store'
+]
 
 export default class POZPackageCache {
   constructor(baseDir) {
@@ -20,6 +26,8 @@ export default class POZPackageCache {
     }
 
     this._readIndexInfo()
+    this.setItem('packagesMap', {})
+
     this._readPackageDir()
     this._check()
   }
@@ -36,7 +44,9 @@ export default class POZPackageCache {
     let packagesMap = this.getItem('packagesMap')
     let findNewPackage = false
 
-    this.packageNames.filter(packageName => !this.getPackageByName(packageName))
+    this.packageNames
+      .filter(packageName => IGNORE_FILES.indexOf(packageName) === -1)
+      .filter(packageName => !this.getPackageByName(packageName))
       .forEach(packageName => {
         let packagePath = this.getPackagePathByName(packageName)
         let { errorList } = POZPackageValidator(packagePath)
@@ -68,12 +78,11 @@ export default class POZPackageCache {
     return this.indexInfo[name]
   }
 
-  setItem(name) {
-    this.indexInfo[name] = name
+  setItem(name, value) {
+    this.indexInfo[name] = value
     fs.writeJsonSync(this.indexInfoPath, this.indexInfo, { spaces: 2 })
     this.indexInfo = null
   }
-
 
   getPackagePathByName(packageName) {
     return path.join(this.packageDirPath, packageName)
@@ -81,23 +90,23 @@ export default class POZPackageCache {
 
   getPackageByName(packageName) {
     let packagesMap = this.getItem('packagesMap')
-    let package
+    let _package
 
     // match packageName or requestName
     if (packagesMap[packageName]) {
-      package = packagesMap[packageName]
+      _package = packagesMap[packageName]
 
     } else {
       for (let _packageName of Object.keys(packagesMap)) {
         if (packagesMap[_packageName].requestName === packageName) {
-          package = packagesMap[_packageName]
+          _package = packagesMap[_packageName]
           break
         }
       }
     }
 
-    if (package) {
-      return new POZPackage(package)
+    if (_package) {
+      return new POZPackage(_package)
     }
 
     return null
