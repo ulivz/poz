@@ -1,7 +1,9 @@
 import path from 'path'
 import fs from 'fs-extra'
 import {exists} from '../utils/fs'
-import logger from '../utils/logger'
+import logger from '../logger/logger'
+import debug from '../core/POZDebugger'
+import POZPackage from './POZPackage'
 import POZPackageValidator from '../core/POZPackageValidator'
 
 const IGNORE_FILES = [
@@ -10,6 +12,7 @@ const IGNORE_FILES = [
 
 export default class POZPackageCache {
   constructor(baseDir) {
+    debug.trace('POZPackageCache', 'constructor')
 
     this.indexInfoPath = path.join(baseDir, 'poz.json')
     this.indexInfo = null
@@ -33,14 +36,17 @@ export default class POZPackageCache {
   }
 
   _readIndexInfo() {
+    debug.trace('POZPackageCache', '_readIndexInfo')
     this.indexInfo = require(this.indexInfoPath)
   }
 
   _readPackageDir() {
+    debug.trace('POZPackageCache', '_readPackageDir')
     this.packageNames = fs.readdirSync(this.packageDirPath)
   }
 
   _check() {
+    debug.trace('POZPackageCache', '_check')
     let packagesMap = this.getItem('packagesMap')
     let findNewPackage = false
 
@@ -72,6 +78,7 @@ export default class POZPackageCache {
   }
 
   getItem(name) {
+    debug.trace('POZPackageCache', 'getItem')
     if (!this.indexInfo) {
       this._readIndexInfo()
     }
@@ -79,16 +86,29 @@ export default class POZPackageCache {
   }
 
   setItem(name, value) {
+    debug.trace('POZPackageCache', 'setItem')
+    if (!this.indexInfo) {
+      this._readIndexInfo()
+    }
     this.indexInfo[name] = value
     fs.writeJsonSync(this.indexInfoPath, this.indexInfo, { spaces: 2 })
     this.indexInfo = null
   }
 
+  cachePackageInfo(pozPackage) {
+    let packagesMap = this.getItem('packagesMap')
+    packagesMap[pozPackage.packageName] = pozPackage
+    this.setItem('packagesMap', packagesMap)
+  }
+
   getPackagePathByName(packageName) {
+    debug.trace('POZPackageCache', 'getPackagePathByName')
     return path.join(this.packageDirPath, packageName)
   }
 
   getPackageByName(packageName) {
+    debug.trace('POZPackageCache', 'getPackageByName')
+
     let packagesMap = this.getItem('packagesMap')
     let _package
 

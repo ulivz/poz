@@ -24,8 +24,9 @@ module.exports = function (cli, POZ) {
           localPackagesLogger(logger.table, pm.cache.getItem('packagesMap'))
 
         } else {
-          let pkgname = input[0]
-          pm.fetchPkg(pkgname)
+          const requestName = input[0]
+          const TIMEOUT = 60000
+          pm.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {
                 const app = new POZ(pkg.cachePath)

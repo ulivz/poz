@@ -1,10 +1,9 @@
 import _ from 'chalk'
 import textable from 'text-table'
-import {isPlainObject, isArray} from './datatypes'
+import {isPlainObject, isArray} from '../utils/datatypes'
 
 const GLOBAL_INDENT = '  '
-export const echo = console.log
-export const COLOR = _
+const echo = _.echo = console.log
 
 const __ = {
   'success': v => _.bgGreen(_.black(v)),
@@ -22,6 +21,7 @@ const getLogFunction = (type) => {
   return (msg) => {
     const msgType = type ? __[type](' ' + type.toUpperCase() + ' ') + ' ' : ''
     const fullMsg = msgType + msg
+    echo()
     echo(fullMsg)
   }
 }

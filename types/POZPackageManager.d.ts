@@ -11,8 +11,6 @@
 // ***************************************************
 import {POZENV} from "./POZ";
 
-
-
 interface POZPackageManageConstructorr {
   new(): POZPackageManager;
   prototype: POZPackageManager;

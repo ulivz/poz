@@ -1,0 +1,9 @@
+{
+  "package_validate": {
+    "NOT_FOUND": "%s not exist.",
+    "MUST_BE_DIRECTORY": "Expect giving path: %s is a directory.",
+    "MISSING_INDEX_FILE": "Cannot resolve %s, \nFor using POZ, the root folder of your POZ package must contain a file named 'poz.js'",
+    "MISSING_TEMPLATE_DIRECTORY": "Cannot resolve %s, \nFor using POZ, A POZ template package should contains a 'template' directory which used to store the template files.",
+    "UNEXPECTED_INDEX_FILE": "'poz.js' must export a plain object or function."
+  }
+}

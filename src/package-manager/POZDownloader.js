@@ -3,7 +3,7 @@ import downloadNpmPkg from 'download-npm-package'
 import path from 'path'
 import fs from 'fs-extra'
 
-export default function POZDownloader(pozPackage) {
+export default function POZDownloader(pozPackage, timeout) {
 
   const { origin, packageName, requestName, cachePath } = pozPackage
 
@@ -11,7 +11,6 @@ export default function POZDownloader(pozPackage) {
     return downloadNpmPkg({
       arg: packageName,
       dir: cachePath
-
     }).then(() => {
       // downloadNpmPkg will download to sub directory by default
       // Need to handle

@@ -1,11 +1,13 @@
 import fs from 'fs-extra'
 import ora from 'ora'
 import {exists} from '../utils/fs'
-import logger from '../utils/logger'
+import logger from '../logger/logger'
 import path from 'path'
 import pkg from '../../package.json'
 import home from 'user-home'
 import env from '../core/POZENV'
+import debug from '../core/POZDebugger'
+import POZPackageValidator from '../core/POZPackageValidator'
 import POZPackage from './POZPackage'
 import POZPackageCache from './POZPackageCache'
 import POZDownloader from './POZDownloader'
@@ -13,6 +15,7 @@ import POZDownloader from './POZDownloader'
 export default class POZPackageManager {
 
   constructor() {
+    debug.trace('POZPackageManager', 'constructor')
     if (!(this instanceof POZPackageManager)) {
       return new POZPackageManager()
     }
@@ -29,6 +32,8 @@ export default class POZPackageManager {
   }
 
   parseRequest(requestName) {
+    debug.trace('POZPackageManager', 'parseRequest')
+
     let packageName, origin, cachePath
     const NPM_REG = /^[a-zA-Z0-9@\-]+$/
     const GIT_REG = /^[a-zA-Z0-9\/\-]+$/
@@ -59,34 +64,59 @@ export default class POZPackageManager {
     })
   }
 
+  fetchPkg(requestName, timeout) {
+    debug.trace('POZPackageManager', 'fetchPkg')
 
-  fetchPkg(requestName) {
-    let _package
-    _package = this.cache.getPackageByName(requestName)
+    let pozPackage
+    pozPackage = this.cache.getPackageByName(requestName)
 
     // 1. Find from cache
-    if (_package) {
-      logger.debug.only(`Use local package ${logger.yellow(requestName)}`)
-      return Promise.resolve(_package)
+    if (pozPackage) {
+      return Promise.resolve(pozPackage)
     }
 
     // 2. Find from Github / NPM
-    const spinner = ora(`Fetching package ${logger.yellow(requestName)} ....`).start()
-    _package = this.parseRequest(requestName)
+    pozPackage = this.parseRequest(requestName)
 
-    if (!_package) {
+    if (!pozPackage) {
       return Promise.reject(null)
-    } else {
-      return POZDownloader(_package)
-        .then(() => {
-          spinner.stop()
-          return _package
-        })
-        .catch(error => {
-          if (error.statusCode === 404) {
-            spinner.fail(`404: Cannot find package ${logger.yellow(requestName)}`)
-          }
-        })
     }
+
+    const timer = setTimeout(() => {
+      logger.error('Request TIMEOUT, Please check your network.')
+      process.exit()
+    }, timeout)
+
+    const spinner = ora(`Fetching package ${logger.yellow(requestName)} ....`).start()
+
+    return POZDownloader(pozPackage)
+
+      .then(() => {
+        spinner.stop()
+        clearTimeout(timer)
+
+        let { errorList } = POZPackageValidator(pozPackage.cachePath)
+        return errorList
+        if (errorList.length) {
+          return Promise.reject(errorList)
+        }
+
+        this.cache.cachePackageInfo(pozPackage)
+        return pozPackage
+      })
+
+      .catch(error => {
+        spinner.stop()
+        clearTimeout(timer)
+        if (error.statusCode === 404) {
+          spinner.stop()
+          logger.error(`404: Cannot find package ${logger.yellow(requestName)}`)
+        } else if (error.code = 'ENOTFOUND') {
+          spinner.stop()
+          logger.error('Please check your network.')
+        } else {
+          throw error
+        }
+      })
   }
 }

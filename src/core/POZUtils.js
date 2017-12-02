@@ -23,10 +23,3 @@ export function mergePOZDestConfig(dest, override = {}) {
     throw new Error('Expect "dest.render" to be a function')
   }
 }
-
-
-
-
-
-
-
