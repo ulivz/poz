@@ -6,6 +6,9 @@ const pozCommand = require('./poz')
 const pozPackageCommand = require('./poz-package')
 const pozCleanCommand = require('./poz-clean')
 
+const utils = require('./utils')
+utils.initLogger(POZ.utils.logger)
+
 const cli = cac()
 
 /**

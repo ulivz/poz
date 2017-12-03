@@ -1,7 +1,7 @@
 const { localPackagesLogger } = require('./utils')
 
 module.exports = function (cli, POZ) {
-  const { logger, chalk } = POZ.utils
+  const { logger } = POZ.utils
 
   return {
     command: {
@@ -21,7 +21,7 @@ module.exports = function (cli, POZ) {
         let pm = new POZ.PackageManager()
         if (!input.length) {
           cli.showHelp()
-          localPackagesLogger(logger.table, pm.cache.getItem('packagesMap'))
+          localPackagesLogger(pm.cache.getItem('packagesMap'))
 
         } else {
           const requestName = input[0]

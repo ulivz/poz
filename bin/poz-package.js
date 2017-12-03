@@ -7,7 +7,7 @@ module.exports = function (cli, POZ) {
 
   function logPkgs() {
     let pm = POZ.PackageManager()
-    localPackagesLogger(logger.table, pm.cache.getItem('packagesMap'))
+    localPackagesLogger(pm.cache.getItem('packagesMap'))
   }
 
   /**
@@ -39,7 +39,8 @@ module.exports = function (cli, POZ) {
         desc: 'Manage your cached POZ packages',
       },
       handler: function (input, flags) {
-        return logPkgs()
+        cli.showHelp()
+        logPkgs()
       },
     },
 
@@ -54,7 +55,7 @@ module.exports = function (cli, POZ) {
           desc: 'Show local POZ packages'
         },
         handler(input, flags) {
-          return logPkgs()
+          logPkgs()
         }
       },
 
@@ -71,7 +72,7 @@ module.exports = function (cli, POZ) {
           let packageName = flags.delete
 
           if (!packageName.length) {
-            return logger.error('Please enter the name of the POZ package you want to delete')
+            return logger.error('To delete a package, you must enter a valid package name.')
           }
 
           let pm = cli.pm()
@@ -132,12 +133,12 @@ module.exports = function (cli, POZ) {
       },
 
       // ***************************************************
-      // poz package --validate={packageName} [-v]
+      // poz package --test={packageName} [-v]
       // ***************************************************
       {
-        name: 'validate',
+        name: 'check',
         opts: {
-          alias: 'v',
+          alias: 'c',
           desc: 'validate all local POZ packages'
         },
         handler(input, flags) {
@@ -148,5 +149,4 @@ module.exports = function (cli, POZ) {
       },
     ]
   }
-
 }

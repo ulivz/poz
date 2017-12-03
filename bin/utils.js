@@ -1,4 +1,10 @@
-const chalk = require('chalk')
+'use strict';
+
+let _
+
+function initLogger(logger) {
+  _ = logger
+}
 
 /**
  * Flattern local packages, used to log
@@ -25,19 +31,19 @@ function getPkgMapLogData(packages) {
  * Log local packages
  * @param pkgMap
  */
-function localPackagesLogger(log, pkgMap) {
+function localPackagesLogger(pkgMap) {
   let tabledata = getPkgMapLogData(pkgMap)
   if (!tabledata.length) {
     return
   }
+  // console.log()
+  console.log('  ' + _.bold('local packages'.toUpperCase()))
   console.log()
-  console.log('  ' + chalk.bold('local packages'.toUpperCase()))
-  console.log()
-  log(tabledata)
+  _.table(tabledata)
   console.log()
 }
 
-
 module.exports = {
+  initLogger,
   localPackagesLogger
 }

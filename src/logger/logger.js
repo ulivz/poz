@@ -6,32 +6,30 @@ import {isPlainObject, isArray} from '../utils/datatypes'
 const GLOBAL_INDENT = '  '
 const echo = _.echo = console.log
 
-const __ = {
-  'success': v => _.bgGreen(_.black(v)),
-  'warn': v => _.bgYellow(_.black(v)),
-  'error': v => _.bgRed(_.black(v)),
-  'info': v => _.bgWhiteBright(_.black(v)),
-  'debug': v => _.bgBlackBright(_.black(v)),
-}
-
 const extraColors = {
   'boldYellow': v => _.bold(_.yellow(v)),
   'boldGreen': v => _.bold(_.green(v)),
   'boldRed': v => _.bold(_.red(v)),
   'boldMagenta': v => _.bold(_.magenta(v)),
+  'successStyle': v => _.bgGreen(_.black(v)),
+  'warnStyle': v => _.bgYellow(_.black(v)),
+  'errorStyle': v => _.bgRed(_.black(v)),
+  'infoStyle': v => _.bgWhiteBright(_.black(v)),
+  'debugStyle': v => _.bgBlackBright(_.black(v)),
 }
 
 assign(_, extraColors)
 
-_.__ = __
-
-_.POZ = {
-  word: v => _.bold(_.cyan(v)),
+_.promptsLogger = {
+  successStyle: v => _.reset(_.warnStyle(' SUCCESS ')) + ' ' + _.bold(v),
+  warnStyle: v => _.reset(_.successStyle(' WARN ')) + ' ' + _.bold(v),
+  errorStyle: v => _.reset(_.errorStyle(' ERROR ')) + ' ' + _.bold(v),
+  infoStyle: v => _.reset(_.infoStyle(' ERROR ')) + ' ' + _.bold(v)
 }
 
 const getLogFunction = (type) => {
   return (msg) => {
-    const msgType = type ? __[type](' ' + type.toUpperCase() + ' ') + ' ' : ''
+    const msgType = type ? extraColors[`${type}Style`](' ' + type.toUpperCase() + ' ') + ' ' : ''
     const fullMsg = msgType + msg
     echo(fullMsg)
   }
