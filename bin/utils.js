@@ -43,7 +43,37 @@ function localPackagesLogger(pkgMap) {
   console.log()
 }
 
+/**
+ * errorList logger
+ * @param errorList
+ */
+function errorListLogger(packageName, errorList) {
+  _.error(`Validate package ${_.packageNameStyle(packageName)} failed, see the error message below:`)
+  for (let error of errorList) {
+    _.wrap()
+    _.echo(_.boldRed('*') + ' ' + error.message)
+  }
+  _.wrap()
+  _.info(`You can use ${_.packageNameStyle('poz package -delete=' + packageName)} to remove this package`)
+}
+
+/**
+ * Log local packages validate result
+ */
+function localPackagesValidateResultLogger(packageValidationResultList) {
+  for (let packageValidation of packageValidationResultList) {
+    let { packageName, errorList } = packageValidation
+    if (errorList.length) {
+      errorListLogger(packageName, errorList)
+    } else {
+      _.success(`package ${_.packageNameStyle(packageName)} is a valid POZ package.`)
+    }
+  }
+}
+
 module.exports = {
   initLogger,
-  localPackagesLogger
+  errorListLogger,
+  localPackagesLogger,
+  localPackagesValidateResultLogger
 }

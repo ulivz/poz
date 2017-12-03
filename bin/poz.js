@@ -1,4 +1,7 @@
-const { localPackagesLogger } = require('./utils')
+const {
+  errorListLogger,
+  localPackagesLogger
+} = require('./utils')
 
 module.exports = function (cli, POZ) {
   const { logger } = POZ.utils
@@ -34,7 +37,11 @@ module.exports = function (cli, POZ) {
               }
             })
             .catch(error => {
-              console.log(error)
+              if (error.length && error[0] instanceof POZ.POZError) {
+                errorListLogger(requestName, error)
+              } else {
+                console.log(error)
+              }
             })
         }
       }

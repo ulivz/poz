@@ -10,12 +10,14 @@ import debug from '../core/POZDebugger'
 import POZPackageValidator from '../core/POZPackageValidator'
 import POZPackage from './POZPackage'
 import POZPackageCache from './POZPackageCache'
+import {POZError} from '../error/POZError'
 import POZDownloader from './POZDownloader'
 
 export default class POZPackageManager {
 
   constructor() {
     debug.trace('POZPackageManager', 'constructor')
+
     if (!(this instanceof POZPackageManager)) {
       return new POZPackageManager()
     }
@@ -29,10 +31,6 @@ export default class POZPackageManager {
 
     this.cache = new POZPackageCache(this.wd)
     this.cache.setItem('__VERSION__', pkg.version)
-  }
-
-  cleanAllCache() {
-    this.cache.cleanAll()
   }
 
   constructorPOZPackage(data) {
@@ -95,10 +93,9 @@ export default class POZPackageManager {
       process.exit()
     }, timeout)
 
-    const spinner = ora(`Fetching package ${logger.yellow(requestName)} ....`).start()
+    const spinner = ora(`Fetching package ${logger.packageNameStyle(requestName)} ....`).start()
 
     return POZDownloader(pozPackage)
-
       .then(() => {
         spinner.stop()
         clearTimeout(timer)
@@ -115,14 +112,19 @@ export default class POZPackageManager {
       .catch(error => {
         spinner.stop()
         clearTimeout(timer)
+
+        // 1. 404 Not Found
         if (error.statusCode === 404) {
           spinner.stop()
-          logger.error(`404: Cannot find package ${logger.yellow(requestName)}`)
+          logger.error(`404: Cannot find package ${logger.packageNameStyle(requestName)}`)
+
+          // 2. Network Error
         } else if (error.code === 'ENOTFOUND') {
           spinner.stop()
           logger.error('Please check your network.')
-        } else {
-          throw error
+
+        } else if (error.length && error[0] instanceof POZError) {
+          return Promise.reject(error)
         }
       })
   }

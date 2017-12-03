@@ -11,8 +11,10 @@ import * as cfs from '../utils/fs'
 import {getGitUser} from '../utils/git'
 import {assign} from '../utils/assign'
 import {mergePOZDestConfig} from './POZUtils.js'
+import {POZError} from '../error/POZError'
 import {isPlainObject, isFunction} from '../utils/datatypes'
 import POZContext from './POZContext.js'
+import POZPackage from '../package-manager/POZPackage'
 import POZDirectory from '../file-system/POZDirectory'
 import POZPackageManager from '../package-manager/POZPackageManager'
 import POZPackageValidator from './POZPackageValidator'
@@ -266,6 +268,8 @@ class POZ extends EventEmitter {
 }
 
 POZ.PackageManager = POZPackageManager
+POZ.POZPackage = POZPackage
+POZ.POZError = POZError
 POZ.utils = {
   string,
   logger: _,

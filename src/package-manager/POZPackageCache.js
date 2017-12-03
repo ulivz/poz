@@ -142,7 +142,9 @@ export default class POZPackageCache {
     return null
   }
 
-  cleanAll() {
+  cleanCache() {
+    debug.trace('POZPackageCache', 'cleanAll')
+
     fs.removeSync(this.indexInfoPath)
     fs.removeSync(this.packageDirPath)
   }
@@ -151,13 +153,26 @@ export default class POZPackageCache {
     if (!(poaPackage instanceof POZPackage)) {
       return
     }
-    fs.removeSync(poaPackage.cachePath)
-    let packagesMap = this.getItem('packagesMap')
-    delete packagesMap[poaPackage.packageName]
-    this.setItem('packagesMap', packagesMap)
+    this.removePackageCache(poaPackage)
+    this.removePackageIndexCache(poaPackage)
   }
 
   isPackageDownloded(packageName) {
     return this.packageNames.indexOf(packageName) > -1
+  }
+
+  removePackageCache(poaPackage) {
+    let { cachePath } = poaPackage
+    if (cachePath.indexOf(this.packageDirPath) === -1 || !exists(this.packageDirPath)) {
+      throw new Error('Invalid package cache path: ' + cachePath)
+    }
+    fs.removeSync(cachePath)
+  }
+
+  removePackageIndexCache(poaPackage) {
+    let { packageName } = poaPackage
+    let packagesMap = this.getItem('packagesMap')
+    delete packagesMap[packageName]
+    this.setItem('packagesMap', packagesMap)
   }
 }

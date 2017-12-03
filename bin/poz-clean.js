@@ -3,8 +3,6 @@
 module.exports = function (cli, POZ) {
   const { logger, prompts } = POZ.utils
 
-
-
   return {
     command: {
       name: 'clean',
@@ -14,15 +12,15 @@ module.exports = function (cli, POZ) {
       handler: function (input, flags) {
         return prompts.prompt({
           cleanAllConfirm: {
-            message: PromptLogger.warn('All local data will be lost, sure to continue?'),
+            message: logger.promptsLogger.warnStyle('All local data will be lost, sure to continue?'),
             type: 'confirm'
           }
         }).then((answers) => {
           if (answers.cleanAllConfirm) {
             let pm = cli.pm()
-            pm.cleanAllCache()
+            pm.cache.cleanCache()
           } else {
-            logger.info(`Cancelled`)
+            logger.redSnow(`Cancelled`)
           }
         })
       },

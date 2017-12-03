@@ -1,6 +1,6 @@
 import errorConfig from './config_error.json'
 
-class POZError extends Error {
+export class POZError extends Error {
   constructor(message, code) {
     super()
     Error.captureStackTrace(this)

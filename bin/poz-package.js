@@ -1,33 +1,17 @@
 'use strict';
 
-const { localPackagesLogger } = require('./utils')
+const {
+  errorListLogger,
+  localPackagesLogger,
+  localPackagesValidateResultLogger
+} = require('./utils')
 
 module.exports = function (cli, POZ) {
   const { logger, prompts } = POZ.utils
 
-  function logPkgs() {
+  function logPackages() {
     let pm = POZ.PackageManager()
     localPackagesLogger(pm.cache.getItem('packagesMap'))
-  }
-
-  /**
-   * Log local packages validate result
-   */
-  function localPackagesValidateResultLogger(packageValidationResultList) {
-    for (let packageValidation of packageValidationResultList) {
-      let { packageName, errorList } = packageValidation
-      if (errorList.length) {
-        logger.error(`Validate package ${logger.boldMagenta(packageName)} failed, see the error message below:`)
-        for (let error of errorList) {
-          logger.wrap()
-          logger.echo(logger.boldRed('*') + ' ' + error.message)
-        }
-        logger.wrap()
-        logger.info(`You can use ${logger.boldMagenta('poz package -delete=' + packageName)} to remove this package`)
-      } else {
-        logger.success(`package ${logger.boldMagenta(packageName)} is a valid POZ package.`)
-      }
-    }
   }
 
   return {
@@ -40,7 +24,7 @@ module.exports = function (cli, POZ) {
       },
       handler: function (input, flags) {
         cli.showHelp()
-        logPkgs()
+        logPackages()
       },
     },
 
@@ -55,7 +39,7 @@ module.exports = function (cli, POZ) {
           desc: 'Show local POZ packages'
         },
         handler(input, flags) {
-          logPkgs()
+          logPackages()
         }
       },
 
@@ -72,16 +56,16 @@ module.exports = function (cli, POZ) {
           let packageName = flags.delete
 
           if (!packageName.length) {
-            return logger.error('To delete a package, you must enter a valid package name.')
+            return logger.redSnow('To delete a package, you must enter a valid package name.')
           }
 
           let pm = cli.pm()
           let pkg = pm.cache.getPackageByName(packageName)
           if (!pkg) {
             if (!pm.cache.isPackageDownloded(packageName)) {
-              return logger.error(`Cannot delete a nonexistent package: ${logger.magenta(packageName)}`)
+              return logger.error(`Cannot delete a nonexistent package: ${logger.packageNameStyle(packageName)}`)
             } else {
-              pkg = pm.constructorPOZPackage({
+              pkg = new POZ.POZPackage({
                 packageName,
                 cachePath: pm.cache.getPackagePathByName(packageName)
               })
@@ -90,15 +74,15 @@ module.exports = function (cli, POZ) {
 
           return prompts.prompt({
             deleteConfirm: {
-              message: `Are you sure you want to delete ${logger.magenta(packageName)}?`,
+              message: `Are you sure you want to delete ${logger.packageNameStyle(packageName)}?`,
               type: 'confirm'
             }
           }).then((answers) => {
             if (answers.deleteConfirm) {
               pm.cache.removePackage(pkg)
-              logger.success(`Removed ${logger.magenta(packageName)}`)
+              logger.success(`Removed ${logger.packageNameStyle(packageName)}`)
             } else {
-              logger.info(`Cancelled`)
+              logger.redSnow(`Cancelled`)
             }
           })
         }
@@ -108,13 +92,35 @@ module.exports = function (cli, POZ) {
       // poz package --add={packageName} [-a]
       // ***************************************************
       {
-        name: 'install',
+        name: 'add',
         opts: {
-          alias: 'i',
+          alias: 'a',
           desc: 'Add a POZ package to local cacehd directory'
         },
         handler(input, flags) {
-          console.log('add')
+          let requestName = flags.add
+          if (!requestName.length) {
+            return logger.redSnow('Please enter a valid POZ package name you want to install.')
+          }
+
+          const TIMEOUT = 60000
+          let pm = new POZ.PackageManager()
+          pm.fetchPkg(requestName, TIMEOUT)
+            .then(pkg => {
+              if (pkg) {
+                const app = new POZ(pkg.cachePath)
+                return app.start()
+              } else {
+                return logger.error(`Find package ${logger.boldMagenta(requestName)} failed.`)
+              }
+            })
+            .catch(error => {
+              if (error.length && error[0] instanceof POZ.POZError) {
+                errorListLogger(requestName, error)
+              } else {
+                console.log(error)
+              }
+            })
         }
       },
 

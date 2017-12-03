@@ -7,6 +7,9 @@ const GLOBAL_INDENT = '  '
 const echo = _.echo = console.log
 
 const extraColors = {
+  'packageNameStyle': v => _.bold(_.magenta(v)),
+  'redSnowStyle': v => _.bold(_.red('*')),
+  'whiteSnowStyle': v => _.bold(_.white('*')),
   'boldYellow': v => _.bold(_.yellow(v)),
   'boldGreen': v => _.bold(_.green(v)),
   'boldRed': v => _.bold(_.red(v)),
@@ -40,6 +43,8 @@ _.success = getLogFunction('success')
 _.error = getLogFunction('error')
 _.warn = getLogFunction('warn')
 _.info = getLogFunction('info')
+_.redSnow = v => echo(extraColors.redSnowStyle() + ' ' + v)
+_.snow = v => echo(extraColors.whiteSnowStyle() + ' ' + v)
 _.debug = getLogFunction('debug')
 _.debug.only = msg => {
   if (process.env.NODE_ENV === 'debug') {
