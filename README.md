@@ -77,10 +77,9 @@ my-first-poz
   |____index.{lang}  # contents: 'My name is {{ name }}'
 ```
 
-Then run `my-first-poz`:
+Then run `poz ulivz/my-first-poz`:
 
-
-
+![](./.media/my-first-poz-demo.gif)
 
 ## Install
 
