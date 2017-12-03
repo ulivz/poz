@@ -1,7 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
 import {exists} from '../utils/fs'
-import logger from '../logger/logger'
 import debug from '../core/POZDebugger'
 import POZPackage from './POZPackage'
 import POZPackageValidator from '../core/POZPackageValidator'

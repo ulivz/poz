@@ -52,7 +52,7 @@ function localPackagesLogger(packagesMap) {
  * @param errorList
  */
 function errorListLogger(packageName, errorList) {
-  _.error(`Validate package ${_.packageNameStyle(packageName)} failed, see the error message below:`)
+  _.error(`package ${_.packageNameStyle(packageName)} is not a valid POZ package, see the error message below:`)
   for (let error of errorList) {
     _.wrap()
     _.echo(_.boldRed('*') + ' ' + error.message)

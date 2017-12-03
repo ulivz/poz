@@ -7,7 +7,8 @@ const GLOBAL_INDENT = '  '
 const echo = _.echo = console.log
 
 const extraColors = {
-  'packageNameStyle': v => _.bold(_.magenta(v)),
+  'errorItemStyle': v => _.cyan(v),
+  'packageNameStyle': v => _.magenta(v),
   'redSnowStyle': v => _.bold(_.red('*')),
   'whiteSnowStyle': v => _.bold(_.white('*')),
   'boldYellow': v => _.bold(_.yellow(v)),
