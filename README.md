@@ -59,7 +59,7 @@ module.exports = function (context, poz) {
       return {
         target: context.name,
         rename: {
-          '{age}': context.lang,
+          '{lang}': context.lang,
         }
       }
     }
@@ -80,6 +80,8 @@ my-first-poz
 Then run `poz ulivz/my-first-poz`:
 
 ![](./.media/my-first-poz-demo.gif)
+
+You can get this demo package at [here](https://github.com/ulivz/my-first-poz). Check all the documents, please move [DOCS](#).
 
 ## Install
 
@@ -106,6 +108,13 @@ npm i poz --save-dev
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
+
+# Prior art
+
+`poz` wouldn't exist if it wasn't for excellent prior art, `poz` is inspired by these projects:
+
+- [sao](https://github.com/saojs/sao)
+- [vue-cli](https://github.com/vuejs/vue-cli)
 
 ## Author
 
