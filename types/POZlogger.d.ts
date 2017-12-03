@@ -6,57 +6,45 @@ import chalk from '../node_modules/chalk/types/index.d.ts'
 // ***************************************************
 // POZ Error
 // ***************************************************
-interface POZLogger<T> extends chalk {
-  echo(...args: any[]): void;
+export interface POZLogger<T> extends chalk {
+  echo(...args: T[]): void;
 
   // Common style
   // need to wrapped by 'console.log'
-  errorItemStyle(message: string): string;
-  packageNameStyle(message: string): string;
-  redSnowStyle(message: string): string;
-  whiteSnowStyle(message: string): string;
-  boldYellow(message: string): string;
-  boldGreen(message: string): string;
-  boldRed(message: string): string;
-  boldMagenta(message: string): string;
-  successStyle(message: string): string;
-  warnStyle(message: string): string;
-  errorStyle(message: string): string;
-  infoStyle(message: string): string;
-  debugStyle(message: string): string;
+  errorItemStyle(message: T): string;
+  packageNameStyle(message: T): string;
+  redSnowStyle(message: T): string;
+  whiteSnowStyle(message: T): string;
+  boldYellow(message: T): string;
+  boldGreen(message: T): string;
+  boldRed(message: T): string;
+  boldMagenta(message: T): string;
+  successStyle(message: T): string;
+  warnStyle(message: T): string;
+  errorStyle(message: T): string;
+  infoStyle(message: T): string;
+  debugStyle(message: T): string;
 
   // Style for prompt message,
   // need to wrapped by 'console.log'
   promptsLogger: {
-    successStyle(message: string): string;
-    warnStyle(message: string): string;
-    errorStyle(message: string): string;
-    infoStyle(message: string): string;
+    successStyle(message: T): string;
+    warnStyle(message: T): string;
+    errorStyle(message: T): string;
+    infoStyle(message: T): string;
   }
 
   // Can used without wrapped by 'console.log'
-  wrap(message: string): void;
-  success(message: string): void;
-  error(message: string): void;
-  warn(message: string): void;
-  info(message: string): void;
-  redSnow(message: string): void;
-  snow(message: string): void;
-  debug(message: string): void;
+  wrap(message: T): void;
+  success(message: T): void;
+  error(message: T): void;
+  warn(message: T): void;
+  info(message: T): void;
+  redSnow(message: T): void;
+  snow(message: T): void;
+  debug(message: T): void;
 
   // A text-table extended table logger
-  table(data: { [key: string]: string }): void;
-  table(data: Array<string[]>): void;
-}
-
-/**
- * A method allow to define '%s' in your error message metadata
- * error config refer to 'src/error/config_error.json'
- */
-interface getError {
-  (type: string, key: string, ...args: string[]): POZLogger
-}
-
-interface getPackageValidateError {
-  (key: string, ...args: string[]): POZLogger
+  table(data: { [key: string]: T }): void;
+  table(data: Array<T[]>): void;
 }

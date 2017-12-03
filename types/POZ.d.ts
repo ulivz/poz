@@ -1,12 +1,55 @@
 // Type definitions for POZ 1.0
 // Definitions by: ulivz https://www.github.com/ulivz
 
-/// <reference path="../node_modules/@types/node/index.d.ts" />
-/// <reference path="../node_modules/@types/fs-extra/index.d.ts" />
-/// <reference path="../node_modules/@types/vinyl/index.d.ts" />
-/// <reference path="../node_modules/@types/inquirer/index.d.ts" />
+import inquirer from '../node_modules/@types/inquirer/index.d.ts';
+import {EventEmitter} from "events"
+import {POZUtils} from "./POZUtils";
+import VinylFile from 'vinyl'
+import {POZPackageManager, POZPackageConstructor} from "./POZPackageManager";
 
-import inquirer = require('inquirer');
+// ***************************************************
+// POZ Main
+// ***************************************************
+export interface POZConstructor {
+  new(): POZ;
+  prototype: POZ;
+  PackageManager: POZPackageManager;
+  POZPackage: POZPackageConstructor;
+}
+
+export interface POZ extends EventEmitter {
+  // A POZ environment singleton object
+  // Used to store the current operating environment-related information, as well as some POZ presets
+  env: POZENV;
+  // Value of process.cwd()
+  // Attention: it's not a getter, running process.chdir() will not change its value
+  cwd: string;
+  // The core object that a POZ package can access, will be passed in as first parameter to config function in 'poz.js'
+  // store some of the current environment information,
+  // as well as the ansower gotten by running prompts
+  context: POZContext;
+  // Exposed utils
+  utils: POZUtils;
+  destConfig: POZDestConfig;
+  POZPackageDirectory: string;
+  POZTemplateDirectory: string;
+  POZPackageConfig: POZConfig;
+  POZDestDirectoryTree: POZDirectory;
+  POZTemplateDirectoryTree: POZDirectory;
+  initContext(POZPackageDirectory: string): void;
+  initLifeCycle(): void;
+  set(key: { [key: string]: any }): void;
+  set(key: string, value: string): void;
+  handleRenderSuccess(file: VinylFile): void;
+  handleRenderFailure(error: Error, file: VinylFile): void
+  printTree(): void;
+  prompt(): void;
+  handlePromptsAnswers(answers: { [key: string]: string }): void;
+  setupDestConfig(): void;
+  dest(): void;
+  start(): Promise<void>;
+}
+
 
 // ***************************************************
 // POZ Context
@@ -20,22 +63,6 @@ interface POZContext<T> {
   set(key: string, val: T): POZContext
   assign(key: { key: string, value: T }): POZContext
   get(key: string): T
-}
-
-// ***************************************************
-// POZ EventEmitter
-// ***************************************************
-interface POZEventEmitterConstructor {
-  new(): POZEventEmitter;
-  prototype: POZEventEmitter;
-}
-
-interface POZEventEmitter extends NodeJS.EventEmitter {
-  printTree(): Promise<void>
-  initLifeCycle(): void
-  renderSuccess(file: File): void
-  renderFailure(error: Error, file: File): void
-  transformIgnore(file: File): void
 }
 
 type POZDestConfigIgnoreFunction = () => boolean
@@ -74,31 +101,6 @@ export interface POZDestConfig {
   rename?: { key: string, value: string } | null;
 }
 
-
-// ***************************************************
-// POZ Main
-// ***************************************************
-export interface POZConstructor {
-  new(): POZ;
-  prototype: POZ;
-}
-
-export interface POZ extends POZEventEmitter {
-  env: POZENV;
-  cwd: string;
-  context: POZContext;
-  destConfig: POZDestConfig;
-  POZPackageDirectory: string;
-  POZTemplateDirectory: string;
-  POZPackageConfig: POZConfig;
-  POZDestDirectoryTree: POZDirectory;
-  POZTemplateDirectoryTree: POZDirectory;
-  initContext(POZPackageDirectory: string): void;
-  set(key: { key: string, value: any }): void;
-  set(key: string, value: string): void;
-  parsePresets(presets: POZDestConfig): void;
-  run(): Promise<void>;
-}
 
 // ***************************************************
 // POZ config

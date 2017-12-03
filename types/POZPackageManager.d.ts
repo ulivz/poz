@@ -22,8 +22,6 @@ interface POZPackageManager {
   cacheDir: string;
   // cache config
   cachePackages: POZCacheConfig;
-
-
   rootDir: string;
   pmConfigPath: string;
   pmPkgResourcesDir: string;
@@ -35,7 +33,6 @@ interface POZPackageManager {
   savePkg(pkgName: string): Promise<void>;
   removePkg(pkgName: string): Promise<void>;
   update(pkgName: string): Promise<void>;
-  checkUpdate(): Promise<POZPackageUpdateInfo[] | null>;
 }
 
 interface POZCacheConfig {
@@ -43,22 +40,17 @@ interface POZCacheConfig {
   pkgMap: { [key: string]: POZPackage }
 }
 
-interface POZPackage {
-  requestName: string;
-  downloadURL: string;
-  // POZ package full path
-  path: string;
-  // package.json
-  pkg?: {
-    author: string;
-    name: string;
-    version: string;
-    description: string;
-  }
+// ***************************************************
+// POZ Package
+// ***************************************************
+export interface POZPackageConstructor {
+  new(package: POZPackage): POZPackage;
+  prototype: POZPackage;
 }
 
-interface POZPackageUpdateInfo {
-  downloadURL: string;
-  currentVersion: string;
-  newVersion: string;
+export interface POZPackage {
+  packageName: string;
+  cachePath: string;
+  requestName?: string;
+  origin?: string;
 }

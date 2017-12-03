@@ -127,7 +127,6 @@ class POZ extends EventEmitter {
     }, 10)
   }
 
-
   initLifeCycle() {
     debug.trace('POZ', 'initLifeCycle')
 
