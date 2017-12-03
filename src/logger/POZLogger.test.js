@@ -1,4 +1,4 @@
-import logger from './logger'
+import logger from './POZLogger'
 
 describe('log', () => {
 
@@ -26,11 +26,6 @@ describe('log', () => {
   test('debug', () => {
     const msg = 'file index.js is cool'
     logger.debug(msg)
-  })
-
-  test('print', () => {
-    const msg = 'file index.js is cool'
-    logger.print(msg)
   })
 
   test('table', () => {

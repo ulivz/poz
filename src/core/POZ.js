@@ -6,7 +6,7 @@ import * as string from '../utils/string'
 import * as datatypes from '../utils/datatypes'
 import * as shell from '../utils/child_process'
 import * as prompts from '../utils/prompts'
-import _ from '../logger/logger'
+import _ from '../logger/POZLogger'
 import * as cfs from '../utils/fs'
 import {getGitUser} from '../utils/git'
 import {assign} from '../utils/assign'
@@ -122,7 +122,7 @@ class POZ extends EventEmitter {
     setTimeout(() => {
       this.POZDestDirectoryTree.traverse()
         .then(() => {
-          _.print(`${_.yellow(archy(this.POZDestDirectoryTree))}`)
+          _.echo(`${_.yellow(archy(this.POZDestDirectoryTree))}`)
         })
     }, 10)
   }

@@ -47,13 +47,6 @@ _.info = getLogFunction('info')
 _.redSnow = v => echo(extraColors.redSnowStyle() + ' ' + v)
 _.snow = v => echo(extraColors.whiteSnowStyle() + ' ' + v)
 _.debug = getLogFunction('debug')
-_.debug.only = msg => {
-  if (process.env.NODE_ENV === 'debug') {
-    debug(msg)
-  }
-}
-
-_.print = getLogFunction()
 
 _.table = raw => {
   let data = []
@@ -79,7 +72,7 @@ _.table = raw => {
     }
   })
   var t = textable(data, { align: ['l', 'l'] })
-  console.log(t)
+  _.echo(t)
 }
 
 export default _
