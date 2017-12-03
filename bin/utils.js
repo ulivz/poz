@@ -2,45 +2,49 @@
 
 let _
 
+/**
+ * Initialize customized logger
+ * @param logger
+ */
 function initLogger(logger) {
   _ = logger
 }
 
 /**
- * Flattern local packages, used to log
+ * Flattern cached packagesMap, used to log
  * @param packages {Array[POZPackage]}
  * @returns {Array}
  */
-function getPkgMapLogData(packages) {
-  let data = []
-  Object.keys(packages).forEach((packageName, idx) => {
-    const pkg = packages[packageName]
-    if (pkg.hide) {
+function getPackagesMapLogData(packagesMap) {
+  let packagesMapLogTableData = []
+  Object.keys(packagesMap).forEach(packageName => {
+    const pozPackage = packagesMap[packageName]
+    // TODO remove it since we didn't have 'hide' package
+    if (pozPackage.hide) {
       return;
     }
-    let row = []
-    row.push(packageName)
-    row.push(pkg.origin)
-    row.push(pkg.cachePath)
-    data.push(row)
+    let packagesMapLogTableDataRow = []
+    packagesMapLogTableDataRow.push(packageName)
+    packagesMapLogTableDataRow.push(pozPackage.origin)
+    packagesMapLogTableDataRow.push(pozPackage.cachePath)
+    packagesMapLogTableData.push(packagesMapLogTableDataRow)
   })
-  return data
+  return packagesMapLogTableData
 }
 
 /**
  * Log local packages
  * @param pkgMap
  */
-function localPackagesLogger(pkgMap) {
-  let tabledata = getPkgMapLogData(pkgMap)
-  if (!tabledata.length) {
+function localPackagesLogger(packagesMap) {
+  let packagesMapLogTableData = getPackagesMapLogData(packagesMap)
+  if (!packagesMapLogTableData.length) {
     return
   }
-  // console.log()
-  console.log('  ' + _.bold('local packages'.toUpperCase()))
-  console.log()
-  _.table(tabledata)
-  console.log()
+  _.echo('  ' + _.bold('local packages'.toUpperCase()))
+  _.wrap()
+  _.table(packagesMapLogTableData)
+  _.wrap()
 }
 
 /**

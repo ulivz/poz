@@ -33,10 +33,6 @@ export default class POZPackageManager {
     this.cache.setItem('__VERSION__', pkg.version)
   }
 
-  constructorPOZPackage(data) {
-    return new POZPackage(data)
-  }
-
   parseRequest(requestName) {
     debug.trace('POZPackageManager', 'parseRequest')
 
