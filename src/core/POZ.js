@@ -1,23 +1,24 @@
 import {EventEmitter} from 'events'
-import {getGitUser} from '../utils/git'
-import {isPlainObject, isFunction} from '../utils/datatypes'
-import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
+import archy from 'archy'
+import fs from 'fs-extra'
+import handlebars2 from 'handlebars2'
 import * as string from '../utils/string'
-import logger from '../logger/logger'
 import * as datatypes from '../utils/datatypes'
 import * as shell from '../utils/child_process'
 import * as prompts from '../utils/prompts'
-import handlebars2 from 'handlebars2'
-import fs from 'fs-extra'
+import _ from '../logger/logger'
 import * as cfs from '../utils/fs'
+import {getGitUser} from '../utils/git'
 import {assign} from '../utils/assign'
 import {mergePOZDestConfig} from './POZUtils.js'
+import {isPlainObject, isFunction} from '../utils/datatypes'
 import POZContext from './POZContext.js'
 import POZDirectory from '../file-system/POZDirectory'
 import POZPackageManager from '../package-manager/POZPackageManager'
 import POZPackageValidator from './POZPackageValidator'
 import env from './POZENV.js'
 import debug from './POZDebugger'
+import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/prompts'
 
 class POZ extends EventEmitter {
 
@@ -186,7 +187,7 @@ class POZ extends EventEmitter {
     let renameConfig = this.destConfig.rename
 
     if (!isPlainObject(renameConfig)) {
-      logger.info('Expect "rename" property to be a plain object')
+      _.info('Expect "rename" property to be a plain object')
       renameConfig = {}
     }
 
@@ -205,7 +206,7 @@ class POZ extends EventEmitter {
       let newName = getNewName(vinylFile.path)
       if (vinylFile.path !== newName) {
         vinylFile.path = newName
-        logger.info(`Rename ${logger.gray(oldRelative)} ==> ${logger.gray(vinylFile.relative)}`)
+        _.info(`Rename ${_.gray(oldRelative)} ==> ${_.gray(vinylFile.relative)}`)
       }
 
       // 2. render
@@ -224,11 +225,11 @@ class POZ extends EventEmitter {
       this.POZTemplateDirectoryTree.setDestIgnore(this.destConfig.ignore)
       const destStream = this.POZTemplateDirectoryTree.dest(this.destConfig.target, transformer)
       destStream.on('error', error => {
-        logger.error(error)
+        _.error(error)
         reject()
       })
       destStream.on('unExpectedTransformer', () => {
-        logger.error(`Unexpected transformer`)
+        _.error(`Unexpected transformer`)
       })
       destStream.on('end', () => {
         this.POZDestDirectoryTree = new POZDirectory(this.destConfig.target)
@@ -267,7 +268,7 @@ class POZ extends EventEmitter {
 POZ.PackageManager = POZPackageManager
 POZ.utils = {
   string,
-  logger,
+  logger: _,
   datatypes,
   shell,
   prompts,

@@ -5,21 +5,21 @@ import env from './POZENV'
 import debug from './POZDebugger'
 import {getPackageValidateError} from '../error/POZError'
 
-export default function POZPackageValidator(pkgPath, userArgs) {
+export default function POZPackageValidator(packagePath, userArgs) {
   debug.trace('POZPackageValidator')
 
   let errorList = []
 
   // 1. Check if the package path exists
-  if (!exists(pkgPath)) {
-    errorList.push(getPackageValidateError('NOT_FOUND', pkgPath))
+  if (!exists(packagePath)) {
+    errorList.push(getPackageValidateError('NOT_FOUND', packagePath))
     // 2. If the package path exists, Check if the package path is a directory
-  } else if (!isDirectory(pkgPath)) {
-    errorList.push(getPackageValidateError('MUST_BE_DIRECTORY', pkgPath))
+  } else if (!isDirectory(packagePath)) {
+    errorList.push(getPackageValidateError('MUST_BE_DIRECTORY', packagePath))
   }
 
   // 3. Check if 'poz.js' exists
-  const POZPackageIndexFile = resolve(pkgPath, env.POZ_PACKAGE_INDEX_FILE_NAME)
+  const POZPackageIndexFile = resolve(packagePath, env.POZ_PACKAGE_INDEX_FILE_NAME)
   let POZPackageConfig
 
   if (!exists(POZPackageIndexFile)) {
@@ -33,7 +33,7 @@ export default function POZPackageValidator(pkgPath, userArgs) {
       if (!isPlainObject(POZPackageConfig)) {
         if (!isFunction(POZPackageConfig)) {
           errorList.push(getPackageValidateError('UNEXPECTED_INDEX_FILE'))
-        } else {
+        } else if (userArgs && userArgs.length) {
           POZPackageConfig = POZPackageConfig(...userArgs)
         }
       } else {
@@ -51,9 +51,9 @@ export default function POZPackageValidator(pkgPath, userArgs) {
   }
 
   // 5. Check if the 'template' directory exists
-  const POZTemplateDirectory = resolve(pkgPath, env.POZ_TEMPLATE_DIRECTORY_NAME)
+  const POZTemplateDirectory = resolve(packagePath, env.POZ_TEMPLATE_DIRECTORY_NAME)
   if (!exists(POZTemplateDirectory)) {
-    errorList.push(getError('MISSING_TEMPLATE_DIRECTORY', POZTemplateDirectory))
+    errorList.push(getPackageValidateError('MISSING_TEMPLATE_DIRECTORY', POZTemplateDirectory))
   }
 
   return {

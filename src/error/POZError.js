@@ -2,7 +2,9 @@ import errorConfig from './config_error.json'
 
 class POZError extends Error {
   constructor(message, code) {
-    super(message)
+    super()
+    Error.captureStackTrace(this)
+    this.message = message
     this.code = code
     this.name = 'POZError'
   }

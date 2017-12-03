@@ -15,7 +15,7 @@ function getPkgMapLogData(packages) {
     let row = []
     row.push(packageName)
     row.push(pkg.origin)
-    row.push(pkg.path)
+    row.push(pkg.cachePath)
     data.push(row)
   })
   return data
@@ -36,6 +36,7 @@ function localPackagesLogger(log, pkgMap) {
   log(tabledata)
   console.log()
 }
+
 
 module.exports = {
   localPackagesLogger

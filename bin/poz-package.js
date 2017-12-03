@@ -7,7 +7,27 @@ module.exports = function (cli, POZ) {
 
   function logPkgs() {
     let pm = POZ.PackageManager()
-    localPackagesLogger(logger.table, pm.PMConfig.pkgMap)
+    localPackagesLogger(logger.table, pm.cache.getItem('packagesMap'))
+  }
+
+  /**
+   * Log local packages validate result
+   */
+  function localPackagesValidateResultLogger(packageValidationResultList) {
+    for (let packageValidation of packageValidationResultList) {
+      let { packageName, errorList } = packageValidation
+      if (errorList.length) {
+        logger.error(`Validate package ${logger.boldMagenta(packageName)} failed, see the error message below:`)
+        for (let error of errorList) {
+          logger.wrap()
+          logger.echo(logger.boldRed('*') + ' ' + error.message)
+        }
+        logger.wrap()
+        logger.info(`You can use ${logger.boldMagenta('poz package -delete=' + packageName)} to remove this package`)
+      } else {
+        logger.success(`package ${logger.boldMagenta(packageName)} is a valid POZ package.`)
+      }
+    }
   }
 
   return {
@@ -51,13 +71,20 @@ module.exports = function (cli, POZ) {
           let packageName = flags.delete
 
           if (!packageName.length) {
-            logger.error('Please enter the name of the POZ package you want to delete')
+            return logger.error('Please enter the name of the POZ package you want to delete')
           }
 
           let pm = cli.pm()
-          let pkg = pm.getPkgByName(packageName)
+          let pkg = pm.cache.getPackageByName(packageName)
           if (!pkg) {
-            return logger.error(`Cannot delete a nonexistent package: ${logger.magenta(packageName)}`)
+            if (!pm.cache.isPackageDownloded(packageName)) {
+              return logger.error(`Cannot delete a nonexistent package: ${logger.magenta(packageName)}`)
+            } else {
+              pkg = pm.constructorPOZPackage({
+                packageName,
+                cachePath: pm.cache.getPackagePathByName(packageName)
+              })
+            }
           }
 
           return prompts.prompt({
@@ -67,8 +94,10 @@ module.exports = function (cli, POZ) {
             }
           }).then((answers) => {
             if (answers.deleteConfirm) {
-              let pm = cli.pm()
-
+              pm.cache.removePackage(pkg)
+              logger.success(`Removed ${logger.magenta(packageName)}`)
+            } else {
+              logger.info(`Cancelled`)
             }
           })
         }
@@ -99,6 +128,22 @@ module.exports = function (cli, POZ) {
         },
         handler(input, flags) {
           console.log('update')
+        }
+      },
+
+      // ***************************************************
+      // poz package --validate={packageName} [-v]
+      // ***************************************************
+      {
+        name: 'validate',
+        opts: {
+          alias: 'v',
+          desc: 'validate all local POZ packages'
+        },
+        handler(input, flags) {
+          let pm = cli.pm()
+          let packageValidationResultList = pm.cache.validateAllPackages()
+          localPackagesValidateResultLogger(packageValidationResultList)
         }
       },
     ]

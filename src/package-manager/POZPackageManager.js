@@ -31,6 +31,14 @@ export default class POZPackageManager {
     this.cache.setItem('__VERSION__', pkg.version)
   }
 
+  cleanAllCache() {
+    this.cache.cleanAll()
+  }
+
+  constructorPOZPackage(data) {
+    return new POZPackage(data)
+  }
+
   parseRequest(requestName) {
     debug.trace('POZPackageManager', 'parseRequest')
 
@@ -96,7 +104,6 @@ export default class POZPackageManager {
         clearTimeout(timer)
 
         let { errorList } = POZPackageValidator(pozPackage.cachePath)
-        return errorList
         if (errorList.length) {
           return Promise.reject(errorList)
         }
@@ -111,7 +118,7 @@ export default class POZPackageManager {
         if (error.statusCode === 404) {
           spinner.stop()
           logger.error(`404: Cannot find package ${logger.yellow(requestName)}`)
-        } else if (error.code = 'ENOTFOUND') {
+        } else if (error.code === 'ENOTFOUND') {
           spinner.stop()
           logger.error('Please check your network.')
         } else {

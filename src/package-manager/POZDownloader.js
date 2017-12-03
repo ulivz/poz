@@ -14,7 +14,7 @@ export default function POZDownloader(pozPackage, timeout) {
     }).then(() => {
       // downloadNpmPkg will download to sub directory by default
       // Need to handle
-      actualCachePath = path.join(cachePath, packageName)
+      let actualCachePath = path.join(cachePath, packageName)
       return fs.copy(actualCachePath, cachePath).then(() => fs.remove(actualCachePath))
     })
 

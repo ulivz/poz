@@ -21,7 +21,7 @@ export default class POZPackageCache {
     this.packageNames = null
 
     if (!exists(this.indexInfoPath)) {
-      fs.writeJsonSync(this.indexInfoPath, {}, { spaces: 2 })
+      fs.writeJsonSync(this.indexInfoPath, { packagesMap: {} }, { spaces: 2 })
     }
 
     if (!exists(this.packageDirPath)) {
@@ -29,10 +29,7 @@ export default class POZPackageCache {
     }
 
     this._readIndexInfo()
-    this.setItem('packagesMap', {})
-
     this._readPackageDir()
-    this._check()
   }
 
   _readIndexInfo() {
@@ -45,36 +42,49 @@ export default class POZPackageCache {
     this.packageNames = fs.readdirSync(this.packageDirPath)
   }
 
-  _check() {
-    debug.trace('POZPackageCache', '_check')
-    let packagesMap = this.getItem('packagesMap')
-    let findNewPackage = false
+  validateAllPackages() {
+    debug.trace('POZPackageCache', 'validatePackages')
 
+    let packageValidationResultList = []
+    let packagesMap = this.getItem('packagesMap')
+    let packagesMapChanged = false
+
+    // 1. Check if package isn't indexed
     this.packageNames
       .filter(packageName => IGNORE_FILES.indexOf(packageName) === -1)
-      .filter(packageName => !this.getPackageByName(packageName))
       .forEach(packageName => {
         let packagePath = this.getPackagePathByName(packageName)
         let { errorList } = POZPackageValidator(packagePath)
 
-        if (!errorList.length) {
+        if (!errorList.length && this.getPackageByName(packageName) === null) {
           packagesMap[packageName] = new POZPackage({
             requestName: packageName,
             packageName,
             cachePath: packagePath,
             origin: 'local',
           })
-          findNewPackage = true
-
-        } else {
-          logger.warn(`${logger.POZ.word(packageName)} is not a valid POZ package, See the error message below:`)
-          console.log(errorList.join('\n'))
+          packagesMapChanged = true
         }
+
+        packageValidationResultList.push({
+          packageName,
+          errorList
+        })
       })
 
-    if (findNewPackage) {
+    // 2. Check if package is indexed but not have package
+    for (let poaPakcage of Object.keys(packagesMap)) {
+      if (this.packageNames.indexOf(poaPakcage.packageName) === -1) {
+        delete packagesMap[poaPakcage.packageName]
+        packagesMapChanged = true
+      }
+    }
+
+    if (packagesMapChanged) {
       this.setItem('packagesMap', packagesMap)
     }
+
+    return packageValidationResultList
   }
 
   getItem(name) {
@@ -110,25 +120,44 @@ export default class POZPackageCache {
     debug.trace('POZPackageCache', 'getPackageByName')
 
     let packagesMap = this.getItem('packagesMap')
-    let _package
+    let pozPackage
 
     // match packageName or requestName
     if (packagesMap[packageName]) {
-      _package = packagesMap[packageName]
+      pozPackage = packagesMap[packageName]
 
     } else {
-      for (let _packageName of Object.keys(packagesMap)) {
-        if (packagesMap[_packageName].requestName === packageName) {
-          _package = packagesMap[_packageName]
+      for (let pozPackageName of Object.keys(packagesMap)) {
+        if (packagesMap[pozPackageName].requestName === packageName) {
+          pozPackage = packagesMap[pozPackageName]
           break
         }
       }
     }
 
-    if (_package) {
-      return new POZPackage(_package)
+    if (pozPackage) {
+      return new POZPackage(pozPackage)
     }
 
     return null
+  }
+
+  cleanAll() {
+    fs.removeSync(this.indexInfoPath)
+    fs.removeSync(this.packageDirPath)
+  }
+
+  removePackage(poaPackage) {
+    if (!(poaPackage instanceof POZPackage)) {
+      return
+    }
+    fs.removeSync(poaPackage.cachePath)
+    let packagesMap = this.getItem('packagesMap')
+    delete packagesMap[poaPackage.packageName]
+    this.setItem('packagesMap', packagesMap)
+  }
+
+  isPackageDownloded(packageName) {
+    return this.packageNames.indexOf(packageName) > -1
   }
 }

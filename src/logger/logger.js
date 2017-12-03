@@ -1,4 +1,5 @@
 import _ from 'chalk'
+import {assign} from '../utils/assign'
 import textable from 'text-table'
 import {isPlainObject, isArray} from '../utils/datatypes'
 
@@ -7,11 +8,22 @@ const echo = _.echo = console.log
 
 const __ = {
   'success': v => _.bgGreen(_.black(v)),
-  'warning': v => _.bgYellow(_.black(v)),
+  'warn': v => _.bgYellow(_.black(v)),
   'error': v => _.bgRed(_.black(v)),
   'info': v => _.bgWhiteBright(_.black(v)),
   'debug': v => _.bgBlackBright(_.black(v)),
 }
+
+const extraColors = {
+  'boldYellow': v => _.bold(_.yellow(v)),
+  'boldGreen': v => _.bold(_.green(v)),
+  'boldRed': v => _.bold(_.red(v)),
+  'boldMagenta': v => _.bold(_.magenta(v)),
+}
+
+assign(_, extraColors)
+
+_.__ = __
 
 _.POZ = {
   word: v => _.bold(_.cyan(v)),
@@ -21,14 +33,14 @@ const getLogFunction = (type) => {
   return (msg) => {
     const msgType = type ? __[type](' ' + type.toUpperCase() + ' ') + ' ' : ''
     const fullMsg = msgType + msg
-    echo()
     echo(fullMsg)
   }
 }
 
+_.wrap = () => console.log()
 _.success = getLogFunction('success')
 _.error = getLogFunction('error')
-_.warn = getLogFunction('warning')
+_.warn = getLogFunction('warn')
 _.info = getLogFunction('info')
 _.debug = getLogFunction('debug')
 _.debug.only = msg => {
