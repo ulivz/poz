@@ -1,9 +1,9 @@
-import {download} from '../download'
-import {isDirEmpty} from '../fs'
+import POZDownloader from '../POZDownloader'
+import { parseRequest } from '../POZPackageManager'
 import path from 'path'
 import fs from 'fs-extra'
 
-describe.skip('download', () => {
+describe.skip('POZDownloader', () => {
 
   const target = path.resolve(__dirname, 'fixtures/download')
 

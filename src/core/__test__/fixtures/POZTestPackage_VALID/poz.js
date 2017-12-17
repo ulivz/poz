@@ -58,7 +58,7 @@ module.exports = function (ctx, poz) {
 
     onExit() {
       run('onExit')
-      poz.set('calledLifeCycle', lifeCycle)
+      ctx.set('calledLifeCycle', lifeCycle)
     }
   }
 

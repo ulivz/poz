@@ -1,6 +1,6 @@
 import fs from 'fs-extra'
 import ora from 'ora'
-import {exists} from '../utils/fs'
+import { exists } from '../utils/fs'
 import logger from '../logger/POZLogger'
 import path from 'path'
 import pkg from '../../package.json'
@@ -10,8 +10,42 @@ import debug from '../core/POZDebugger'
 import POZPackageValidator from '../core/POZPackageValidator'
 import POZPackage from './POZPackage'
 import POZPackageCache from './POZPackageCache'
-import {POZError} from '../error/POZError'
+import { POZError } from '../error/POZError'
 import POZDownloader from './POZDownloader'
+
+/**
+ * Parse user package request
+ * @param {String} requestName
+ * @returns {POZPackage}
+ */
+
+export function parseRequest(requestName) {
+  let packageName, origin
+  const NPM_REG = /^[a-zA-Z0-9@\-]+$/
+  const GIT_REG = /^[a-zA-Z0-9\/\-]+$/
+
+  // local package
+  if (exists(requestName)) {
+    packageName = requestName.split('/').pop()
+    origin = 'local'
+
+  } else if (NPM_REG.test(requestName)) {
+    packageName = requestName
+    origin = 'npm'
+
+  } else if (GIT_REG.test(requestName)) {
+    packageName = requestName.split('/').pop()
+    origin = 'git'
+
+  } else {
+    return null
+  }
+
+  return {
+    packageName,
+    origin
+  }
+}
 
 export default class POZPackageManager {
 
@@ -33,38 +67,6 @@ export default class POZPackageManager {
     this.cache.setItem('__VERSION__', pkg.version)
   }
 
-  parseRequest(requestName) {
-    debug.trace('POZPackageManager', 'parseRequest')
-
-    let packageName, origin, cachePath
-    const NPM_REG = /^[a-zA-Z0-9@\-]+$/
-    const GIT_REG = /^[a-zA-Z0-9\/\-]+$/
-
-    // local package
-    if (exists(requestName)) {
-      packageName = requestName.split('/').pop()
-      origin = 'local'
-
-    } else if (NPM_REG.test(requestName)) {
-      packageName = requestName
-      origin = 'npm'
-
-    } else if (GIT_REG.test(requestName)) {
-      packageName = requestName.split('/').pop()
-      origin = 'git'
-
-    } else {
-      return null
-    }
-
-    cachePath = path.join(this.cache.packageDirPath, packageName)
-    return new POZPackage({
-      requestName,
-      packageName,
-      cachePath,
-      origin,
-    })
-  }
 
   fetchPkg(requestName, timeout) {
     debug.trace('POZPackageManager', 'fetchPkg')
@@ -78,7 +80,9 @@ export default class POZPackageManager {
     }
 
     // 2. Find from Github / NPM
-    pozPackage = this.parseRequest(requestName)
+    const { packageName, origin } = parseRequest(requestName)
+    const cachePath = path.join(this.cache.packageDirPath, packageName)
+    pozPackage = new POZPackage({ requestName, packageName, origin, cachePath })
 
     if (!pozPackage) {
       return Promise.reject(null)
