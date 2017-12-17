@@ -18,7 +18,6 @@ function parseInfo(main, method, extra) {
 
 class POZDebugger {
 
-  // @override
   start(info) {
     if (!env.isDebug) {
       return
@@ -30,7 +29,6 @@ class POZDebugger {
     )
   }
 
-  // @override
   end(info) {
     if (!env.isDebug) {
       return
@@ -42,7 +40,6 @@ class POZDebugger {
     )
   }
 
-  // @override
   trace(...info) {
     if (!env.isDebug) {
       return

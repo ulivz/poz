@@ -25,7 +25,6 @@ import {promptsRunner, mockPromptsRunner, promptsTransformer} from '../utils/pro
 class POZ extends EventEmitter {
 
   constructor(POZPackageDirectory) {
-
     debug.trace('POZ', 'constructor')
     super()
 
@@ -49,11 +48,9 @@ class POZ extends EventEmitter {
     this.utils = this.constructor.utils
     this.initContext(POZPackageDirectory)
     this.initLifeCycle()
-
   }
 
   initContext(POZPackageDirectory) {
-
     debug.trace('POZ', 'initContext')
 
     const {
@@ -86,16 +83,6 @@ class POZ extends EventEmitter {
       $POZPackageDirectory: POZPackageDirectory,
       $POZTemplateDirectory: POZTemplateDirectory
     })
-  }
-
-  set(key, value) {
-    debug.trace('POZ', 'set')
-
-    if (isPlainObject(key)) {
-      this.context.assign(key)
-    } else {
-      this.context.set(key, value)
-    }
   }
 
   handleRenderSuccess(file) {
@@ -178,7 +165,7 @@ class POZ extends EventEmitter {
       render: this.env.POZ_RENDER_ENGINE,
     }
     mergePOZDestConfig(this.destConfig, this.POZPackageConfig.dest)
-    this.set('dest', this.destConfig)
+    this.context.set('dest', this.destConfig)
   }
 
   dest() {
