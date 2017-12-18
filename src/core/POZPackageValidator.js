@@ -1,9 +1,9 @@
-import {exists, isDirectory} from '../utils/fs'
-import {isFunction, isPlainObject} from '../utils/datatypes'
-import {resolve} from '../utils/path'
+import { exists, isDirectory } from '../utils/fs'
+import { isFunction, isPlainObject } from '../utils/datatypes'
+import { resolve } from '../utils/path'
 import env from './POZENV'
 import debug from './POZDebugger'
-import {getPackageValidateError} from '../error/POZError'
+import { getPackageValidateError } from '../error/POZError'
 
 export default function POZPackageValidator(packagePath, userArgs) {
   debug.trace('POZPackageValidator')
@@ -52,7 +52,8 @@ export default function POZPackageValidator(packagePath, userArgs) {
 
   // 5. Check if the 'template' directory exists
   const POZTemplateDirectory = resolve(packagePath, env.POZ_TEMPLATE_DIRECTORY_NAME)
-  if (!exists(POZTemplateDirectory)) {
+  // when 'POZPackageConfig.dest' = false, skip this check.
+  if (POZPackageConfig.dest && !exists(POZTemplateDirectory)) {
     errorList.push(getPackageValidateError('MISSING_TEMPLATE_DIRECTORY', POZTemplateDirectory))
   }
 

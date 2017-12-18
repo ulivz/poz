@@ -109,7 +109,7 @@ type POZDestConfigFunction = () => POZDestConfig;
 export interface POZConfig {
   // Base Config
   prompts(): inquirer.Question;
-  dest?: string | POZDestConfig | POZDestConfigFunction;
+  dest?: string | POZDestConfig | POZDestConfigFunction | boolean;
   // Life Cycle
   onStart?(): void;
   onPromptStart?(): void;
