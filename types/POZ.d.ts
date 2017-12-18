@@ -60,9 +60,16 @@ interface POZContextConstructor {
 }
 
 interface POZContext<T> {
-  set(key: string, val: T): POZContext
-  assign(key: { key: string, value: T }): POZContext
-  get(key: string): T
+  set(key: string, val: T): POZContext;
+  assign(key: { key: string, value: T }): POZContext;
+  get(key: string): T;
+  $cwd: string;
+  $env: POZENV;
+  $dirname: string;
+  $gituser: string;
+  $gitemail: string;
+  $POZPackageDirectory: string;
+  $POZTemplateDirectory: string;
 }
 
 type POZDestConfigIgnoreFunction = () => boolean

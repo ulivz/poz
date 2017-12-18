@@ -19,13 +19,11 @@ import POZDirectory from '../file-system/POZDirectory'
 import POZPackageManager from '../package-manager/POZPackageManager'
 import POZPackageValidator from './POZPackageValidator'
 import env from './POZENV.js'
-import debug from './POZDebugger'
 import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
 
 class POZ extends EventEmitter {
 
   constructor(POZPackageDirectory) {
-    debug.trace('POZ', 'constructor')
     super()
 
     if (!(this instanceof POZ)) {
@@ -33,7 +31,7 @@ class POZ extends EventEmitter {
     }
 
     const properties = {
-      env: env,
+      env,
       cwd: null,
       utils: null,
       context: new POZContext(),
@@ -51,7 +49,6 @@ class POZ extends EventEmitter {
   }
 
   initContext(POZPackageDirectory) {
-    debug.trace('POZ', 'initContext')
 
     const {
       errorList,
@@ -60,7 +57,7 @@ class POZ extends EventEmitter {
     } = POZPackageValidator(POZPackageDirectory, [this.context, this])
 
     if (errorList.length) {
-      if (this.env.isTest) {
+      if (env.isTest) {
         throw new Error(errorList.shift().code)
       }
       throw new Error(errorList.shift().message)
@@ -73,10 +70,9 @@ class POZ extends EventEmitter {
     const user = getGitUser()
     const cwd = process.cwd()
 
-    this.cwd = cwd
     this.context.assign({
       $cwd: cwd,
-      $env: this.env.POZ_ENV,
+      $env: env.POZ_ENV,
       $dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
       $gituser: user.name,
       $gitemail: user.email,
@@ -86,15 +82,11 @@ class POZ extends EventEmitter {
   }
 
   handleRenderSuccess(file) {
-    debug.trace('POZ', 'handleRenderSuccess')
-
     let filePath = relative(this.POZTemplateDirectory, file.path)
     _.success(`render ${_.cyan(filePath)}`)
   }
 
   handleRenderFailure(error, file) {
-    debug.trace('POZ', 'handleRenderFailure')
-
     let filePath = relative(this.POZTemplateDirectory, file.path)
     _.error(`render ${_.cyan(filePath)}`)
     _.echo(error)
@@ -103,8 +95,6 @@ class POZ extends EventEmitter {
   }
 
   printTree() {
-    debug.trace('POZ', 'printTree')
-
     _.echo()
     setTimeout(() => {
       this.POZDestDirectoryTree.traverse()
@@ -115,9 +105,7 @@ class POZ extends EventEmitter {
   }
 
   initLifeCycle() {
-    debug.trace('POZ', 'initLifeCycle')
-
-    for (let hook of this.env.POZ_LIFE_CYCLE) {
+    for (let hook of env.POZ_LIFE_CYCLE) {
       let hookHandler = this.POZPackageConfig[hook]
       if (hookHandler) {
         if (isFunction(hookHandler)) {
@@ -126,7 +114,7 @@ class POZ extends EventEmitter {
             hookHandler(...args)
           })
         } else {
-          if (this.env.isDev) {
+          if (env.isDev) {
             _.warn(`${_.cyan(hook)} must be a function, skipped!`)
           }
         }
@@ -135,12 +123,10 @@ class POZ extends EventEmitter {
   }
 
   prompt() {
-    debug.trace('POZ', 'initLifeCycle')
-
     this.emit('onPromptStart')
     const promptsMetadata = this.POZPackageConfig.prompts()
     const prompts = promptsTransformer(promptsMetadata)
-    const envPromptsRunner = this.env.isTest
+    const envPromptsRunner = env.isTest
       ? mockPromptsRunner
       : promptsRunner
 
@@ -148,29 +134,23 @@ class POZ extends EventEmitter {
   }
 
   handlePromptsAnswers(answers) {
-    debug.trace('POZ', 'handlePromptsAnswers')
-
     this.context.assign(answers)
     this.emit('onPromptEnd')
   }
 
   setupDestConfig() {
-    debug.trace('POZ', 'setupDestConfig')
-
     // default
     this.destConfig = {
-      target: this.cwd,
+      target: this.context.$cwd,
       ignore: null,
       rename: null,
-      render: this.env.POZ_RENDER_ENGINE,
+      render: env.POZ_RENDER_ENGINE,
     }
     mergePOZDestConfig(this.destConfig, this.POZPackageConfig.dest)
     this.context.set('dest', this.destConfig)
   }
 
   dest() {
-    debug.trace('POZ', 'dest')
-
     this.emit('onDestStart')
     let renameConfig = this.destConfig.rename
 
@@ -230,8 +210,6 @@ class POZ extends EventEmitter {
   }
 
   start() {
-    debug.trace('POZ', 'start')
-
     this.emit('onStart')
     this.POZTemplateDirectoryTree = new POZDirectory(this.POZTemplateDirectory)
     return this.prompt()

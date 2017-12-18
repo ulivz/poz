@@ -53,7 +53,7 @@ export default function POZPackageValidator(packagePath, userArgs) {
   // 5. Check if the 'template' directory exists
   const POZTemplateDirectory = resolve(packagePath, env.POZ_TEMPLATE_DIRECTORY_NAME)
   // when 'POZPackageConfig.dest' = false, skip this check.
-  if (POZPackageConfig.dest && !exists(POZTemplateDirectory)) {
+  if (POZPackageConfig && POZPackageConfig.dest !== false && !exists(POZTemplateDirectory)) {
     errorList.push(getPackageValidateError('MISSING_TEMPLATE_DIRECTORY', POZTemplateDirectory))
   }
 

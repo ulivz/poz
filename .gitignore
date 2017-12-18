@@ -8,4 +8,5 @@ packages
 .DS_Store
 examples/fixtures
 */**/dist
+prototype
 
