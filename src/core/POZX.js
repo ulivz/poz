@@ -1,3 +1,5 @@
+import { isPromise } from '../utils/datatypes'
+
 class POZX {
   constructor() {
     this.quene = []
@@ -24,15 +26,17 @@ class POZX {
     }
   }
 
-  go() {
+  async go() {
     while (this.quene.length) {
       let task = this.quene.shift()
       let scope
 
       let start = Date.now()
-      task.handler(scope = this.scope[task.name] = {})
+      const result = task.handler(scope = this.scope[task.name] = {})
+      if (isPromise(result)) {
+        await result
+      }
       let end = Date.now()
-
       while (task.subscribers.length) {
         let subscriber = task.subscribers.shift()
         subscriber(task.name, scope)
@@ -55,9 +59,13 @@ app.task('task1', (scope) => {
   }
 })
 
-app.task('task2', (scope) => {
-  scope.task2 = true
-})
+app
+  .task('task2', (scope) => {
+    scope.task2 = true
+  })
+  .catch(error => {
+
+  })
 
 app.subscribe('*', (name, duration, scope) => {
   console.log('DEBUG: ' + name, duration + 'ms')
