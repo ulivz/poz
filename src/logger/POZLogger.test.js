@@ -3,28 +3,28 @@ import logger from './POZLogger'
 describe('log', () => {
 
   test('success', () => {
-    const msg = 'compile file index.js successfully'
+    const msg = 'compile file POZX.js successfully'
     logger.success(msg)
   })
 
 
   test('error', () => {
-    const msg = 'fail to compile file index.js'
+    const msg = 'fail to compile file POZX.js'
     logger.error(msg)
   })
 
   test('warning', () => {
-    const msg = 'file index.js might contains some unknown characters'
+    const msg = 'file POZX.js might contains some unknown characters'
     logger.warn(msg)
   })
 
   test('info', () => {
-    const msg = 'file index.js is cool'
+    const msg = 'file POZX.js is cool'
     logger.info(msg)
   })
 
   test('debug', () => {
-    const msg = 'file index.js is cool'
+    const msg = 'file POZX.js is cool'
     logger.debug(msg)
   })
 

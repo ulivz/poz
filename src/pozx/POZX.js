@@ -1,6 +1,6 @@
 import { isPromise } from '../utils/datatypes'
 
-class POZX {
+export default class POZX {
   constructor() {
     this.quene = []
     this.queneMap = {}
@@ -33,10 +33,13 @@ class POZX {
 
       let start = Date.now()
       const result = task.handler(scope = this.scope[task.name] = {})
+
       if (isPromise(result)) {
         await result
       }
+
       let end = Date.now()
+
       while (task.subscribers.length) {
         let subscriber = task.subscribers.shift()
         subscriber(task.name, scope)
@@ -49,26 +52,3 @@ class POZX {
   }
 }
 
-let app = new POZX()
-
-app.task('task1', (scope) => {
-  scope.task1 = true
-  let r = []
-  for (let i = 0, l = 10000000; i < l; i++) {
-    r.push(i)
-  }
-})
-
-app
-  .task('task2', (scope) => {
-    scope.task2 = true
-  })
-  .catch(error => {
-
-  })
-
-app.subscribe('*', (name, duration, scope) => {
-  console.log('DEBUG: ' + name, duration + 'ms')
-})
-
-app.go()

@@ -1,5 +1,5 @@
 import POZ from '../POZ'
-import {resolve} from '../../utils/path'
+import { resolve } from '../../utils/path'
 
 describe('POZ', () => {
 
