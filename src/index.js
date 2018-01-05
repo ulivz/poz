@@ -1,2 +1,2 @@
-import POZ from './core/POZ'
+import POZ from './core/poz'
 export default POZ

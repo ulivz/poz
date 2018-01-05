@@ -1,7 +1,8 @@
 import _ from 'chalk'
-import {assign} from '../utils/assign'
+import { assign } from '../utils/assign'
 import textable from 'text-table'
-import {isPlainObject, isArray} from '../utils/datatypes'
+import { isPlainObject, isArray } from '../utils/datatypes'
+import env from '../core/env'
 
 const GLOBAL_INDENT = '  '
 const echo = _.echo = console.log
@@ -47,6 +48,13 @@ _.info = getLogFunction('info')
 _.redSnow = v => echo(extraColors.redSnowStyle() + ' ' + v)
 _.snow = v => echo(extraColors.whiteSnowStyle() + ' ' + v)
 _.debug = getLogFunction('debug')
+
+_.testonly = (() => {
+  if (env.isTest) {
+    return getLogFunction()
+  }
+  return () => {}
+})()
 
 _.table = raw => {
   let data = []

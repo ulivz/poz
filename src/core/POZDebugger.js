@@ -1,5 +1,5 @@
 import _ from '../logger/POZLogger'
-import env from './POZENV'
+import env from './env'
 
 function getTime() {
   return _.gray(`[${new Date().toLocaleTimeString()}]`)

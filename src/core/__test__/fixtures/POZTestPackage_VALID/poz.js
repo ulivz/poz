@@ -1,4 +1,4 @@
-module.exports = function (ctx, poz) {
+module.exports = function (ctx) {
 
   let lifeCycle = []
 
@@ -12,7 +12,7 @@ module.exports = function (ctx, poz) {
       return {
         // Since during the test. test program would change the `process.cwd()`.
         // So using `poz.cwd` which is static through the whole life cycle.
-        target: poz.POZPackageDirectory + '/dist',
+        target: ctx.$sourceDir + '/dist',
         rename: {
           '{js}': '.js'
         }

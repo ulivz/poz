@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import {exists} from '../utils/fs'
 import debug from '../core/POZDebugger'
 import POZPackage from './POZPackage'
-import POZPackageValidator from '../core/POZPackageValidator'
+import POZPackageValidator from '../core/package-validator'
 
 const IGNORE_FILES = [
   '.DS_Store'
