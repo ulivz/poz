@@ -1,8 +1,8 @@
 import fs from 'fs'
-import POZFileTreeNode from './POZFileTreeNode'
-import {dest} from './POZFileTreeNode'
+import Node from './node'
+import { dest } from './node'
 
-export default class POZFile extends POZFileTreeNode {
+export default class FileNode extends Node {
 
   constructor(path, cwd) {
     super(path, cwd)
@@ -18,8 +18,12 @@ export default class POZFile extends POZFileTreeNode {
     return this._contents
   }
 
-  dest(target, transformer) {
-    return dest(this.path, target, transformer)
+  setpath(newpath) {
+    this.path = newpath
+  }
+
+  toJSON() {
+    return this._toJSON()
   }
 
 }

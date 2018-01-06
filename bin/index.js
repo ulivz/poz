@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 const cac = require('cac')
-const POZ = require('../dist/poz.common.js')
+const poz = require('../dist/poz.common.js')
 
 const pozCommand = require('./poz')
 const pozPackageCommand = require('./poz-package')
 const pozCleanCommand = require('./poz-clean')
 
 const utils = require('./utils')
-utils.initLogger(POZ.utils.logger)
+utils.initLogger(poz.utils.logger)
 
 const cli = cac()
 
@@ -16,7 +16,7 @@ const cli = cac()
  * @param commandFn
  */
 cli.use = function (commandFn) {
-  let { command, options, alias } = commandFn(cli, POZ)
+  let { command, options, alias } = commandFn(cli, poz)
 
   const oldCommandHandler = command.handler
   const newCommandHandler = (input, flags) => {
@@ -46,8 +46,8 @@ cli.use = function (commandFn) {
 }
 
 
-cli.logger = POZ.utils.logger
-cli.pm = () => new POZ.PackageManager()
+cli.logger = poz.utils.logger
+cli.pm = () => new poz.PackageManager()
 
 cli
   .use(pozCommand)

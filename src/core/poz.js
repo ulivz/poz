@@ -8,9 +8,9 @@ import { assign } from '../utils/assign'
 import { mergePOZDestConfig } from './POZUtils.js'
 import { POZError } from '../error/POZError'
 import { isPlainObject, isFunction } from '../utils/datatypes'
-import POZContext from './POZContext.js'
+import POZContext from './poz-context.js'
 import POZPackage from '../package-manager/POZPackage'
-import POZDirectory from '../file-system/POZDirectory'
+import POZDirectory from '../file-system/directory-node'
 import POZPackageManager from '../package-manager/POZPackageManager'
 import packageValidator from './package-validator'
 import env from './env.js'
@@ -37,7 +37,7 @@ function POZ(POZPackageDirectory) {
     errors,
     POZTemplateDirectory,
     userConfig
-  } = packageValidator(POZPackageDirectory, [context])
+  } = packageValidator(POZPackageDirectory, [context, utils])
 
   /**
    * Throw if error
@@ -238,6 +238,8 @@ function POZ(POZPackageDirectory) {
         event.emit('onExit', error)
       })
   }
+
+  utils.printTree = printTree
 
   return {
     presets,

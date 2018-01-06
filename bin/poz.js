@@ -3,8 +3,8 @@ const {
   localPackagesLogger
 } = require('./utils')
 
-module.exports = function (cli, POZ) {
-  const { logger } = POZ.utils
+module.exports = function (cli, poz) {
+  const { logger } = poz.utils
 
   return {
     command: {
@@ -21,7 +21,7 @@ module.exports = function (cli, POZ) {
           return cli.parse(argv)
         }
 
-        let pm = new POZ.PackageManager()
+        let pm = new poz.PackageManager()
         if (!input.length) {
           cli.showHelp()
           localPackagesLogger(pm.cache.getItem('packagesMap'))
@@ -32,12 +32,12 @@ module.exports = function (cli, POZ) {
           pm.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {
-                const app = new POZ(pkg.cachePath)
-                return app.start()
+                const app = poz(pkg.cachePath)
+                return app.launch()
               }
             })
             .catch(error => {
-              if (error.length && error[0] instanceof POZ.POZError) {
+              if (error.length && error[0] instanceof poz.pozError) {
                 errorListLogger(requestName, error)
               } else {
                 console.log(error)
@@ -51,7 +51,7 @@ module.exports = function (cli, POZ) {
         name: 'local',
         opts: {
           alias: '-l',
-          desc: 'Use a local POZ package',
+          desc: 'Use a local poz package',
           type: 'boolean'
         }
       }

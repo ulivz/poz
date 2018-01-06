@@ -6,11 +6,11 @@ const {
   localPackagesValidateResultLogger
 } = require('./utils')
 
-module.exports = function (cli, POZ) {
-  const { logger, prompts } = POZ.utils
+module.exports = function (cli, poz) {
+  const { logger, prompts } = poz.utils
 
   function logPackages() {
-    let pm = POZ.PackageManager()
+    let pm = poz.PackageManager()
     localPackagesLogger(pm.cache.getItem('packagesMap'))
   }
 
@@ -108,8 +108,8 @@ module.exports = function (cli, POZ) {
           pm.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {
-                const app = new POZ(pkg.cachePath)
-                return app.start()
+                const app = poz(pkg.cachePath)
+                return app.launch()
               } else {
                 return logger.error(`Find package ${logger.boldMagenta(requestName)} failed.`)
               }
