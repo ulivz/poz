@@ -1,4 +1,4 @@
-import { parseRequest } from '../POZPackageManager'
+import { parseRequest } from '../package-manager'
 
 describe('parseRequest', () => {
 

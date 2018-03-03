@@ -6,12 +6,12 @@ import path from 'path'
 import pkg from '../../package.json'
 import home from 'user-home'
 import env from '../core/env'
-import debug from '../core/POZDebugger'
+import debug from '../core/debugger'
 import POZPackageValidator from '../core/package-validator'
-import POZPackage from './POZPackage'
-import POZPackageCache from './POZPackageCache'
-import { POZError } from '../error/POZError'
-import POZDownloader from './POZDownloader'
+import POZPackage from './package'
+import POZPackageCache from './package-cache'
+import { POZError } from '../error/poz-error'
+import POZDownloader from './downloader'
 
 /**
  * Parse user package request

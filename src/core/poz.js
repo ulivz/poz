@@ -2,26 +2,27 @@ import { EventEmitter } from 'events'
 import archy from 'archy'
 import log from '../logger/POZLogger'
 import * as cfs from '../utils/fs'
-import * as presets from './poz-presets'
+import * as presets from './presets'
 import { getGitUser } from '../utils/git'
 import { assign } from '../utils/assign'
-import { mergePOZDestConfig } from './POZUtils.js'
-import { POZError } from '../error/POZError'
+import { mergePOZDestConfig } from './utils.js'
 import { isPlainObject, isFunction } from '../utils/datatypes'
-import POZContext from './poz-context.js'
-import POZPackage from '../package-manager/POZPackage'
+import { POZError } from '../error/poz-error'
+import Context from './context.js'
+import POZPackage from '../package-manager/package'
 import POZDirectory from '../file-system/directory-node'
-import POZPackageManager from '../package-manager/POZPackageManager'
+import POZPackageManager from '../package-manager/package-manager'
 import packageValidator from './package-validator'
 import env from './env.js'
 import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
-import { EXPORTED_UTILS } from './poz-presets'
+import { EXPORTED_UTILS } from './presets'
+import { alphax } from 'alphax'
 
 function POZ(POZPackageDirectory) {
 
   const cwd = process.cwd()
   const utils = EXPORTED_UTILS
-  const context = new POZContext()
+  const context = Context()
   const event = new EventEmitter()
 
   let POZDestDirectoryTree

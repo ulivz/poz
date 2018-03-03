@@ -1,9 +1,9 @@
 import { exists, isDirectory } from '../utils/fs'
 import { isFunction, isPlainObject } from '../utils/datatypes'
 import { resolve } from '../utils/path'
-import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './poz-presets'
-import debug from './POZDebugger'
-import { getPackageValidateError } from '../error/POZError'
+import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
+import debug from './debugger'
+import { getPackageValidateError } from '../error/poz-error'
 
 export default function POZPackageValidator(packagePath, userArgs) {
   debug.trace('POZPackageValidator')

@@ -1,5 +1,5 @@
-import POZDownloader from '../POZDownloader'
-import { parseRequest } from '../POZPackageManager'
+import POZDownloader from '../downloader'
+import { parseRequest } from '../package-manager'
 import path from 'path'
 import fs from 'fs-extra'
 

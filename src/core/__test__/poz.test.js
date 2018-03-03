@@ -1,5 +1,5 @@
 import poz from '../poz'
-import { LIFE_CYCLE } from '../poz-presets'
+import { LIFE_CYCLE } from '../presets'
 import { resolve } from '../../utils/path'
 
 describe('POZ', () => {

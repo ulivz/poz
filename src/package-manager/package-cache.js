@@ -1,8 +1,8 @@
 import path from 'path'
 import fs from 'fs-extra'
 import {exists} from '../utils/fs'
-import debug from '../core/POZDebugger'
-import POZPackage from './POZPackage'
+import debug from '../core/debugger'
+import POZPackage from './package'
 import POZPackageValidator from '../core/package-validator'
 
 const IGNORE_FILES = [

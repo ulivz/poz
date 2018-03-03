@@ -1,4 +1,4 @@
-import debug from '../core/POZDebugger'
+import debug from '../core/debugger'
 
 /**
  * POZ Package
