@@ -10,7 +10,6 @@ import { isPlainObject, isFunction } from '../utils/datatypes'
 import { POZError } from '../error/poz-error'
 import Context from './context.js'
 import POZPackage from '../package-manager/package'
-import POZDirectory from '../file-system/directory-node'
 import POZPackageManager from '../package-manager/package-manager'
 import packageValidator from './package-validator'
 import env from './env.js'
@@ -25,11 +24,10 @@ function POZ(POZPackageDirectory) {
   const context = Context()
   const event = new EventEmitter()
 
-  let POZDestDirectoryTree
-  let POZTemplateDirectoryTree
   let destConfig
   let user
   let status
+  let app
 
   /**
    * Validate the POZ package, and get the content of config file
@@ -116,23 +114,6 @@ function POZ(POZPackageDirectory) {
     return envPromptsRunner(prompts)
   }
 
-  /**
-   * Get new name
-   */
-  function curryGetNewName() {
-    let renameConfig = destConfig.rename
-    if (!isPlainObject(renameConfig)) {
-      log.info('Expect "rename" property to be a plain object')
-      renameConfig = {}
-    }
-    return function (name) {
-      Object.keys(renameConfig).forEach(pattern => {
-        name = name.replace(pattern, renameConfig[pattern])
-      })
-      return name
-    }
-  }
-
   function handleRenderSuccess(file) {
     let filePath = relative(POZTemplateDirectory, file.path)
     log.success(`render ${log.cyan(filePath)}`)
@@ -142,74 +123,28 @@ function POZ(POZPackageDirectory) {
     let filePath = relative(POZTemplateDirectory, file.path)
     log.error(`render ${log.cyan(filePath)}`)
     log.echo(error)
-    const targetNode = POZTemplateDirectoryTree.searchByAbsolutePath(file.path)
     targetNode.label = targetNode.label + ' ' + log.gray('[Render Error!]')
-  }
-
-  function printTree() {
-    log.echo()
-    setTimeout(() => {
-      POZDestDirectoryTree.traverse()
-        .then(() => {
-          log.echo(`${log.yellow(archy(POZDestDirectoryTree))}`)
-        })
-    }, 10)
-  }
-
-  /**
-   * Get new transform function used in render
-   */
-  function curryTransformer(render) {
-    const getNewName = curryGetNewName()
-    return function transform(vinylFile) {
-      // 1. renmae
-      let oldRelative = vinylFile.relative
-      let newName = getNewName(vinylFile.path)
-      if (vinylFile.path !== newName) {
-        vinylFile.path = newName
-        log.info(`Rename ${log.gray(oldRelative)} ==> ${log.gray(vinylFile.relative)}`)
-      }
-
-      // 2. render
-      if (!vinylFile.isDirectory()) {
-        try {
-          let renderResult = render(vinylFile.contents.toString(), context, vinylFile)
-          vinylFile.contents = new Buffer(renderResult)
-          handleRenderSuccess(vinylFile)
-        } catch (error) {
-          handleRenderFailure(error, vinylFile)
-        }
-      }
-    }
   }
 
   /**
    * Dest files
    */
   function dest() {
-    event.emit('onDestStart')
-    return new Promise((resolve, reject) => {
-      POZTemplateDirectoryTree.setDestIgnore(destConfig.ignore)
-      const destStream = POZTemplateDirectoryTree.dest(
-        destConfig.target,
-        curryTransformer(destConfig.render)
-      )
-      destStream
-        .on('error', error => {
-          log.error(error)
-          reject()
-        })
-        .on('unExpectedTransformer', () => {
-          log.error(`Unexpected transformer`)
-        })
-        .on('end', () => {
-          POZDestDirectoryTree = new POZDirectory(destConfig.target)
-          event.emit('onDestEnd')
-          resolve()
-        })
-    }).catch(error => {
-      console.log(error)
+    app = alphax()
+    const { rename, filter, transformFn } = destConfig
+    app.src(POZTemplateDirectory + '/**', {
+      rename,
+      filter,
+      transformFn
     })
+
+    return app.dest(destConfig.target)
+      .then(() => {
+        event.emit('onDestEnd')
+      })
+      .catch(error => {
+        console.log(error)
+      })
   }
 
   /**
@@ -220,16 +155,13 @@ function POZ(POZPackageDirectory) {
     initializeContext()
     bindHookListener()
     event.emit('onStart')
-    POZTemplateDirectoryTree = new POZDirectory(POZTemplateDirectory)
+
     return prompt()
       .then(answers => {
         context.assign(answers)
         event.emit('onPromptEnd')
         setupDestConfig()
-        return Promise.all([
-          POZTemplateDirectoryTree.traverse(),
-          dest()
-        ])
+        return dest()
       })
       .then(() => {
         event.emit('onExit')
