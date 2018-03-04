@@ -15,7 +15,7 @@ import packageValidator from './package-validator'
 import env from './env.js'
 import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
 import { EXPORTED_UTILS } from './presets'
-import { alphax } from 'alphax'
+import alphax from 'alphax'
 
 function POZ(POZPackageDirectory) {
 
@@ -86,6 +86,17 @@ function POZ(POZPackageDirectory) {
     }
   }
 
+  function curryTransformer(render) {
+    return function transform(content) {
+      let renderResult
+      try {
+        renderResult = render(content, context)
+      } catch (error) {
+      }
+      return renderResult
+    }
+  }
+
   /**
    * Setup dest config
    */
@@ -131,14 +142,14 @@ function POZ(POZPackageDirectory) {
    */
   function dest() {
     app = alphax()
-    const { rename, filter, transformFn } = destConfig
+    const { rename, filter, render } = destConfig
     app.src(POZTemplateDirectory + '/**', {
       rename,
       filter,
-      transformFn
+      transformFn: curryTransformer(render)
     })
 
-    return app.dest(destConfig.target)
+    return app.dest(destConfig.target || '.')
       .then(() => {
         event.emit('onDestEnd')
       })
@@ -171,8 +182,6 @@ function POZ(POZPackageDirectory) {
         event.emit('onExit', error)
       })
   }
-
-  utils.printTree = printTree
 
   return {
     presets,

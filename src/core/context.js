@@ -1,30 +1,19 @@
-export default function context() {
-  const ob = {}
-
-  function set(key, val) {
-    ob[key] = val
-    return ob
+class Context {
+  set(key, val) {
+    this[key] = val
+    return this
   }
 
-  function assign(kVs) {
-    Object.keys(kVs).forEach(_key => {
-      set(_key, kVs[_key])
+  assign(keyValues) {
+    Object.keys(keyValues).forEach(key => {
+      this.set(key, keyValues[key])
     })
-    return ob
+    return this
   }
 
-  function get(key) {
-    return ob[key]
-  }
-
-  function getContext() {
-    return Object.assign({}, ob)
-  }
-
-  return {
-    get,
-    set,
-    assign,
-    getContext
+  get(key) {
+    return this[key]
   }
 }
+
+export default () => new Context()
