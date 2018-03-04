@@ -2,11 +2,9 @@ import { exists, isDirectory } from '../utils/fs'
 import { isFunction, isPlainObject } from '../utils/datatypes'
 import { resolve } from '../utils/path'
 import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
-import debug from './debugger'
 import { getPackageValidateError } from '../error/error'
 
 export default function POZPackageValidator(packagePath, userArgs) {
-  debug.trace('POZPackageValidator')
 
   let errors = []
 
@@ -51,16 +49,16 @@ export default function POZPackageValidator(packagePath, userArgs) {
   }
 
   // 5. Check if the 'template' directory exists
-  const POZTemplateDirectory = resolve(packagePath, TEMPLATE_DIRECTORY_NAME)
+  const packageTemplateDir = resolve(packagePath, TEMPLATE_DIRECTORY_NAME)
   // when 'userConfig.dest' = false, skip this check.
-  if (userConfig && userConfig.dest !== false && !exists(POZTemplateDirectory)) {
-    errors.push(getPackageValidateError('MISSING_TEMPLATE_DIRECTORY', POZTemplateDirectory))
+  if (userConfig && userConfig.dest !== false && !exists(packageTemplateDir)) {
+    errors.push(getPackageValidateError('MISSING_TEMPLATE_DIRECTORY', packageTemplateDir))
   }
 
   return {
     errors,
     POZPackageIndexFile,
-    POZTemplateDirectory,
+    packageTemplateDir,
     userConfig
   }
 }

@@ -1,7 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
 import {exists} from '../utils/fs'
-import debug from '../core/debugger'
 import POZPackage from './package'
 import POZPackageValidator from '../core/package-validator'
 
@@ -11,7 +10,6 @@ const IGNORE_FILES = [
 
 export default class POZPackageCache {
   constructor(baseDir) {
-    debug.trace('POZPackageCache', 'constructor')
 
     this.indexInfoPath = path.join(baseDir, 'poz.json')
     this.indexInfo = null
@@ -32,17 +30,14 @@ export default class POZPackageCache {
   }
 
   _readIndexInfo() {
-    debug.trace('POZPackageCache', '_readIndexInfo')
     this.indexInfo = require(this.indexInfoPath)
   }
 
   _readPackageDir() {
-    debug.trace('POZPackageCache', '_readPackageDir')
     this.packageNames = fs.readdirSync(this.packageDirPath)
   }
 
   validateAllPackages() {
-    debug.trace('POZPackageCache', 'validatePackages')
 
     let packageValidationResultList = []
     let packagesMap = this.getItem('packagesMap')
@@ -87,7 +82,6 @@ export default class POZPackageCache {
   }
 
   getItem(name) {
-    debug.trace('POZPackageCache', 'getItem')
     if (!this.indexInfo) {
       this._readIndexInfo()
     }
@@ -95,7 +89,6 @@ export default class POZPackageCache {
   }
 
   setItem(name, value) {
-    debug.trace('POZPackageCache', 'setItem')
     if (!this.indexInfo) {
       this._readIndexInfo()
     }
@@ -111,13 +104,10 @@ export default class POZPackageCache {
   }
 
   getPackagePathByName(packageName) {
-    debug.trace('POZPackageCache', 'getPackagePathByName')
     return path.join(this.packageDirPath, packageName)
   }
 
   getPackageByName(packageName) {
-    debug.trace('POZPackageCache', 'getPackageByName')
-
     let packagesMap = this.getItem('packagesMap')
     let pozPackage
 
@@ -142,7 +132,6 @@ export default class POZPackageCache {
   }
 
   cleanCache() {
-    debug.trace('POZPackageCache', 'cleanAll')
 
     fs.removeSync(this.indexInfoPath)
     fs.removeSync(this.packageDirPath)

@@ -6,7 +6,6 @@ import path from 'path'
 import pkg from '../../package.json'
 import home from 'user-home'
 import env from '../core/env'
-import debug from '../core/debugger'
 import POZPackageValidator from '../core/package-validator'
 import POZPackage from './package'
 import POZPackageCache from './package-cache'
@@ -50,8 +49,6 @@ export function parseRequest(requestName) {
 export default class POZPackageManager {
 
   constructor() {
-    debug.trace('POZPackageManager', 'constructor')
-
     if (!(this instanceof POZPackageManager)) {
       return new POZPackageManager()
     }
@@ -69,8 +66,6 @@ export default class POZPackageManager {
 
 
   fetchPkg(requestName, timeout) {
-    debug.trace('POZPackageManager', 'fetchPkg')
-
     let pozPackage
     pozPackage = this.cache.getPackageByName(requestName)
 

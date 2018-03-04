@@ -19,7 +19,7 @@ import * as presets from './presets'
 import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
 
 
-function POZ(POZPackageDirectory) {
+function POZ(packageSourceDir) {
 
   const cwd = process.cwd()
   const utils = EXPORTED_UTILS
@@ -38,7 +38,7 @@ function POZ(POZPackageDirectory) {
     errors,
     POZTemplateDirectory,
     userConfig
-  } = packageValidator(POZPackageDirectory, [context, utils])
+  } = packageValidator(packageSourceDir, [context, utils])
 
   /**
    * Throw if error
@@ -63,7 +63,7 @@ function POZ(POZPackageDirectory) {
       $$dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
       $gituser: user.name,
       $gitemail: user.email,
-      $sourceDir: POZPackageDirectory
+      $sourceDir: packageSourceDir
     })
   }
 
