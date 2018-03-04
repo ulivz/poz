@@ -8,7 +8,11 @@ module.exports = {
       include: '**/*.md',
       // Undefined by default
       exclude: ['node_modules/**']
-    })
+    }),
+    buble({
+      objectAssign: 'Object.assign',
+      exclude: ['node_modules/**'],
+    }),
   ],
   exports: 'default',
   filename: pkg.name,
