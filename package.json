@@ -55,6 +55,7 @@
     "@types/inquirer": "0.0.35",
     "@types/node": "^8.0.47",
     "@types/vinyl": "^2.0.1",
+    "bili": "^3.0.2",
     "eslint-config-ulivz": "^1.0.0",
     "gh-pages": "^1.0.0",
     "glob": "^7.1.2",
