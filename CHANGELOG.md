@@ -1,3 +1,26 @@
+<a name="0.0.3"></a>
+## [0.0.3](https://github.com/ULIVZ/poz/compare/v0.0.2...v0.0.3) (2018-03-04)
+
+
+### Bug Fixes
+
+* make filter work ([4b96229](https://github.com/ULIVZ/poz/commit/4b96229))
+* program doesn't work after importing alphax ([0bd0553](https://github.com/ULIVZ/poz/commit/0bd0553))
+* some bugs ([3f99fd9](https://github.com/ULIVZ/poz/commit/3f99fd9))
+* UT ([04fa1a4](https://github.com/ULIVZ/poz/commit/04fa1a4))
+
+
+### Features
+
+* **$core:** Rewrite core and use more functional style ([c9c33b1](https://github.com/ULIVZ/poz/commit/c9c33b1))
+* **$core:** rewrite file system and remove the dependency of vinyl-fs ([f51fadc](https://github.com/ULIVZ/poz/commit/f51fadc))
+* **$core:** support no dest ([50ab200](https://github.com/ULIVZ/poz/commit/50ab200))
+* **$pozx:** support async/await ([b68a861](https://github.com/ULIVZ/poz/commit/b68a861))
+* finish migration with bili3 ([7e6f9f1](https://github.com/ULIVZ/poz/commit/7e6f9f1))
+* use alphax to rewrite code ([71b43f5](https://github.com/ULIVZ/poz/commit/71b43f5))
+
+
+
 <a name="0.0.2"></a>
 ## 0.0.2 (2017-12-03)
 
