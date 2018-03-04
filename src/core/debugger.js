@@ -1,4 +1,4 @@
-import _ from '../logger/POZLogger'
+import _ from '../logger/logger'
 import env from './env'
 
 function getTime() {

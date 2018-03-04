@@ -1,4 +1,4 @@
-import logger from './POZLogger'
+import logger from './logger'
 
 describe('log', () => {
 

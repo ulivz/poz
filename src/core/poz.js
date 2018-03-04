@@ -1,21 +1,23 @@
 import { EventEmitter } from 'events'
-import archy from 'archy'
-import log from '../logger/POZLogger'
+import alphax from 'alphax'
+
+import log from '../logger/logger'
 import * as cfs from '../utils/fs'
-import * as presets from './presets'
+
 import { getGitUser } from '../utils/git'
 import { assign } from '../utils/assign'
-import { mergePOZDestConfig } from './utils.js'
-import { isPlainObject, isFunction } from '../utils/datatypes'
-import { POZError } from '../error/poz-error'
+import { mergePOZDestConfig, consolelog } from './utils.js'
+import { isFunction } from '../utils/datatypes'
+import { POZError } from '../error/error'
 import Context from './context.js'
 import POZPackage from '../package-manager/package'
 import POZPackageManager from '../package-manager/package-manager'
 import packageValidator from './package-validator'
-import env from './env.js'
+import { isDev, isTest } from './env.js'
+import { RENDER_ENGINE, LIFE_CYCLE, EXPORTED_UTILS } from './presets'
+import * as presets from './presets'
 import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
-import { EXPORTED_UTILS } from './presets'
-import alphax from 'alphax'
+
 
 function POZ(POZPackageDirectory) {
 
@@ -43,7 +45,7 @@ function POZ(POZPackageDirectory) {
    */
   function throwIfError() {
     if (errors.length) {
-      if (env.isTest) {
+      if (isDev) {
         throw new Error(errors.shift().code)
       }
       throw new Error(errors.shift().message)
@@ -69,25 +71,25 @@ function POZ(POZPackageDirectory) {
    * Initialize binding the life cycle listener
    */
   function bindHookListener() {
-    for (let hookname of presets.LIFE_CYCLE) {
-      let handler = userConfig[hookname]
+    for (const hookname of LIFE_CYCLE) {
+      const handler = userConfig[hookname]
       if (!handler) {
         continue
       }
       if (isFunction(handler)) {
         event.on(hookname, (...args) => {
-          log.testonly(`Running ${log.cyan(hookname)} ...`)
+          consolelog(isTest, `Running ${log.cyan(hookname)} ...`)
           status = hookname
           handler(...args)
         })
       } else {
-        log.testonly(`Expected ${log.cyan(hookname)} to be a function`)
+        consolelog(isTest, `Expect ${log.cyan(hookname)} to be a function`)
       }
     }
   }
 
   function curryTransformer(render) {
-    return function transform(content) {
+    return function (content) {
       let renderResult
       try {
         renderResult = render(content, context)
@@ -106,7 +108,7 @@ function POZ(POZPackageDirectory) {
       target: cwd,
       ignore: null,
       rename: null,
-      render: presets.RENDER_ENGINE,
+      render: RENDER_ENGINE,
     }
     mergePOZDestConfig(destConfig, userConfig.dest)
     context.set('dest', destConfig)
@@ -119,7 +121,7 @@ function POZ(POZPackageDirectory) {
     event.emit('onPromptStart')
     const promptsMetadata = userConfig.prompts()
     const prompts = promptsTransformer(promptsMetadata)
-    const envPromptsRunner = env.isTest
+    const envPromptsRunner = isTest
       ? mockPromptsRunner
       : promptsRunner
     return envPromptsRunner(prompts)

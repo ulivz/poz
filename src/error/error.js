@@ -1,5 +1,5 @@
 import errorConfig from './config_error.json'
-import logger from '../logger/POZLogger'
+import logger from '../logger/logger'
 
 export class POZError extends Error {
   constructor(message, code) {

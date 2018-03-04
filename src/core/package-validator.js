@@ -3,7 +3,7 @@ import { isFunction, isPlainObject } from '../utils/datatypes'
 import { resolve } from '../utils/path'
 import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
 import debug from './debugger'
-import { getPackageValidateError } from '../error/poz-error'
+import { getPackageValidateError } from '../error/error'
 
 export default function POZPackageValidator(packagePath, userArgs) {
   debug.trace('POZPackageValidator')

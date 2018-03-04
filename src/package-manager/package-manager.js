@@ -1,7 +1,7 @@
 import fs from 'fs-extra'
 import ora from 'ora'
 import { exists } from '../utils/fs'
-import logger from '../logger/POZLogger'
+import logger from '../logger/logger'
 import path from 'path'
 import pkg from '../../package.json'
 import home from 'user-home'
@@ -10,7 +10,7 @@ import debug from '../core/debugger'
 import POZPackageValidator from '../core/package-validator'
 import POZPackage from './package'
 import POZPackageCache from './package-cache'
-import { POZError } from '../error/poz-error'
+import { POZError } from '../error/error'
 import POZDownloader from './downloader'
 
 /**
