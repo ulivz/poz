@@ -5,7 +5,7 @@ export function assert(condition, msg) {
 }
 
 export function consolelog(condition, msg) {
-  if (!condition) console.log(msg)
+  if (condition) console.log(msg)
 }
 
 export function mergePOZDestConfig(dest, override = {}) {

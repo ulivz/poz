@@ -4,6 +4,7 @@ import log from '../logger/logger'
 import * as cfs from '../utils/fs'
 import { getGitUser } from '../utils/git'
 import { assign } from '../utils/assign'
+import { relative } from '../utils/path'
 import { mergePOZDestConfig, consolelog, assert } from './utils.js'
 import { isFunction } from '../utils/datatypes'
 import { isDev, isTest } from './env'
@@ -85,12 +86,25 @@ function POZ(packageSourceDir) {
     }
   }
 
+  function handleRenderSuccess(file) {
+    let filePath = relative(packageTemplateDir, file.path)
+    log.success(`render ${log.cyan(filePath)}`)
+  }
+
+  function handleRenderFailure(error, file) {
+    let filePath = relative(packageTemplateDir, file.path)
+    log.error(`render ${log.cyan(filePath)}`)
+    log.echo(error)
+  }
+
   function curryTransformer(render) {
-    return function (content) {
+    return function (content, file) {
       let renderResult
       try {
-        renderResult = render(content, context)
+        renderResult = render(content, context, file)
+        handleRenderSuccess(file)
       } catch (error) {
+        handleRenderFailure(error, file)
       }
       return renderResult
     }
@@ -108,7 +122,7 @@ function POZ(packageSourceDir) {
       render: RENDER_ENGINE,
     }
     mergePOZDestConfig(destConfig, userConfig.dest)
-    context.set('dest', destConfig)
+    context.set('$dest', destConfig)
   }
 
   /**
@@ -124,17 +138,6 @@ function POZ(packageSourceDir) {
     return envPromptsRunner(prompts)
   }
 
-  function handleRenderSuccess(file) {
-    let filePath = relative(packageTemplateDir, file.path)
-    log.success(`render ${log.cyan(filePath)}`)
-  }
-
-  function handleRenderFailure(error, file) {
-    let filePath = relative(packageTemplateDir, file.path)
-    log.error(`render ${log.cyan(filePath)}`)
-    log.echo(error)
-    targetNode.label = targetNode.label + ' ' + log.gray('[Render Error!]')
-  }
 
   /**
    * Dest files
@@ -147,7 +150,6 @@ function POZ(packageSourceDir) {
       filter,
       transformFn: curryTransformer(render)
     })
-
     return app.dest(destConfig.target || '.')
       .then(() => {
         event.emit('onDestEnd')

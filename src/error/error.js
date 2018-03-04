@@ -1,4 +1,4 @@
-import errorConfig from './config_error.json'
+import errorConfig from './error-config.json'
 import logger from '../logger/logger'
 
 export function getError(type, key, ...args) {

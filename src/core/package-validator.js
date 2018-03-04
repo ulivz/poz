@@ -17,17 +17,17 @@ export default function PackageValidator(packagePath, userArgs) {
   }
 
   // 3. Check if 'poz.js' exists
-  const POZPackageIndexFile = resolve(packagePath, PACKAGE_INDEX_FILE_NAME)
+  const packageIndexFile = resolve(packagePath, PACKAGE_INDEX_FILE_NAME)
   let userConfig
 
-  if (!exists(POZPackageIndexFile)) {
-    errors.push(getPackageValidateError('MISSING_INDEX_FILE', POZPackageIndexFile))
+  if (!exists(packageIndexFile)) {
+    errors.push(getPackageValidateError('MISSING_INDEX_FILE', packageIndexFile))
 
   } else {
 
     // 4. Check if 'poz.js' exports a plain object or function
     try {
-      userConfig = require(POZPackageIndexFile)
+      userConfig = require(packageIndexFile)
       if (!isPlainObject(userConfig)) {
         if (!isFunction(userConfig)) {
           errors.push(getPackageValidateError('UNEXPECTED_INDEX_FILE'))
@@ -42,6 +42,7 @@ export default function PackageValidator(packagePath, userArgs) {
     } catch (error) {
       if (error.name === 'TypeError') {
         errors.push(getPackageValidateError('UNEXPECTED_INDEX_FILE'))
+        console.log(error)
       } else {
         throw error
       }
@@ -57,7 +58,7 @@ export default function PackageValidator(packagePath, userArgs) {
 
   return {
     errors,
-    POZPackageIndexFile,
+    packageIndexFile,
     packageTemplateDir,
     userConfig
   }

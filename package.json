@@ -33,7 +33,7 @@
     ]
   },
   "dependencies": {
-    "alphax": "0.0.7",
+    "alphax": "0.0.8",
     "archy": "^1.0.0",
     "cac": "^4.2.4",
     "chalk": "^2.3.0",
