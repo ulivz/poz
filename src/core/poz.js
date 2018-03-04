@@ -136,6 +136,7 @@ function POZ(packageSourceDir) {
     app = alphax()
     const { rename, filter, render, outDir } = normalizedConfig
     app.src(packageTemplateDir + '/**', {
+      baseDir: packageTemplateDir,
       rename,
       filter,
       transformFn: render
