@@ -4,7 +4,7 @@ import { resolve } from '../utils/path'
 import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
 import { getPackageValidateError } from '../error/error'
 
-export default function POZPackageValidator(packagePath, userArgs) {
+export default function PackageValidator(packagePath, userArgs) {
 
   let errors = []
 

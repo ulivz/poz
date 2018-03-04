@@ -1,16 +1,6 @@
 import errorConfig from './config_error.json'
 import logger from '../logger/logger'
 
-export class POZError extends Error {
-  constructor(message, code) {
-    super()
-    Error.captureStackTrace(this)
-    this.message = message
-    this.code = code
-    this.name = 'POZError'
-  }
-}
-
 export function getError(type, key, ...args) {
   let error = errorConfig[type][key]
   if (!error) {
@@ -22,7 +12,7 @@ export function getError(type, key, ...args) {
     let part = errorParts[i]
     errorString = errorString + part + (logger.errorItemStyle(args.shift() || ''))
   }
-  return new POZError(errorString, key)
+  return new Error(errorString, key)
 }
 
 export function getPackageValidateError(key, ...args) {

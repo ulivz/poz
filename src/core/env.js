@@ -3,13 +3,13 @@ export const ENV = {
   DEBUG: 'debug'
 }
 
-const POZ_ENV = process.env.POZ_ENV
+export const POZ_ENV = process.env.POZ_ENV
   || process.env.NODE_ENV
   || process.env.BABEL_ENV
   || null
-const isTest = POZ_ENV === ENV.TEST
-const isDebug = POZ_ENV === ENV.DEBUG
-const isDev = isTest || isDebug
+export const isTest = POZ_ENV === ENV.TEST
+export const isDebug = POZ_ENV === ENV.DEBUG
+export const isDev = isTest || isDebug
 
 export default {
   POZ_ENV,

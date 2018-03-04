@@ -1,23 +1,20 @@
 import { EventEmitter } from 'events'
 import alphax from 'alphax'
-
 import log from '../logger/logger'
 import * as cfs from '../utils/fs'
-
 import { getGitUser } from '../utils/git'
 import { assign } from '../utils/assign'
-import { mergePOZDestConfig, consolelog } from './utils.js'
+import { mergePOZDestConfig, consolelog, assert } from './utils.js'
 import { isFunction } from '../utils/datatypes'
-import { POZError } from '../error/error'
-import Context from './context.js'
-import POZPackage from '../package-manager/package'
-import POZPackageManager from '../package-manager/package-manager'
-import packageValidator from './package-validator'
-import { isDev, isTest } from './env.js'
+import { isDev, isTest } from './env'
 import { RENDER_ENGINE, LIFE_CYCLE, EXPORTED_UTILS } from './presets'
+import * as env from './env'
 import * as presets from './presets'
 import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
-
+import Context from './context.js'
+import Package from '../package-manager/package'
+import PackageManager from '../package-manager/package-manager'
+import packageValidator from './package-validator'
 
 function POZ(packageSourceDir) {
 
@@ -36,7 +33,7 @@ function POZ(packageSourceDir) {
    */
   const {
     errors,
-    POZTemplateDirectory,
+    packageTemplateDir,
     userConfig
   } = packageValidator(packageSourceDir, [context, utils])
 
@@ -128,12 +125,12 @@ function POZ(packageSourceDir) {
   }
 
   function handleRenderSuccess(file) {
-    let filePath = relative(POZTemplateDirectory, file.path)
+    let filePath = relative(packageTemplateDir, file.path)
     log.success(`render ${log.cyan(filePath)}`)
   }
 
   function handleRenderFailure(error, file) {
-    let filePath = relative(POZTemplateDirectory, file.path)
+    let filePath = relative(packageTemplateDir, file.path)
     log.error(`render ${log.cyan(filePath)}`)
     log.echo(error)
     targetNode.label = targetNode.label + ' ' + log.gray('[Render Error!]')
@@ -145,7 +142,7 @@ function POZ(packageSourceDir) {
   function dest() {
     app = alphax()
     const { rename, filter, render } = destConfig
-    app.src(POZTemplateDirectory + '/**', {
+    app.src(packageTemplateDir + '/**', {
       rename,
       filter,
       transformFn: curryTransformer(render)
@@ -156,7 +153,7 @@ function POZ(packageSourceDir) {
         event.emit('onDestEnd')
       })
       .catch(error => {
-        console.log(error)
+        assert(isTest, error)
       })
   }
 
@@ -195,9 +192,8 @@ function POZ(packageSourceDir) {
   }
 }
 
-POZ.PackageManager = POZPackageManager
-POZ.POZPackage = POZPackage
-POZ.POZError = POZError
+POZ.PackageManager = PackageManager
+POZ.Package = Package
 POZ.utils = EXPORTED_UTILS
 assign(POZ.utils.fs, cfs)
 

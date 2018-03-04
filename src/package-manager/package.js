@@ -1,7 +1,7 @@
 /**
  * POZ Package
  */
-export default class POZPackage {
+export default class Package {
   constructor({ requestName, packageName, cachePath, origin }) {
     this.requestName = requestName
     this.packageName = packageName

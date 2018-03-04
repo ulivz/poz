@@ -37,7 +37,7 @@ module.exports = function (cli, poz) {
               }
             })
             .catch(error => {
-              if (error.length && error[0] instanceof poz.pozError) {
+              if (error.length && error[0] instanceof Error) {
                 errorListLogger(requestName, error)
               } else {
                 console.log(error)

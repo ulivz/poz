@@ -6,16 +6,15 @@ import path from 'path'
 import pkg from '../../package.json'
 import home from 'user-home'
 import env from '../core/env'
-import POZPackageValidator from '../core/package-validator'
-import POZPackage from './package'
-import POZPackageCache from './package-cache'
-import { POZError } from '../error/error'
-import POZDownloader from './downloader'
+import PackageValidator from '../core/package-validator'
+import Package from './package'
+import PackageCache from './package-cache'
+import Downloader from './downloader'
 
 /**
  * Parse user package request
  * @param {String} requestName
- * @returns {POZPackage}
+ * @returns {Package}
  */
 
 export function parseRequest(requestName) {
@@ -46,11 +45,11 @@ export function parseRequest(requestName) {
   }
 }
 
-export default class POZPackageManager {
+export default class PackageManager {
 
   constructor() {
-    if (!(this instanceof POZPackageManager)) {
-      return new POZPackageManager()
+    if (!(this instanceof PackageManager)) {
+      return new PackageManager()
     }
 
     this.env = env
@@ -60,26 +59,26 @@ export default class POZPackageManager {
       fs.ensureDirSync(this.wd)
     }
 
-    this.cache = new POZPackageCache(this.wd)
+    this.cache = new PackageCache(this.wd)
     this.cache.setItem('__VERSION__', pkg.version)
   }
 
 
   fetchPkg(requestName, timeout) {
-    let pozPackage
-    pozPackage = this.cache.getPackageByName(requestName)
+    let Package
+    Package = this.cache.getPackageByName(requestName)
 
     // 1. Find from cache
-    if (pozPackage) {
-      return Promise.resolve(pozPackage)
+    if (Package) {
+      return Promise.resolve(Package)
     }
 
     // 2. Find from Github / NPM
     const { packageName, origin } = parseRequest(requestName)
     const cachePath = path.join(this.cache.packageDirPath, packageName)
-    pozPackage = new POZPackage({ requestName, packageName, origin, cachePath })
+    Package = new Package({ requestName, packageName, origin, cachePath })
 
-    if (!pozPackage) {
+    if (!Package) {
       return Promise.reject(null)
     }
 
@@ -90,18 +89,18 @@ export default class POZPackageManager {
 
     const spinner = ora(`Fetching package ${logger.packageNameStyle(requestName)} ....`).start()
 
-    return POZDownloader(pozPackage)
+    return Downloader(Package)
       .then(() => {
         spinner.stop()
         clearTimeout(timer)
 
-        let { errorList } = POZPackageValidator(pozPackage.cachePath)
+        let { errorList } = PackageValidator(Package.cachePath)
         if (errorList.length) {
           return Promise.reject(errorList)
         }
 
-        this.cache.cachePackageInfo(pozPackage)
-        return pozPackage
+        this.cache.cachePackageInfo(Package)
+        return Package
       })
 
       .catch(error => {
@@ -118,7 +117,7 @@ export default class POZPackageManager {
           spinner.stop()
           logger.error('Please check your network.')
 
-        } else if (error.length && error[0] instanceof POZError) {
+        } else if (error.length && error[0] instanceof Error) {
           return Promise.reject(error)
         }
       })

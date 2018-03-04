@@ -65,7 +65,7 @@ module.exports = function (cli, poz) {
             if (!pm.cache.isPackageDownloded(packageName)) {
               return logger.error(`Cannot delete a nonexistent package: ${logger.packageNameStyle(packageName)}`)
             } else {
-              pkg = new POZ.POZPackage({
+              pkg = new POZ.Package({
                 packageName,
                 cachePath: pm.cache.getPackagePathByName(packageName)
               })
@@ -115,7 +115,7 @@ module.exports = function (cli, poz) {
               }
             })
             .catch(error => {
-              if (error.length && error[0] instanceof POZ.POZError) {
+              if (error.length && error[0] instanceof Error) {
                 errorListLogger(requestName, error)
               } else {
                 console.log(error)

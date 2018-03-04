@@ -1,14 +1,14 @@
 import path from 'path'
 import fs from 'fs-extra'
-import {exists} from '../utils/fs'
-import POZPackage from './package'
-import POZPackageValidator from '../core/package-validator'
+import { exists } from '../utils/fs'
+import Package from './package'
+import PackageValidator from '../core/package-validator'
 
 const IGNORE_FILES = [
   '.DS_Store'
 ]
 
-export default class POZPackageCache {
+export default class PackageCache {
   constructor(baseDir) {
 
     this.indexInfoPath = path.join(baseDir, 'poz.json')
@@ -48,10 +48,10 @@ export default class POZPackageCache {
       .filter(packageName => IGNORE_FILES.indexOf(packageName) === -1)
       .forEach(packageName => {
         let packagePath = this.getPackagePathByName(packageName)
-        let { errorList } = POZPackageValidator(packagePath)
+        let { errorList } = PackageValidator(packagePath)
 
         if (!errorList.length && this.getPackageByName(packageName) === null) {
-          packagesMap[packageName] = new POZPackage({
+          packagesMap[packageName] = new Package({
             requestName: packageName,
             packageName,
             cachePath: packagePath,
@@ -125,7 +125,7 @@ export default class POZPackageCache {
     }
 
     if (pozPackage) {
-      return new POZPackage(pozPackage)
+      return new Package(pozPackage)
     }
 
     return null
@@ -138,7 +138,7 @@ export default class POZPackageCache {
   }
 
   removePackage(poaPackage) {
-    if (!(poaPackage instanceof POZPackage)) {
+    if (!(poaPackage instanceof Package)) {
       return
     }
     this.removePackageCache(poaPackage)
