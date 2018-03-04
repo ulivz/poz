@@ -7,8 +7,7 @@
     "type": "poz"
   },
   "bin": "bin/index.js",
-  "main": "dist/poz.common.js",
-  "module": "dist/poz.es.js",
+  "main": "dist/poz.cjs.js",
   "files": [
     "dist"
   ],
