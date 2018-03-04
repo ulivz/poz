@@ -15,8 +15,6 @@ import * as presets from './presets'
 import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
 import event from './event'
 import Context from './context.js'
-import Package from '../package-manager/package'
-import PackageManager from '../package-manager/package-manager'
 import packageValidator from './package-validator'
 
 function POZ(packageSourceDir) {
@@ -187,8 +185,6 @@ function POZ(packageSourceDir) {
   }
 }
 
-POZ.PackageManager = PackageManager
-POZ.Package = Package
 POZ.utils = EXPORTED_UTILS
 assign(POZ.utils.fs, cfs)
 

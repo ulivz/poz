@@ -48,10 +48,6 @@ export function parseRequest(requestName) {
 export default class PackageManager {
 
   constructor() {
-    if (!(this instanceof PackageManager)) {
-      return new PackageManager()
-    }
-
     this.env = env
     this.wd = path.join(home, '.poz')
 
@@ -65,20 +61,20 @@ export default class PackageManager {
 
 
   fetchPkg(requestName, timeout) {
-    let Package
-    Package = this.cache.getPackageByName(requestName)
+    let _package
+    _package = this.cache.getPackageByName(requestName)
 
     // 1. Find from cache
-    if (Package) {
-      return Promise.resolve(Package)
+    if (_package) {
+      return Promise.resolve(_package)
     }
 
     // 2. Find from Github / NPM
     const { packageName, origin } = parseRequest(requestName)
     const cachePath = path.join(this.cache.packageDirPath, packageName)
-    Package = new Package({ requestName, packageName, origin, cachePath })
+    _package = new Package({ requestName, packageName, origin, cachePath })
 
-    if (!Package) {
+    if (!_package) {
       return Promise.reject(null)
     }
 
@@ -89,18 +85,18 @@ export default class PackageManager {
 
     const spinner = ora(`Fetching package ${logger.packageNameStyle(requestName)} ....`).start()
 
-    return Downloader(Package)
+    return Downloader(_package)
       .then(() => {
         spinner.stop()
         clearTimeout(timer)
 
-        let { errorList } = PackageValidator(Package.cachePath)
-        if (errorList.length) {
+        let { errors } = PackageValidator(_package.cachePath)
+        if (errors && errors.length) {
           return Promise.reject(errorList)
         }
 
-        this.cache.cachePackageInfo(Package)
-        return Package
+        this.cache.cachePackageInfo(_package)
+        return _package
       })
 
       .catch(error => {
@@ -117,8 +113,8 @@ export default class PackageManager {
           spinner.stop()
           logger.error('Please check your network.')
 
-        } else if (error.length && error[0] instanceof Error) {
-          return Promise.reject(error)
+        } else {
+          throw error
         }
       })
   }

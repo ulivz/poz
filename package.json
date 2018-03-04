@@ -17,7 +17,7 @@
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
-    "build": "bili --name poz --banner --plugin json",
+    "build": "bili --name poz --banner --plugin json --exports named",
     "example": "poi --config build/poi.config.js",
     "build:example": "poi build --config build/poi.config.js",
     "gh": "gh-pages -d example/dist",

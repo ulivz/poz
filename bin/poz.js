@@ -1,11 +1,11 @@
-const {
-  errorListLogger,
-  localPackagesLogger
-} = require('./utils')
+'use strict';
 
-module.exports = function (cli, poz) {
-  const { logger } = poz.utils
+const { errorListLogger, localPackagesLogger } = require('./utils')
+const { POZ, Package, PackageManager } = require('../dist/poz.cjs')
 
+const { logger } = POZ.utils
+
+module.exports = function (cli) {
   return {
     command: {
       name: '*',
@@ -21,18 +21,18 @@ module.exports = function (cli, poz) {
           return cli.parse(argv)
         }
 
-        let pm = new poz.PackageManager()
+        let manager = new PackageManager()
         if (!input.length) {
           cli.showHelp()
-          localPackagesLogger(pm.cache.getItem('packagesMap'))
+          localPackagesLogger(manager.cache.getItem('packagesMap'))
 
         } else {
           const requestName = input[0]
           const TIMEOUT = 60000
-          pm.fetchPkg(requestName, TIMEOUT)
+          manager.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {
-                const app = poz(pkg.cachePath)
+                const app = new POZ(pkg.cachePath)
                 return app.launch()
               }
             })

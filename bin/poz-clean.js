@@ -1,7 +1,9 @@
 'use strict';
 
-module.exports = function (cli, POZ) {
-  const { logger, prompts } = POZ.utils
+const { POZ, PackageManager } = require('../dist/poz.cjs')
+const { logger, prompts } = POZ.utils
+
+module.exports = function (cli) {
 
   return {
     command: {
@@ -17,7 +19,7 @@ module.exports = function (cli, POZ) {
           }
         }).then((answers) => {
           if (answers.cleanAllConfirm) {
-            let pm = cli.pm()
+            let pm = new PackageManager()
             pm.cache.cleanCache()
           } else {
             logger.redSnow(`Cancelled`)

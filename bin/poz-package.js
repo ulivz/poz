@@ -1,17 +1,14 @@
 'use strict';
 
-const {
-  errorListLogger,
-  localPackagesLogger,
-  localPackagesValidateResultLogger
-} = require('./utils')
+const { errorListLogger, localPackagesLogger, localPackagesValidateResultLogger } = require('./utils')
+const { POZ, Package, PackageManager } = require('../dist/poz.cjs')
+const { logger, prompts } = POZ.utils
 
-module.exports = function (cli, poz) {
-  const { logger, prompts } = poz.utils
+module.exports = function (cli) {
 
   function logPackages() {
-    let pm = poz.PackageManager()
-    localPackagesLogger(pm.cache.getItem('packagesMap'))
+    let manager = new PackageManager()
+    localPackagesLogger(manager.cache.getItem('packagesMap'))
   }
 
   return {
@@ -59,15 +56,15 @@ module.exports = function (cli, poz) {
             return logger.redSnow('To delete a package, you must enter a valid package name.')
           }
 
-          let pm = cli.pm()
-          let pkg = pm.cache.getPackageByName(packageName)
+          let manager = new PackageManager()
+          let pkg = manager.cache.getPackageByName(packageName)
           if (!pkg) {
-            if (!pm.cache.isPackageDownloded(packageName)) {
+            if (!manager.cache.isPackageDownloded(packageName)) {
               return logger.error(`Cannot delete a nonexistent package: ${logger.packageNameStyle(packageName)}`)
             } else {
-              pkg = new POZ.Package({
+              pkg = new Package({
                 packageName,
-                cachePath: pm.cache.getPackagePathByName(packageName)
+                cachePath: manager.cache.getPackagePathByName(packageName)
               })
             }
           }
@@ -79,7 +76,7 @@ module.exports = function (cli, poz) {
             }
           }).then((answers) => {
             if (answers.deleteConfirm) {
-              pm.cache.removePackage(pkg)
+              manager.cache.removePackage(pkg)
               logger.success(`Removed ${logger.packageNameStyle(packageName)}`)
             } else {
               logger.redSnow(`Cancelled`)
@@ -104,8 +101,8 @@ module.exports = function (cli, poz) {
           }
 
           const TIMEOUT = 60000
-          let pm = new POZ.PackageManager()
-          pm.fetchPkg(requestName, TIMEOUT)
+          let manager = new POZ.PackageManager()
+          manager.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {
                 const app = poz(pkg.cachePath)
@@ -148,8 +145,8 @@ module.exports = function (cli, poz) {
           desc: 'validate all local POZ packages'
         },
         handler(input, flags) {
-          let pm = cli.pm()
-          let packageValidationResultList = pm.cache.validateAllPackages()
+          let manager = new PackageManager()
+          let packageValidationResultList = manager.cache.validateAllPackages()
           localPackagesValidateResultLogger(packageValidationResultList)
         }
       },
