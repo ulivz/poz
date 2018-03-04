@@ -55,13 +55,11 @@
     "@types/inquirer": "0.0.35",
     "@types/node": "^8.0.47",
     "@types/vinyl": "^2.0.1",
-    "babel-plugin-inline-import": "^2.0.6",
     "eslint-config-ulivz": "^1.0.0",
     "gh-pages": "^1.0.0",
     "glob": "^7.1.2",
     "jest-cli": "^21.2.1",
     "raw-loader": "^0.5.1",
-    "rollup-plugin-string": "^2.0.2",
     "xo": "^0.18.0"
   },
   "xo": {
