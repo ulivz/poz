@@ -18,7 +18,7 @@
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
-    "build": "bili --config build/bili.config.js",
+    "build": "bili --name poz --banner --plugin json",
     "example": "poi --config build/poi.config.js",
     "build:example": "poi build --config build/poi.config.js",
     "gh": "gh-pages -d example/dist",
@@ -60,6 +60,7 @@
     "gh-pages": "^1.0.0",
     "glob": "^7.1.2",
     "jest-cli": "^21.2.1",
+    "rollup-plugin-json": "^2.3.0",
     "xo": "^0.18.0"
   },
   "xo": {

@@ -59,7 +59,7 @@ function POZ(packageSourceDir) {
     context.assign({
       $cwd: cwd,
       $env: env,
-      $$dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
+      $dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
       $gituser: user.name,
       $gitemail: user.email,
       $sourceDir: packageSourceDir
@@ -104,7 +104,7 @@ function POZ(packageSourceDir) {
   function disposeUserConfig() {
     normalizedConfig = getNormalizedConfig(
       {
-        dest: cwd,
+        outDir: cwd,
         filter: null,
         rename: null,
         render: RENDER_ENGINE
@@ -120,9 +120,9 @@ function POZ(packageSourceDir) {
    */
   function prompt() {
     event.emit('onPromptStart')
-    const { prompts } = userConfig
+    let { prompts } = userConfig
     const promptsMetadata = isFunction(prompts) ? prompts() : prompts
-    const prompts = promptsTransformer(promptsMetadata)
+    prompts = promptsTransformer(promptsMetadata)
     const envPromptsRunner = isTest
       ? mockPromptsRunner
       : promptsRunner
@@ -134,13 +134,13 @@ function POZ(packageSourceDir) {
    */
   function dest() {
     app = alphax()
-    const { rename, filter, render } = normalizedConfig
+    const { rename, filter, render, outDir } = normalizedConfig
     app.src(packageTemplateDir + '/**', {
       rename,
       filter,
-      transformFn: curryTransformer(render)
+      transformFn: render
     })
-    return app.dest(normalizedConfig.target || '.')
+    return app.dest(outDir || '.')
       .then(() => {
         event.emit('onDestEnd')
       })

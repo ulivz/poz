@@ -1,0 +1,5 @@
+export const NOT_FOUND = "%s not exist."
+export const MUST_BE_DIRECTORY = "Expect giving path: %s is a directory."
+export const MISSING_INDEX_FILE = "Cannot resolve %s, \nFor using POZ, the root folder of your POZ package must contain a file named 'poz.js'"
+export const MISSING_TEMPLATE_DIRECTORY = "Cannot resolve %s, \nFor using POZ, A POZ template package should contains a 'template' directory which used to store the template files."
+export const UNEXPECTED_INDEX_FILE = "'poz.js' must export a plain object or function."

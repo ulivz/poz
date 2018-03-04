@@ -1,5 +1,6 @@
 import event from './event'
 import { RENDER_FAILURE, RENDER_SUCCESS } from './event-names'
+import { isString, isPlainObject, isFunction, isUndefined } from '../utils/datatypes'
 
 function curryTransformer(render, context) {
   return function (content, file) {
@@ -15,9 +16,9 @@ function curryTransformer(render, context) {
 }
 
 export function getNormalizedConfig(initConfig, userConfig = {}, context) {
-  let { render, dest, rename, filter } = userConfig
+  let { render, outDir, rename, filter } = userConfig
 
-  if (isFunction(dest)) dest = dest()
+  if (isFunction(outDir)) outDir = outDir()
   if (isFunction(rename)) rename = rename()
   if (isFunction(filter)) filter = filter()
 
@@ -27,9 +28,9 @@ export function getNormalizedConfig(initConfig, userConfig = {}, context) {
     )
   }
 
-  if (!isUndefined(dest) && !isString(dest)) {
+  if (!isUndefined(outDir) && !isString(outDir)) {
     throw new Error(
-      'Expect "dest" to be a string or a function that returns string.'
+      'Expect "outDir" to be a string or a function that returns string.'
     )
   }
 
@@ -49,7 +50,7 @@ export function getNormalizedConfig(initConfig, userConfig = {}, context) {
 
   return Object.assign({}, initConfig, {
     render,
-    dest,
+    outDir,
     rename,
     filter
   })

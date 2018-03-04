@@ -3,7 +3,7 @@ import ora from 'ora'
 import { exists } from '../utils/fs'
 import logger from '../logger/logger'
 import path from 'path'
-import pkg from '../../package.json'
+// import pkg from '../../package.json'
 import home from 'user-home'
 import env from '../core/env'
 import PackageValidator from '../core/package-validator'
@@ -60,7 +60,7 @@ export default class PackageManager {
     }
 
     this.cache = new PackageCache(this.wd)
-    this.cache.setItem('__VERSION__', pkg.version)
+    // this.cache.setItem('__VERSION__', pkg.version)
   }
 
 

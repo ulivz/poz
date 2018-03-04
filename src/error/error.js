@@ -1,8 +1,8 @@
-import errorConfig from './error-config.json'
+import * as errorConfig from './error-config'
 import logger from '../logger/logger'
 
-export function getError(type, key, ...args) {
-  let error = errorConfig[type][key]
+export function getError(key, ...args) {
+  let error = errorConfig[key]
   if (!error) {
     throw Error(`Unknown POZ error key: ${key}`)
   }
@@ -16,5 +16,5 @@ export function getError(type, key, ...args) {
 }
 
 export function getPackageValidateError(key, ...args) {
-  return getError('package_validate', key, ...args)
+  return getError(key, ...args)
 }

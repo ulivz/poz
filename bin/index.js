@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const cac = require('cac')
-const poz = require('../dist/poz.common.js')
+const poz = require('../dist/poz.cjs.js')
 
 const pozCommand = require('./poz')
 const pozPackageCommand = require('./poz-package')
