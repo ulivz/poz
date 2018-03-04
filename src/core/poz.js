@@ -1,17 +1,19 @@
-import { EventEmitter } from 'events'
 import alphax from 'alphax'
 import log from '../logger/logger'
 import * as cfs from '../utils/fs'
 import { getGitUser } from '../utils/git'
-import { assign } from '../utils/assign'
 import { relative } from '../utils/path'
-import { mergePOZDestConfig, consolelog, assert } from './utils.js'
+import { assign } from '../utils/assign'
+import { consolelog, assert } from './utils.js'
+import { getNormalizedConfig } from './normalize-config'
 import { isFunction } from '../utils/datatypes'
 import { isDev, isTest } from './env'
 import { RENDER_ENGINE, LIFE_CYCLE, EXPORTED_UTILS } from './presets'
+import { RENDER_FAILURE, RENDER_SUCCESS } from './event-names'
 import * as env from './env'
 import * as presets from './presets'
 import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
+import event from './event'
 import Context from './context.js'
 import Package from '../package-manager/package'
 import PackageManager from '../package-manager/package-manager'
@@ -22,9 +24,8 @@ function POZ(packageSourceDir) {
   const cwd = process.cwd()
   const utils = EXPORTED_UTILS
   const context = Context()
-  const event = new EventEmitter()
 
-  let destConfig
+  let normalizedConfig
   let user
   let status
   let app
@@ -97,32 +98,21 @@ function POZ(packageSourceDir) {
     log.echo(error)
   }
 
-  function curryTransformer(render) {
-    return function (content, file) {
-      let renderResult
-      try {
-        renderResult = render(content, context, file)
-        handleRenderSuccess(file)
-      } catch (error) {
-        handleRenderFailure(error, file)
-      }
-      return renderResult
-    }
-  }
-
   /**
-   * Setup dest config
+   * Dispose user config
    */
-  function setupDestConfig() {
-    // default
-    destConfig = {
-      target: cwd,
-      ignore: null,
-      rename: null,
-      render: RENDER_ENGINE,
-    }
-    mergePOZDestConfig(destConfig, userConfig.dest)
-    context.set('$dest', destConfig)
+  function disposeUserConfig() {
+    normalizedConfig = getNormalizedConfig(
+      {
+        dest: cwd,
+        filter: null,
+        rename: null,
+        render: RENDER_ENGINE
+      },
+      userConfig,
+      context
+    )
+    context.set('$config', normalizedConfig)
   }
 
   /**
@@ -130,7 +120,8 @@ function POZ(packageSourceDir) {
    */
   function prompt() {
     event.emit('onPromptStart')
-    const promptsMetadata = userConfig.prompts()
+    const { prompts } = userConfig
+    const promptsMetadata = isFunction(prompts) ? prompts() : prompts
     const prompts = promptsTransformer(promptsMetadata)
     const envPromptsRunner = isTest
       ? mockPromptsRunner
@@ -138,19 +129,18 @@ function POZ(packageSourceDir) {
     return envPromptsRunner(prompts)
   }
 
-
   /**
    * Dest files
    */
   function dest() {
     app = alphax()
-    const { rename, filter, render } = destConfig
+    const { rename, filter, render } = normalizedConfig
     app.src(packageTemplateDir + '/**', {
       rename,
       filter,
       transformFn: curryTransformer(render)
     })
-    return app.dest(destConfig.target || '.')
+    return app.dest(normalizedConfig.target || '.')
       .then(() => {
         event.emit('onDestEnd')
       })
@@ -163,6 +153,8 @@ function POZ(packageSourceDir) {
    * Runner
    */
   function launch() {
+    event.on(RENDER_FAILURE, handleRenderFailure)
+    event.on(RENDER_SUCCESS, handleRenderSuccess)
     throwIfError()
     initializeContext()
     bindHookListener()
@@ -172,7 +164,7 @@ function POZ(packageSourceDir) {
       .then(answers => {
         context.assign(answers)
         event.emit('onPromptEnd')
-        setupDestConfig()
+        disposeUserConfig()
         return dest()
       })
       .then(() => {

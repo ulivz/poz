@@ -53,7 +53,8 @@ _.testonly = (() => {
   if (env.isTest) {
     return getLogFunction()
   }
-  return () => {}
+  return () => {
+  }
 })()
 
 _.table = raw => {
