@@ -2,6 +2,17 @@ import event from './event'
 import { RENDER_FAILURE, RENDER_SUCCESS } from './event-names'
 import { isString, isPlainObject, isFunction, isNullOrUndefined } from '../utils/datatypes'
 
+/**
+ * A curry function that accpets a pure render function, and
+ * return a new function that handle the render status
+ *
+ * @param {Function} render A pure render function whose first
+ * parameter is template string, second parameter is the
+ * context, and third parameter is current vinyl file instance
+ *
+ * @param {Context} context
+ * @returns {Function} new transform function
+ */
 function curryTransformer(render, context) {
   return function (content, file) {
     let renderResult
@@ -14,6 +25,26 @@ function curryTransformer(render, context) {
     return renderResult
   }
 }
+
+/**
+ * Get the default rename config from the context object
+ * @param {Context} context
+ * @returns {Object} rename config
+ */
+
+function getDefaultRenameConfig(context) {
+  const rename = {}
+  Object.keys(context).forEach(key => rename[`{${key}}`] = context[key])
+  return rename
+}
+
+/**
+ * Merge and handle the initial config and user config
+ * @param {Object} initConfig
+ * @param {Object} userConfig
+ * @param {Context} context
+ * @returns {Object} normalized Config
+ */
 
 export function getNormalizedConfig(initConfig, userConfig = {}, context) {
   let { render, outDir, rename, filter } = userConfig
@@ -52,6 +83,7 @@ export function getNormalizedConfig(initConfig, userConfig = {}, context) {
   }
 
   render = curryTransformer(render, context)
+  rename = Object.assign(rename || {}, getDefaultRenameConfig(context))
 
   return Object.assign({}, initConfig, {
     render,

@@ -6,7 +6,7 @@ import { getPackageValidateError } from '../error/error'
 
 export default function PackageValidator(packagePath, userArgs) {
 
-  let errors = []
+  const errors = []
 
   // 1. Check if the package path exists
   if (!exists(packagePath)) {
