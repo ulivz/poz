@@ -137,7 +137,7 @@ function POZ(packageSourceDir) {
       baseDir: packageTemplateDir,
       rename,
       filters,
-      transformFn: render
+      transform: render
     })
     return app.dest(outDir || '.')
       .then(() => {
