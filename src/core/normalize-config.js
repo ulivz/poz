@@ -47,16 +47,16 @@ function getDefaultRenameConfig(context) {
  */
 
 export function getNormalizedConfig(initConfig, userConfig = {}, context) {
-  let { render, outDir, rename, filter } = userConfig
+  let { render, outDir, rename, filters } = userConfig
 
   if (!render) render = initConfig.render
   if (!outDir) outDir = initConfig.outDir
   if (!rename) rename = initConfig.rename
-  if (!filter) filter = initConfig.filter
+  if (!filters) filters = initConfig.filters
 
   if (isFunction(outDir)) outDir = outDir()
   if (isFunction(rename)) rename = rename()
-  if (isFunction(filter)) filter = filter()
+  if (isFunction(filters)) filters = filters()
 
   if (!isFunction(render)) {
     throw new Error(
@@ -76,9 +76,9 @@ export function getNormalizedConfig(initConfig, userConfig = {}, context) {
     )
   }
 
-  if (!isNullOrUndefined(filter) && !isPlainObject(filter)) {
+  if (!isNullOrUndefined(filters) && !isPlainObject(filters)) {
     throw new Error(
-      'Expect "filter" to be a plain object or a function that returns plain object.'
+      'Expect "filters" to be a plain object or a function that returns plain object.'
     )
   }
 
@@ -89,6 +89,6 @@ export function getNormalizedConfig(initConfig, userConfig = {}, context) {
     render,
     outDir,
     rename,
-    filter
+    filters
   })
 }
