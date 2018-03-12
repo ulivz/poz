@@ -103,7 +103,7 @@ function POZ(packageSourceDir) {
     normalizedConfig = getNormalizedConfig(
       {
         outDir: cwd,
-        filter: null,
+        filters: null,
         rename: null,
         render: RENDER_ENGINE
       },
@@ -132,11 +132,11 @@ function POZ(packageSourceDir) {
    */
   function dest() {
     app = alphax()
-    const { rename, filter, render, outDir } = normalizedConfig
+    const { rename, filters, render, outDir } = normalizedConfig
     app.src(packageTemplateDir + '/**', {
       baseDir: packageTemplateDir,
       rename,
-      filter,
+      filters,
       transformFn: render
     })
     return app.dest(outDir || '.')
