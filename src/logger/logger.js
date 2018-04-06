@@ -1,5 +1,5 @@
 import _ from 'chalk'
-import { assign } from '../utils/assign'
+import { assign } from '../utils/mixin'
 import textable from 'text-table'
 import { isPlainObject, isArray } from '../utils/datatypes'
 import env from '../core/env'

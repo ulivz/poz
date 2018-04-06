@@ -1,31 +1,41 @@
-import fs from 'fs'
+import fs from 'fs-extra'
+import { mixin } from './mixin'
 
-export function exists(path) {
-  return fs.existsSync(path)
-}
-
-export function isFile(path) {
-  if (!exists(path)) {
+function isFile(path) {
+  if (!fs.existsSync(path)) {
     return null;
   }
   const stat = fs.statSync(path)
   return stat.isFile()
 }
 
-export function isDirectory(path) {
-  if (!exists(path)) {
+function isDirectory(path) {
+  if (!fs.existsSync(path)) {
     return null;
   }
   const stat = fs.statSync(path)
   return stat.isDirectory()
 }
 
-export function isDirEmpty(path) {
-  if (!exists(path)) {
+function isDirEmpty(path) {
+  if (!fs.existsSync(path)) {
     throw new Error(`${path} not exist!`)
   }
   const files = fs.readdirSync(path)
   return !files.length
+}
+
+mixin(fs, {
+  isFile,
+  isDirectory,
+  isDirEmpty
+})
+
+export {
+  fs as default,
+  isFile,
+  isDirectory,
+  isDirEmpty
 }
 
 

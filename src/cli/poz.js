@@ -10,7 +10,7 @@ export default function (cli) {
       },
       handler(input, flags) {
         const pm = new PackageManager()
-        
+
         if (!input.length) {
           cli.showHelp()
           localPackagesLogger(pm.cache.getItem('packagesMap'))
