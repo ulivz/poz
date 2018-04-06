@@ -1,6 +1,6 @@
-import { exists, isDirectory } from '../utils/fs'
+import fs from '../utils/fs'
 import { isFunction, isPlainObject } from '../utils/datatypes'
-import { resolve } from '../utils/path'
+import { resolve } from 'path'
 import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
 import { getPackageValidateError } from '../error/error'
 
@@ -9,10 +9,10 @@ export default function PackageValidator(packagePath, userArgs) {
   const errors = []
 
   // 1. Check if the package path exists
-  if (!exists(packagePath)) {
+  if (!fs.existsSync(packagePath)) {
     errors.push(getPackageValidateError('NOT_FOUND', packagePath))
     // 2. If the package path exists, Check if the package path is a directory
-  } else if (!isDirectory(packagePath)) {
+  } else if (!fs.isDirectory(packagePath)) {
     errors.push(getPackageValidateError('MUST_BE_DIRECTORY', packagePath))
   }
 
@@ -20,7 +20,7 @@ export default function PackageValidator(packagePath, userArgs) {
   const packageIndexFile = resolve(packagePath, PACKAGE_INDEX_FILE_NAME)
   let userConfig
 
-  if (!exists(packageIndexFile)) {
+  if (!fs.existsSync(packageIndexFile)) {
     errors.push(getPackageValidateError('MISSING_INDEX_FILE', packageIndexFile))
 
   } else {
@@ -52,7 +52,7 @@ export default function PackageValidator(packagePath, userArgs) {
   // 5. Check if the 'template' directory exists
   const packageTemplateDir = resolve(packagePath, TEMPLATE_DIRECTORY_NAME)
   // when 'userConfig.dest' = false, skip this check.
-  if (userConfig && userConfig.dest !== false && !exists(packageTemplateDir)) {
+  if (userConfig && userConfig.dest !== false && !fs.existsSync(packageTemplateDir)) {
     errors.push(getPackageValidateError('MISSING_TEMPLATE_DIRECTORY', packageTemplateDir))
   }
 

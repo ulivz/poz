@@ -1,26 +1,22 @@
 import alphax from 'alphax'
-import log from '../logger/logger'
-import * as cfs from '../utils/fs'
-import { getGitUser } from '../utils/git'
-import { relative } from '../utils/path'
-import { assign } from '../utils/assign'
-import { consolelog, assert } from './utils.js'
+import { relative } from 'path'
 import { getNormalizedConfig } from './normalize-config'
-import { isFunction } from '../utils/datatypes'
-import { isDev, isTest } from './env'
-import { RENDER_ENGINE, LIFE_CYCLE, EXPORTED_UTILS } from './presets'
+import { RENDER_ENGINE, LIFE_CYCLE } from './presets'
 import { RENDER_FAILURE, RENDER_SUCCESS } from './event-names'
+import { isDev, isTest } from './env'
 import * as env from './env'
 import * as presets from './presets'
-import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
 import event from './event'
 import Context from './context.js'
 import packageValidator from './package-validator'
+import utils, { logger as log, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
+
+const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
+const { isFunction } = datatypes
 
 function POZ(packageSourceDir) {
 
   const cwd = process.cwd()
-  const utils = EXPORTED_UTILS
   const context = Context()
 
   let normalizedConfig
@@ -28,18 +24,12 @@ function POZ(packageSourceDir) {
   let status
   let app
 
-  /**
-   * Validate the POZ package, and get the content of config file
-   */
   const {
     errors,
     packageTemplateDir,
     userConfig
   } = packageValidator(packageSourceDir, [context, utils])
 
-  /**
-   * Throw if error
-   */
   function throwIfError() {
     if (errors.length) {
       if (isDev) {
@@ -49,9 +39,6 @@ function POZ(packageSourceDir) {
     }
   }
 
-  /**
-   * Initialize render context
-   */
   function initializeContext() {
     user = getGitUser()
     context.assign({
@@ -64,9 +51,6 @@ function POZ(packageSourceDir) {
     })
   }
 
-  /**
-   * Initialize binding the life cycle listener
-   */
   function bindHookListener() {
     for (const hookname of LIFE_CYCLE) {
       const handler = userConfig[hookname]
@@ -96,9 +80,6 @@ function POZ(packageSourceDir) {
     log.echo(error)
   }
 
-  /**
-   * Dispose user config
-   */
   function disposeUserConfig() {
     normalizedConfig = getNormalizedConfig(
       {
@@ -113,9 +94,6 @@ function POZ(packageSourceDir) {
     context.set('$config', normalizedConfig)
   }
 
-  /**
-   * Running prompt according to config
-   */
   function prompt() {
     event.emit('onPromptStart')
     let { prompts } = userConfig
@@ -127,9 +105,6 @@ function POZ(packageSourceDir) {
     return envPromptsRunner(prompts)
   }
 
-  /**
-   * Dest files
-   */
   function dest() {
     app = alphax()
     const { rename, filters, render, outDir } = normalizedConfig
@@ -148,9 +123,6 @@ function POZ(packageSourceDir) {
       })
   }
 
-  /**
-   * Runner
-   */
   function launch() {
     event.on(RENDER_FAILURE, handleRenderFailure)
     event.on(RENDER_SUCCESS, handleRenderSuccess)
@@ -166,9 +138,7 @@ function POZ(packageSourceDir) {
         disposeUserConfig()
         return dest()
       })
-      .then(() => {
-        event.emit('onExit')
-      })
+      .then(() => event.emit('onExit'))
       .catch(error => {
         throw error
         event.emit('onExit', error)
@@ -184,8 +154,5 @@ function POZ(packageSourceDir) {
     userConfig
   }
 }
-
-POZ.utils = EXPORTED_UTILS
-assign(POZ.utils.fs, cfs)
 
 export default POZ

@@ -1,7 +1,7 @@
 import _ from 'chalk'
-import { assign } from '../utils/assign'
+import { mixin } from './mixin'
 import textable from 'text-table'
-import { isPlainObject, isArray } from '../utils/datatypes'
+import { isPlainObject, isArray } from './datatypes'
 import env from '../core/env'
 
 const GLOBAL_INDENT = '  '
@@ -23,7 +23,7 @@ const extraColors = {
   'debugStyle': v => _.bgBlackBright(_.black(v)),
 }
 
-assign(_, extraColors)
+mixin(_, extraColors)
 
 _.promptsLogger = {
   successStyle: v => _.reset(_.warnStyle(' SUCCESS ')) + ' ' + _.bold(v),

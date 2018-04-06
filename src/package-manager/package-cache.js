@@ -1,6 +1,5 @@
 import path from 'path'
-import fs from 'fs-extra'
-import { exists } from '../utils/fs'
+import fs from '../utils/fs'
 import Package from './package'
 import PackageValidator from '../core/package-validator'
 
@@ -17,11 +16,11 @@ export default class PackageCache {
     this.packageDirPath = path.join(baseDir, 'packages')
     this.packageNames = null
 
-    if (!exists(this.indexInfoPath)) {
+    if (!fs.existsSync(this.indexInfoPath)) {
       fs.writeJsonSync(this.indexInfoPath, { packagesMap: {} }, { spaces: 2 })
     }
 
-    if (!exists(this.packageDirPath)) {
+    if (!fs.existsSync(this.packageDirPath)) {
       fs.ensureDirSync(this.packageDirPath)
     }
 
@@ -151,7 +150,7 @@ export default class PackageCache {
 
   removePackageCache(poaPackage) {
     let { cachePath } = poaPackage
-    if (cachePath.indexOf(this.packageDirPath) === -1 || !exists(this.packageDirPath)) {
+    if (cachePath.indexOf(this.packageDirPath) === -1 || !fs.existsSync(this.packageDirPath)) {
       throw new Error('Invalid package cache path: ' + cachePath)
     }
     fs.removeSync(cachePath)

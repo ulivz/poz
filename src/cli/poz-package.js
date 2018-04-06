@@ -1,10 +1,8 @@
-'use strict';
+import { errorListLogger, localPackagesLogger, localPackagesValidateResultLogger } from './utils'
+import { POZ, Package, PackageManager } from '../index'
+import { logger, prompts } from '../utils/index'
 
-const { errorListLogger, localPackagesLogger, localPackagesValidateResultLogger } = require('./utils')
-const { POZ, Package, PackageManager } = require('../dist/poz.cjs')
-const { logger, prompts } = POZ.utils
-
-module.exports = function (cli) {
+export default function (cli) {
 
   function logPackages() {
     let manager = new PackageManager()
@@ -101,7 +99,7 @@ module.exports = function (cli) {
           }
 
           const TIMEOUT = 60000
-          let manager = new POZ.PackageManager()
+          let manager = new PackageManager()
           manager.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {

@@ -1,19 +1,10 @@
 import {
-exists,
-isFile,
-isDirectory,
-readdirSync,
-isDirEmpty,
-unlinkSync,
+  isFile,
+  isDirectory,
+  isDirEmpty
 } from '../fs'
 
-
 describe('fs', () => {
-
-  test('exists', () => {
-    let dir = __dirname + '/fixtures/dist'
-    expect(exists(dir)).toBe(false)
-  })
 
   test('isFile && isDirectory', () => {
 

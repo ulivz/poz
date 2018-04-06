@@ -1,7 +1,6 @@
-import fs from 'fs-extra'
 import ora from 'ora'
-import { exists } from '../utils/fs'
-import logger from '../logger/logger'
+import fs from '../utils/fs'
+import logger from '../utils/logger'
 import path from 'path'
 // import pkg from '../../package.json'
 import home from 'user-home'
@@ -23,7 +22,7 @@ export function parseRequest(requestName) {
   const GIT_REG = /^[a-zA-Z0-9\/\-]+$/
 
   // local package
-  if (exists(requestName)) {
+  if (fs.existsSync(requestName)) {
     packageName = requestName.split('/').pop()
     origin = 'local'
 
@@ -51,7 +50,7 @@ export default class PackageManager {
     this.env = env
     this.wd = path.join(home, '.poz')
 
-    if (!exists(this.wd)) {
+    if (!fs.existsSync(this.wd)) {
       fs.ensureDirSync(this.wd)
     }
 
