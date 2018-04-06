@@ -1,21 +1,11 @@
-'use strict';
-
-let _
-
-/**
- * Initialize customized logger
- * @param logger
- */
-function initLogger(logger) {
-  _ = logger
-}
+import _ from '../logger/logger'
 
 /**
  * Flattern cached packagesMap, used to log
  * @param packages {Array[POZPackage]}
  * @returns {Array}
  */
-function getPackagesMapLogData(packagesMap) {
+export function getPackagesMapLogData(packagesMap) {
   let packagesMapLogTableData = []
   Object.keys(packagesMap).forEach(packageName => {
     const pozPackage = packagesMap[packageName]
@@ -36,7 +26,7 @@ function getPackagesMapLogData(packagesMap) {
  * Log local packages
  * @param pkgMap
  */
-function localPackagesLogger(packagesMap) {
+export function localPackagesLogger(packagesMap) {
   let packagesMapLogTableData = getPackagesMapLogData(packagesMap)
   if (!packagesMapLogTableData.length) {
     return
@@ -51,7 +41,7 @@ function localPackagesLogger(packagesMap) {
  * errorList logger
  * @param errorList
  */
-function errorListLogger(packageName, errorList) {
+export function errorListLogger(packageName, errorList) {
   _.error(`package ${_.packageNameStyle(packageName)} is not a valid POZ package, see the error message below:`)
   for (let error of errorList) {
     _.wrap()
@@ -64,7 +54,7 @@ function errorListLogger(packageName, errorList) {
 /**
  * Log local packages validate result
  */
-function localPackagesValidateResultLogger(packageValidationResultList) {
+export function localPackagesValidateResultLogger(packageValidationResultList) {
   for (let packageValidation of packageValidationResultList) {
     let { packageName, errorList } = packageValidation
     if (errorList.length) {
@@ -75,9 +65,3 @@ function localPackagesValidateResultLogger(packageValidationResultList) {
   }
 }
 
-module.exports = {
-  initLogger,
-  errorListLogger,
-  localPackagesLogger,
-  localPackagesValidateResultLogger
-}

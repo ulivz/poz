@@ -1,9 +1,7 @@
-'use strict';
-
-const { POZ, PackageManager } = require('../dist/poz.cjs')
+import { POZ, PackageManager } from '../index'
 const { logger, prompts } = POZ.utils
 
-module.exports = function (cli) {
+export default function (cli) {
 
   return {
     command: {

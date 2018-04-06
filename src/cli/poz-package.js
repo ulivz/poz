@@ -1,10 +1,8 @@
-'use strict';
-
-const { errorListLogger, localPackagesLogger, localPackagesValidateResultLogger } = require('./utils')
-const { POZ, Package, PackageManager } = require('../dist/poz.cjs')
+import { errorListLogger, localPackagesLogger, localPackagesValidateResultLogger } from './utils'
+import { POZ, Package, PackageManager } from '../index'
 const { logger, prompts } = POZ.utils
 
-module.exports = function (cli) {
+export default function (cli) {
 
   function logPackages() {
     let manager = new PackageManager()

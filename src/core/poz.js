@@ -17,6 +17,18 @@ import event from './event'
 import Context from './context.js'
 import packageValidator from './package-validator'
 
+class POZRunner {
+  constructor(packageSourceDir, {
+    write = true
+  }) {
+
+  }
+
+  use() {
+
+  }
+}
+
 function POZ(packageSourceDir) {
 
   const cwd = process.cwd()

@@ -6,8 +6,8 @@
     "url": "ULIVZ/poz",
     "type": "poz"
   },
-  "bin": "bin/index.js",
-  "main": "dist/poz.cjs.js",
+  "bin": "dist/cli.js",
+  "main": "dist/index.js",
   "files": [
     "dist"
   ],
@@ -17,7 +17,7 @@
     "test": "BABEL_ENV=test npm run lint && jest",
     "lint": "xo",
     "prepublish": "npm run build",
-    "build": "bili --name poz --banner --plugin json --exports named --js babel --no-babel.babelrc",
+    "build": "bili src/{index,cli}.js --filename [name].js --banner --plugin json --exports named --js babel --no-babel.babelrc",
     "example": "poi --config build/poi.config.js",
     "build:example": "poi build --config build/poi.config.js",
     "gh": "gh-pages -d example/dist",

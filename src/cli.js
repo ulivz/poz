@@ -1,13 +1,10 @@
 #!/usr/bin/env node
-const cac = require('cac')
-const { POZ } = require('../dist/poz.cjs.js')
 
-const pozCommand = require('./poz')
-const pozPackageCommand = require('./poz-package')
-const pozCleanCommand = require('./poz-clean')
-
-const utils = require('./utils')
-utils.initLogger(POZ.utils.logger)
+import cac from 'cac'
+import { POZ } from './index'
+import pozCommand from './cli/poz'
+import pozPackageCommand from './cli/poz-package'
+import pozCleanCommand from './cli/poz-clean'
 
 const cli = cac()
 
