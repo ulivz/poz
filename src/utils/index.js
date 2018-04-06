@@ -10,8 +10,8 @@ import { promisify } from './promise'
 import * as string from './string'
 import * as prompts from './prompts'
 import * as datatypes from './datatypes'
-import * as fs from './fs'
-import * as path from './path'
+
+import fs from './fs'
 
 export {
   assign,
@@ -27,7 +27,6 @@ export {
   string,
   prompts,
   datatypes,
-  fs,
-  path
+  fs
 }
 

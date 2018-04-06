@@ -1,5 +1,5 @@
 import fs from './fs'
-import { resolve } from './path'
+import { resolve } from 'path'
 
 export function getPkg(baseDir) {
   const pkgPath = resolve(baseDir || process.cwd(), 'package.json')

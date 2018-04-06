@@ -1,6 +1,6 @@
 import fs from '../utils/fs'
 import { isFunction, isPlainObject } from '../utils/datatypes'
-import { resolve } from '../utils/path'
+import { resolve } from 'path'
 import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
 import { getPackageValidateError } from '../error/error'
 
