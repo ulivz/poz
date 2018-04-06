@@ -1,7 +1,7 @@
 import _ from 'chalk'
-import { assign } from '../utils/mixin'
+import { assign } from './mixin'
 import textable from 'text-table'
-import { isPlainObject, isArray } from '../utils/datatypes'
+import { isPlainObject, isArray } from './datatypes'
 import env from '../core/env'
 
 const GLOBAL_INDENT = '  '

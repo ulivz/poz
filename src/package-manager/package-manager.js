@@ -1,6 +1,6 @@
 import ora from 'ora'
 import fs from '../utils/fs'
-import logger from '../logger/logger'
+import logger from '../utils/logger'
 import path from 'path'
 // import pkg from '../../package.json'
 import home from 'user-home'

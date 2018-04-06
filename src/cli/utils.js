@@ -1,4 +1,4 @@
-import _ from '../logger/logger'
+import _ from '../utils/logger'
 
 /**
  * Flattern cached packagesMap, used to log

@@ -1,33 +1,18 @@
 import alphax from 'alphax'
-import log from '../logger/logger'
-import * as cfs from '../utils/fs'
-import { getGitUser } from '../utils/git'
 import { relative } from 'path'
-import { assign } from '../utils/mixin'
-import { consolelog, assert } from './utils.js'
 import { getNormalizedConfig } from './normalize-config'
-import { isFunction } from '../utils/datatypes'
-import { isDev, isTest } from './env'
-import { RENDER_ENGINE, LIFE_CYCLE, EXPORTED_UTILS } from './presets'
+import { RENDER_ENGINE, LIFE_CYCLE } from './presets'
 import { RENDER_FAILURE, RENDER_SUCCESS } from './event-names'
+import { isDev, isTest } from './env'
 import * as env from './env'
 import * as presets from './presets'
-import { promptsRunner, mockPromptsRunner, promptsTransformer } from '../utils/prompts'
 import event from './event'
 import Context from './context.js'
 import packageValidator from './package-validator'
+import utils, { logger as log, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
 
-class POZRunner {
-  constructor(packageSourceDir, {
-    write = true
-  }) {
-
-  }
-
-  use() {
-
-  }
-}
+const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
+const { isFunction } = datatypes
 
 function POZ(packageSourceDir) {
 
@@ -197,7 +182,6 @@ function POZ(packageSourceDir) {
   }
 }
 
-POZ.utils = EXPORTED_UTILS
-assign(POZ.utils.fs, cfs)
+POZ.utils = utils
 
 export default POZ

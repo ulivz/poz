@@ -1,5 +1,5 @@
 import * as errorConfig from './error-config'
-import logger from '../logger/logger'
+import logger from '../utils/logger'
 
 export function getError(key, ...args) {
   let error = errorConfig[key]
