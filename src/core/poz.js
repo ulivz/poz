@@ -24,18 +24,12 @@ function POZ(packageSourceDir) {
   let status
   let app
 
-  /**
-   * Validate the POZ package, and get the content of config file
-   */
   const {
     errors,
     packageTemplateDir,
     userConfig
   } = packageValidator(packageSourceDir, [context, utils])
 
-  /**
-   * Throw if error
-   */
   function throwIfError() {
     if (errors.length) {
       if (isDev) {
@@ -45,9 +39,6 @@ function POZ(packageSourceDir) {
     }
   }
 
-  /**
-   * Initialize render context
-   */
   function initializeContext() {
     user = getGitUser()
     context.assign({
@@ -60,9 +51,6 @@ function POZ(packageSourceDir) {
     })
   }
 
-  /**
-   * Initialize binding the life cycle listener
-   */
   function bindHookListener() {
     for (const hookname of LIFE_CYCLE) {
       const handler = userConfig[hookname]
@@ -92,9 +80,6 @@ function POZ(packageSourceDir) {
     log.echo(error)
   }
 
-  /**
-   * Dispose user config
-   */
   function disposeUserConfig() {
     normalizedConfig = getNormalizedConfig(
       {
@@ -109,9 +94,6 @@ function POZ(packageSourceDir) {
     context.set('$config', normalizedConfig)
   }
 
-  /**
-   * Running prompt according to config
-   */
   function prompt() {
     event.emit('onPromptStart')
     let { prompts } = userConfig
@@ -123,9 +105,6 @@ function POZ(packageSourceDir) {
     return envPromptsRunner(prompts)
   }
 
-  /**
-   * Dest files
-   */
   function dest() {
     app = alphax()
     const { rename, filter, render, outDir } = normalizedConfig
@@ -144,9 +123,6 @@ function POZ(packageSourceDir) {
       })
   }
 
-  /**
-   * Runner
-   */
   function launch() {
     event.on(RENDER_FAILURE, handleRenderFailure)
     event.on(RENDER_SUCCESS, handleRenderSuccess)
@@ -178,7 +154,5 @@ function POZ(packageSourceDir) {
     userConfig
   }
 }
-
-POZ.utils = utils
 
 export default POZ

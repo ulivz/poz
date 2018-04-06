@@ -1,5 +1,4 @@
 import path from 'path'
-import fs from 'fs-extra'
 import fs from '../utils/fs'
 import Package from './package'
 import PackageValidator from '../core/package-validator'

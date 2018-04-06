@@ -1,6 +1,6 @@
 import { errorListLogger, localPackagesLogger, localPackagesValidateResultLogger } from './utils'
 import { POZ, Package, PackageManager } from '../index'
-const { logger, prompts } = POZ.utils
+import { logger, prompts } from '../utils/index'
 
 export default function (cli) {
 
@@ -99,7 +99,7 @@ export default function (cli) {
           }
 
           const TIMEOUT = 60000
-          let manager = new POZ.PackageManager()
+          let manager = new PackageManager()
           manager.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {

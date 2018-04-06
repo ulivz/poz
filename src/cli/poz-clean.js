@@ -1,6 +1,5 @@
-import { POZ, PackageManager } from '../index'
-
-const { logger, prompts } = POZ.utils
+import { PackageManager } from '../index'
+import { logger, prompts } from '../utils/index'
 
 export default function (cli) {
 
