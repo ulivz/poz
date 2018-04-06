@@ -8,14 +8,13 @@ module.exports = function (ctx) {
 
   return {
 
-    dest() {
+    get target() {
+      return ctx.$sourceDir + '/dist'
+    },
+
+    get rename() {
       return {
-        // Since during the test. test program would change the `process.cwd()`.
-        // So using `poz.cwd` which is static through the whole life cycle.
-        target: ctx.$sourceDir + '/dist',
-        rename: {
-          '{js}': '.js'
-        }
+        '{js}': '.js'
       }
     },
 

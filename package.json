@@ -14,7 +14,7 @@
   "scripts": {
     "test:cov:local": "DEV_ENV=local BABEL_ENV=test jest src/** --coverage",
     "test:cov:ci": "BABEL_ENV=test jest src/** --coverage",
-    "test": "BABEL_ENV=test jest",
+    "test": "BABEL_ENV=test jest src/core/__test__/poz.test.js",
     "lint": "xo",
     "prepublish": "npm run build",
     "build": "bili src/{index,cli}.js --filename [name].js --banner --plugin json --exports named --js babel --no-babel.babelrc",
@@ -55,6 +55,7 @@
     "@types/inquirer": "0.0.35",
     "@types/node": "^8.0.47",
     "@types/vinyl": "^2.0.1",
+    "babel-preset-env": "^1.6.1",
     "eslint-config-ulivz": "^1.0.0",
     "gh-pages": "^1.0.0",
     "glob": "^7.1.2",

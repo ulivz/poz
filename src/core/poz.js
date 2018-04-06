@@ -14,7 +14,11 @@ import utils, { logger as log, prompts, datatypes, consolelog, assert, getGitUse
 const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
 const { isFunction } = datatypes
 
-function POZ(packageSourceDir) {
+function POZ(packageSourceDir, { write = true } = {}) {
+
+  if (arguments[1] === false) {
+    write = false
+  }
 
   const cwd = process.cwd()
   const context = Context()
@@ -114,10 +118,8 @@ function POZ(packageSourceDir) {
       filters,
       transform: render
     })
-    return app.dest(outDir || '.')
-      .then(() => {
-        event.emit('onDestEnd')
-      })
+    return app.dest(outDir || '.', { write })
+      .then(() => app.fileMap())
       .catch(error => {
         assert(isTest, error)
       })
@@ -136,9 +138,14 @@ function POZ(packageSourceDir) {
         context.assign(answers)
         event.emit('onPromptEnd')
         disposeUserConfig()
+        event.emit('onDestStart')
         return dest()
       })
-      .then(() => event.emit('onExit'))
+      .then(files => {
+        event.emit('onDestEnd')
+        event.emit('onExit')
+        return files
+      })
       .catch(error => {
         throw error
         event.emit('onExit', error)
