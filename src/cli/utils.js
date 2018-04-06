@@ -65,3 +65,33 @@ export function localPackagesValidateResultLogger(packageValidationResultList) {
   }
 }
 
+/**
+ * Curry use function for CAC.
+ * @param {function(cac)} commandFn
+ * @returns {cac}
+ */
+export function curryUse(CLI) {
+  return function use(commandFn) {
+    const { command, options, alias } = commandFn(CLI)
+    const oldCommandHandler = command.handler
+    const newCommandHandler = (input, flags) => {
+      for (let i = 0, l = options.length; i < l; i++) {
+        let option = options[i]
+        if (flags[option.name]) {
+          option.handler(input, flags)
+          return
+        }
+      }
+      oldCommandHandler(input, flags)
+    }
+    const cacCommand = CLI.command(command.name, command.opts, newCommandHandler)
+    options.forEach(option => cacCommand.option(option.name, option.opts))
+    if (alias) {
+      if (!CLI.aliasMap) {
+        CLI.aliasMap = {}
+      }
+      CLI.aliasMap[alias] = command.name
+    }
+    return CLI
+  }
+}
