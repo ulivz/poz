@@ -162,9 +162,7 @@ function POZ(packageSourceDir) {
         disposeUserConfig()
         return dest()
       })
-      .then(() => {
-        event.emit('onExit')
-      })
+      .then(() => event.emit('onExit'))
       .catch(error => {
         throw error
         event.emit('onExit', error)
