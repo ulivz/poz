@@ -1,5 +1,8 @@
 import { errorListLogger, localPackagesLogger } from './utils'
 import { POZ, Package, PackageManager } from '../index'
+import pkg from '../../package.json'
+
+const { description } = pkg
 
 const { logger } = POZ.utils
 
@@ -8,7 +11,7 @@ export default function (cli) {
     command: {
       name: '*',
       opts: {
-        desc: 'Programmable scaffolding generator',
+        desc: description,
       },
       handler: function (input, flags) {
 
