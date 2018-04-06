@@ -72,7 +72,7 @@ export function localPackagesValidateResultLogger(packageValidationResultList) {
  */
 export function curryUse(CLI) {
   return function use(commandFn) {
-    const { command, options, alias } = commandFn(CLI)
+    const { command, options } = commandFn(CLI)
     const oldCommandHandler = command.handler
     const newCommandHandler = (input, flags) => {
       for (let i = 0, l = options.length; i < l; i++) {
@@ -86,12 +86,6 @@ export function curryUse(CLI) {
     }
     const cacCommand = CLI.command(command.name, command.opts, newCommandHandler)
     options.forEach(option => cacCommand.option(option.name, option.opts))
-    if (alias) {
-      if (!CLI.aliasMap) {
-        CLI.aliasMap = {}
-      }
-      CLI.aliasMap[alias] = command.name
-    }
     return CLI
   }
 }

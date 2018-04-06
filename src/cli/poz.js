@@ -1,6 +1,5 @@
 import { errorListLogger, localPackagesLogger } from './utils'
-import { POZ, Package, PackageManager } from '../index'
-const { logger } = POZ.utils
+import { POZ, PackageManager } from '../index'
 
 export default function (cli) {
   return {
@@ -9,24 +8,17 @@ export default function (cli) {
       opts: {
         desc: 'Programmable scaffolding generator',
       },
-      handler: function (input, flags) {
-
-        // Implementation for alias
-        if (cli.aliasMap[input[0]]) {
-          let argv = process.argv.slice(2)
-          argv[0] = cli.aliasMap[input[0]]
-          return cli.parse(argv)
-        }
-
-        let manager = new PackageManager()
+      handler(input, flags) {
+        const pm = new PackageManager()
+        
         if (!input.length) {
           cli.showHelp()
-          localPackagesLogger(manager.cache.getItem('packagesMap'))
+          localPackagesLogger(pm.cache.getItem('packagesMap'))
 
         } else {
           const requestName = input[0]
           const TIMEOUT = 60000
-          manager.fetchPkg(requestName, TIMEOUT)
+          pm.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {
                 const app = new POZ(pkg.cachePath)
