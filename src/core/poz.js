@@ -17,7 +17,6 @@ const { isFunction } = datatypes
 function POZ(packageSourceDir) {
 
   const cwd = process.cwd()
-  const utils = EXPORTED_UTILS
   const context = Context()
 
   let normalizedConfig
