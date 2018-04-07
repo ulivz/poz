@@ -3,7 +3,7 @@ import downloadNpmPkg from 'download-npm-package'
 import path from 'path'
 import fs from 'fs-extra'
 
-export default function POZDownloader(pozPackage) {
+export default function downloader(pozPackage) {
 
   const { origin, packageName, requestName, cachePath } = pozPackage
 

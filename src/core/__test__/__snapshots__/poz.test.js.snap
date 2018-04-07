@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`POZ Should each life cycle works 1`] = `
+Object {
+  "README.md": "# fixtures
+
+- description: my awesome project
+- author: POZ
+",
+  "src": null,
+  "src/index.js": "module.exports = function fixtures() {
+  // Go hacking!
+}",
+}
+`;

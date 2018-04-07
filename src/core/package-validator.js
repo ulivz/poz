@@ -2,7 +2,7 @@ import fs from '../utils/fs'
 import { isFunction, isPlainObject } from '../utils/datatypes'
 import { resolve } from 'path'
 import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
-import { getPackageValidateError } from '../error/error'
+import { getPackageValidateError } from './error'
 
 export default function PackageValidator(packagePath, userArgs) {
 
