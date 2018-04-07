@@ -1,5 +1,12 @@
 import * as errorConfig from './error-config'
-import logger from '../utils/logger'
+import { logger } from '../utils/index'
+
+export default class POZError extends Error {
+  constructor(message, code) {
+    super(message)
+    this.code = code
+  }
+}
 
 export function getError(key, ...args) {
   let error = errorConfig[key]
@@ -12,9 +19,11 @@ export function getError(key, ...args) {
     let part = errorParts[i]
     errorString = errorString + part + (logger.errorItemStyle(args.shift() || ''))
   }
-  return new Error(errorString, key)
+  return new POZError(errorString, key)
 }
 
 export function getPackageValidateError(key, ...args) {
   return getError(key, ...args)
 }
+
+
