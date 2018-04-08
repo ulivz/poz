@@ -1,7 +1,7 @@
 import fs from '../utils/fs'
 import { isFunction, isPlainObject } from '../utils/datatypes'
 import { resolve } from 'path'
-import { PACKAGE_INDEX_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
+import { PACKAGE_ENTRY_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
 import { getPackageValidateError } from './error'
 
 class POZPackageError {
@@ -25,7 +25,7 @@ class POZPackageError {
 }
 
 export function validatePackage(packagePath, {
-  packageEntryFileName,
+  EntryFileName,
   templateDirName,
   exportArguements = []
 } = {}) {
@@ -40,11 +40,11 @@ export function validatePackage(packagePath, {
   }
 
   // 3. Check if entry file exists
-  const indexFile = resolve(packagePath, packageEntryFileName)
+  const indexFile = resolve(packagePath, EntryFileName)
   let userConfig
 
   if (!fs.existsSync(indexFile)) {
-    error.push('MISSING_INDEX_FILE', indexFile)
+    error.push('MISSING_ENTRY_FILE', indexFile)
   } else {
 
     // 4. Check if entry file exports a plain object or function
@@ -53,12 +53,12 @@ export function validatePackage(packagePath, {
 
       if (isPlainObject(userConfig)) {
         if (JSON.stringify(userConfig) === '{}') {
-          error.push('CANNOT_EXPORT_EMPTY_OBJECT', packageEntryFileName)
+          error.push('CANNOT_EXPORT_EMPTY_OBJECT', EntryFileName)
         }
       } else if (isFunction(userConfig)) {
         userConfig = userConfig(...exportArguements)
       } else {
-        error.push('UNEXPECTED_INDEX_FILE')
+        error.push('UNEXPECTED_ENTRY_FILE')
       }
     } catch (error) {
       if (error.name === 'TypeError') {
@@ -104,11 +104,11 @@ export default function PackageValidator(packagePath, userArgs) {
   }
 
   // 3. Check if 'poz.js' exists
-  const indexFile = resolve(packagePath, PACKAGE_INDEX_FILE_NAME)
+  const indexFile = resolve(packagePath, PACKAGE_ENTRY_FILE_NAME)
   let userConfig
 
   if (!fs.existsSync(indexFile)) {
-    errors.push(getPackageValidateError('MISSING_INDEX_FILE', indexFile))
+    errors.push(getPackageValidateError('MISSING_ENTRY_FILE', indexFile))
 
   } else {
 
@@ -117,18 +117,18 @@ export default function PackageValidator(packagePath, userArgs) {
       userConfig = require(indexFile)
       if (!isPlainObject(userConfig)) {
         if (!isFunction(userConfig)) {
-          errors.push(getPackageValidateError('UNEXPECTED_INDEX_FILE'))
+          errors.push(getPackageValidateError('UNEXPECTED_ENTRY_FILE'))
         } else if (userArgs && userArgs.length) {
           userConfig = userConfig(...userArgs)
         }
       } else {
         if (JSON.stringify(userConfig) === '{}') {
-          errors.push(getPackageValidateError('UNEXPECTED_INDEX_FILE'))
+          errors.push(getPackageValidateError('UNEXPECTED_ENTRY_FILE'))
         }
       }
     } catch (error) {
       if (error.name === 'TypeError') {
-        errors.push(getPackageValidateError('UNEXPECTED_INDEX_FILE'))
+        errors.push(getPackageValidateError('UNEXPECTED_ENTRY_FILE'))
         console.log(error)
       } else {
         throw error
