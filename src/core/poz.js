@@ -8,23 +8,12 @@ import * as env from './env'
 import * as presets from './presets'
 import event from './event'
 import Context from './context.js'
-import packageValidator from './package-validator'
-import { getPackageValidateError } from './error'
+import { validatePackage } from './package-validator'
 import utils, { logger as log, fs, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
 
 const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
 const { isFunction, isArray, isPlainObject } = datatypes
 
-/**
- * This function was for resolving the package. A relative or absolute path to the target package
- * should be given, then the package's info will be return.
- */
-function resolvePackage(packagePath, {
-  packageEntryFileName = 'poz.js',
-  templateDirName = 'template'
-}) {
-
-}
 
 function POZ(packageSourceDir, { write = true } = {}) {
 
@@ -41,29 +30,31 @@ function POZ(packageSourceDir, { write = true } = {}) {
   let app
 
   const {
-    errors,
-    packageTemplateDir,
+    error,
+    templateDir,
     userConfig
-  } = packageValidator(packageSourceDir, [context, utils])
+  } = validatePackage(packageSourceDir, {
+    exportArguements: [context, utils]
+  })
 
   function throwIfError() {
-    if (errors.length) {
+    if (error.notEmpty()) {
       if (isDev) {
-        throw new Error(errors.shift().code)
+        throw new Error(error.currentErrorCode())
       }
-      throw new Error(errors.shift().message)
+      throw new Error(error.currentErrorMessage())
     }
   }
 
   function initializeContext() {
     user = getGitUser()
     context.assign({
-      $cwd: cwd,
-      $env: env,
-      $dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
-      $gituser: user.name,
-      $gitemail: user.email,
-      $sourceDir: packageSourceDir
+      cwd: cwd,
+      env: env,
+      dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
+      gituser: user.name,
+      gitemail: user.email,
+      dirpath: packageSourceDir
     })
   }
 
@@ -86,12 +77,12 @@ function POZ(packageSourceDir, { write = true } = {}) {
   }
 
   function handleRenderSuccess(file) {
-    let filePath = relative(packageTemplateDir, file.path)
+    let filePath = relative(templateDir, file.path)
     log.success(`render ${log.cyan(filePath)}`)
   }
 
   function handleRenderFailure(error, file) {
-    let filePath = relative(packageTemplateDir, file.path)
+    let filePath = relative(templateDir, file.path)
     log.error(`render ${log.cyan(filePath)}`)
     log.echo(error)
   }
@@ -107,7 +98,7 @@ function POZ(packageSourceDir, { write = true } = {}) {
       userConfig,
       context
     )
-    context.set('$config', normalizedConfig)
+    context.set('config', normalizedConfig)
   }
 
   function prompt() {
@@ -124,14 +115,19 @@ function POZ(packageSourceDir, { write = true } = {}) {
   function dest() {
     app = alphax()
     const { rename, filters, render, outDir } = normalizedConfig
-    app.src(packageTemplateDir + '/**', {
-      baseDir: packageTemplateDir,
+    console.log(normalizedConfig)
+    app.src(templateDir + '/**', {
+      baseDir: templateDir,
       rename,
       filters,
       transform: render
     })
     return app.dest(outDir || '.', { write })
-      .then(() => app.fileMap())
+      .then(() => {
+
+        console.log(app)
+        return app.fileMap()
+      })
       .catch(error => {
         assert(isTest, error)
       })
@@ -169,7 +165,7 @@ function POZ(packageSourceDir, { write = true } = {}) {
     context,
     utils,
     launch,
-    errors,
+    error,
     userConfig
   }
 }

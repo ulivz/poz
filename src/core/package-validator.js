@@ -15,18 +15,26 @@ class POZPackageError {
       getPackageValidateError(errorName, ...args))
   }
 
+  currentErrorCode() {
+    return this.peek().code
+  }
+
+  currentErrorMessage() {
+    return this.peek().message
+  }
+
   peek() {
     return this.errors[0]
   }
 
-  isEmpty() {
-    return this.errors.length === 0
+  notEmpty() {
+    return this.errors.length !== 0
   }
 }
 
 export function validatePackage(packagePath, {
-  EntryFileName,
-  templateDirName,
+  entryFileName = 'poz.js',
+  templateDirName = 'template',
   exportArguements = []
 } = {}) {
   const error = new POZPackageError()
@@ -40,7 +48,7 @@ export function validatePackage(packagePath, {
   }
 
   // 3. Check if entry file exists
-  const indexFile = resolve(packagePath, EntryFileName)
+  const indexFile = resolve(packagePath, entryFileName)
   let userConfig
 
   if (!fs.existsSync(indexFile)) {
@@ -53,7 +61,7 @@ export function validatePackage(packagePath, {
 
       if (isPlainObject(userConfig)) {
         if (JSON.stringify(userConfig) === '{}') {
-          error.push('CANNOT_EXPORT_EMPTY_OBJECT', EntryFileName)
+          error.push('CANNOT_EXPORT_EMPTY_OBJECT', entryFileName)
         }
       } else if (isFunction(userConfig)) {
         userConfig = userConfig(...exportArguements)
@@ -85,66 +93,6 @@ export function validatePackage(packagePath, {
 
   return {
     error,
-    indexFile,
-    templateDir,
-    userConfig
-  }
-}
-
-export default function PackageValidator(packagePath, userArgs) {
-
-  const errors = []
-
-  // 1. Check if the package path exists
-  if (!fs.existsSync(packagePath)) {
-    errors.push(getPackageValidateError('NOT_FOUND', packagePath))
-    // 2. If the package path exists, Check if the package path is a directory
-  } else if (!fs.isDirectory(packagePath)) {
-    errors.push(getPackageValidateError('MUST_BE_DIRECTORY', packagePath))
-  }
-
-  // 3. Check if 'poz.js' exists
-  const indexFile = resolve(packagePath, PACKAGE_ENTRY_FILE_NAME)
-  let userConfig
-
-  if (!fs.existsSync(indexFile)) {
-    errors.push(getPackageValidateError('MISSING_ENTRY_FILE', indexFile))
-
-  } else {
-
-    // 4. Check if 'poz.js' exports a plain object or function
-    try {
-      userConfig = require(indexFile)
-      if (!isPlainObject(userConfig)) {
-        if (!isFunction(userConfig)) {
-          errors.push(getPackageValidateError('UNEXPECTED_ENTRY_FILE'))
-        } else if (userArgs && userArgs.length) {
-          userConfig = userConfig(...userArgs)
-        }
-      } else {
-        if (JSON.stringify(userConfig) === '{}') {
-          errors.push(getPackageValidateError('UNEXPECTED_ENTRY_FILE'))
-        }
-      }
-    } catch (error) {
-      if (error.name === 'TypeError') {
-        errors.push(getPackageValidateError('UNEXPECTED_ENTRY_FILE'))
-        console.log(error)
-      } else {
-        throw error
-      }
-    }
-  }
-
-  // 5. Check if the 'template' directory exists
-  const templateDir = resolve(packagePath, TEMPLATE_DIRECTORY_NAME)
-  // when 'userConfig.dest' = false, skip this check.
-  if (userConfig && userConfig.dest !== false && !fs.existsSync(templateDir)) {
-    errors.push(getPackageValidateError('MISSING_TEMPLATE_DIRECTORY', templateDir))
-  }
-
-  return {
-    errors,
     indexFile,
     templateDir,
     userConfig
