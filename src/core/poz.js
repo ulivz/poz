@@ -9,10 +9,22 @@ import * as presets from './presets'
 import event from './event'
 import Context from './context.js'
 import packageValidator from './package-validator'
-import utils, { logger as log, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
+import { getPackageValidateError } from './error'
+import utils, { logger as log, fs, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
 
 const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
-const { isFunction } = datatypes
+const { isFunction, isArray, isPlainObject } = datatypes
+
+/**
+ * This function was for resolving the package. A relative or absolute path to the target package
+ * should be given, then the package's info will be return.
+ */
+function resolvePackage(packagePath, {
+  packageEntryFileName = 'poz.js',
+  templateDirName = 'template'
+}) {
+
+}
 
 function POZ(packageSourceDir, { write = true } = {}) {
 
