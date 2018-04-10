@@ -42,7 +42,6 @@
     "download-npm-package": "^3.1.11",
     "fs-extra": "^4.0.2",
     "git-config-path": "^1.0.1",
-    "handlebars2": "^0.1.1",
     "inquirer": "^3.3.0",
     "jstransformer": "^1.0.0",
     "jstransformer-handlebars": "^1.1.0",
