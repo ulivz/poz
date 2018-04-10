@@ -1,5 +1,3 @@
-import handlebars2 from 'handlebars2'
-
 export const LIFE_CYCLE = [
   'onStart',
   'onPromptStart',
@@ -10,5 +8,5 @@ export const LIFE_CYCLE = [
 ]
 
 export const TEMPLATE_DIRECTORY_NAME = 'template'
-export const PACKAGE_INDEX_FILE_NAME = 'poz.js'
-export const RENDER_ENGINE = handlebars2.render
+export const PACKAGE_ENTRY_FILE_NAME = 'poz.js'
+

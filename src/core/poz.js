@@ -12,8 +12,7 @@ import { validatePackage } from './package-validator'
 import utils, { logger as log, fs, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
 
 const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
-const { isFunction, isArray, isPlainObject } = datatypes
-
+const { isFunction } = datatypes
 
 function POZ(packageSourceDir, { write = true } = {}) {
 
@@ -88,16 +87,7 @@ function POZ(packageSourceDir, { write = true } = {}) {
   }
 
   function disposeUserConfig() {
-    normalizedConfig = getNormalizedConfig(
-      {
-        outDir: cwd,
-        filters: null,
-        rename: null,
-        render: RENDER_ENGINE
-      },
-      userConfig,
-      context
-    )
+    normalizedConfig = getNormalizedConfig(userConfig, context)
     context.set('config', normalizedConfig)
   }
 
@@ -115,7 +105,6 @@ function POZ(packageSourceDir, { write = true } = {}) {
   function dest() {
     app = alphax()
     const { rename, filters, render, outDir } = normalizedConfig
-    console.log(normalizedConfig)
     app.src(templateDir + '/**', {
       baseDir: templateDir,
       rename,

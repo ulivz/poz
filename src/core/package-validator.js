@@ -33,8 +33,8 @@ class POZPackageError {
 }
 
 export function validatePackage(packagePath, {
-  entryFileName = 'poz.js',
-  templateDirName = 'template',
+  entryFileName = PACKAGE_ENTRY_FILE_NAME,
+  templateDirName = TEMPLATE_DIRECTORY_NAME,
   exportArguements = []
 } = {}) {
   const error = new POZPackageError()
