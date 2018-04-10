@@ -1,7 +1,7 @@
 import alphax from 'alphax'
 import { relative } from 'path'
 import { getNormalizedConfig } from './normalize-config'
-import { RENDER_ENGINE, LIFE_CYCLE } from './presets'
+import { LIFE_CYCLE } from './presets'
 import { RENDER_FAILURE, RENDER_SUCCESS } from './event-names'
 import { isDev, isTest } from './env'
 import * as env from './env'
@@ -112,11 +112,7 @@ function POZ(packageSourceDir, { write = true } = {}) {
       transform: render
     })
     return app.dest(outDir || '.', { write })
-      .then(() => {
-
-        console.log(app)
-        return app.fileMap()
-      })
+      .then(() => app.fileMap())
       .catch(error => {
         assert(isTest, error)
       })

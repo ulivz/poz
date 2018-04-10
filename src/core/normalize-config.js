@@ -5,7 +5,9 @@ import { isString, isPlainObject, isFunction, isNullOrUndefined } from '../utils
 
 function getRender(render = 'handlebars') {
   if (isString(render)) {
-    return transformer(require(`jstransformer-${render}`))
+    const renderEngine = transformer(require(`jstransformer-${render}`))
+    // Implement a unified interface
+    return (str, ctx) => renderEngine.render(str, {}, ctx).body
   }
   return render
 }
@@ -65,7 +67,12 @@ export function getNormalizedConfig(userConfig = {}, context) {
     filters = null
   } = userConfig
 
+  console.log(render)
+
   render = getRender(render)
+
+  console.log(render)
+
   if (isFunction(outDir)) outDir = outDir()
   if (isFunction(rename)) rename = rename()
   if (isFunction(filters)) filters = filters()
