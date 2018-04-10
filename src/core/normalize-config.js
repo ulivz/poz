@@ -64,14 +64,11 @@ export function getNormalizedConfig(userConfig = {}, context) {
     render,
     outDir = context.cwd,
     rename = null,
-    filters = null
+    filters = null,
+    ...rest
   } = userConfig
 
-  console.log(render)
-
   render = getRender(render)
-
-  console.log(render)
 
   if (isFunction(outDir)) outDir = outDir()
   if (isFunction(rename)) rename = rename()
@@ -108,6 +105,7 @@ export function getNormalizedConfig(userConfig = {}, context) {
     render,
     outDir,
     rename,
-    filters
+    filters,
+    ...rest
   }
 }

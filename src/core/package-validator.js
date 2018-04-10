@@ -3,6 +3,7 @@ import { isFunction, isPlainObject } from '../utils/datatypes'
 import { resolve } from 'path'
 import { PACKAGE_ENTRY_FILE_NAME, TEMPLATE_DIRECTORY_NAME } from './presets'
 import { getPackageValidateError } from './error'
+import { isDev } from './env'
 
 class POZPackageError {
   constructor(packagePath) {
@@ -29,6 +30,15 @@ class POZPackageError {
 
   notEmpty() {
     return this.errors.length !== 0
+  }
+
+  throwIfError() {
+    if (this.notEmpty()) {
+      if (isDev) {
+        throw new Error(this.currentErrorCode())
+      }
+      throw new Error(this.currentErrorMessage())
+    }
   }
 }
 

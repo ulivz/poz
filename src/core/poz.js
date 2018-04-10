@@ -9,64 +9,65 @@ import * as presets from './presets'
 import event from './event'
 import Context from './context.js'
 import { validatePackage } from './package-validator'
-import utils, { logger as log, fs, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
+import utils, { logger as log, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
 
 const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
 const { isFunction } = datatypes
 
-function POZ(packageSourceDir, { write = true } = {}) {
-
-  if (arguments[1] === false) {
-    write = false
-  }
-
-  const cwd = process.cwd()
-  const context = Context()
-
-  let normalizedConfig
-  let user
-  let status
-  let app
-
-  const {
-    error,
-    templateDir,
-    userConfig
-  } = validatePackage(packageSourceDir, {
-    exportArguements: [context, utils]
-  })
-
-  function throwIfError() {
-    if (error.notEmpty()) {
-      if (isDev) {
-        throw new Error(error.currentErrorCode())
-      }
-      throw new Error(error.currentErrorMessage())
+class POZ {
+  constructor(src, { write = true } = {}) {
+    this.src = src
+    this.templateDir = null
+    this.write = write
+    this.userConfig = null
+    this.normalizedConfig = null
+    this.user = {}
+    this.status = null
+    this.app = null
+    this.error = null
+    this.cwd = process.cwd()
+    this.context = Context()
+    if (arguments[1] === false) {
+      this.write = false
     }
+    this.validatePackage()
   }
 
-  function initializeContext() {
-    user = getGitUser()
-    context.assign({
-      cwd: cwd,
+  validatePackage() {
+    const {
+      error,
+      templateDir,
+      userConfig
+    } = validatePackage(this.src, {
+      exportArguements: [this.context, utils]
+    })
+    this.error = error
+    this.templateDir = templateDir
+    this.userConfig = userConfig
+  }
+
+  initializeContext() {
+    this.user = getGitUser()
+    this.context.assign({
+      cwd: this.cwd,
       env: env,
-      dirname: cwd.slice(cwd.lastIndexOf('/') + 1),
-      gituser: user.name,
-      gitemail: user.email,
-      dirpath: packageSourceDir
+      dirname: this.cwd.slice(this.cwd.lastIndexOf('/') + 1),
+      gituser: this.user.name,
+      gitemail: this.user.email,
+      src: this.src
     })
   }
 
-  function bindHookListener() {
+  bindHookListener() {
     for (const hookname of LIFE_CYCLE) {
-      const handler = userConfig[hookname]
+      const handler = this.userConfig[hookname]
       if (!handler) {
         continue
       }
       if (isFunction(handler)) {
         event.on(hookname, (...args) => {
           consolelog(isTest, `Running ${log.cyan(hookname)} ...`)
-          status = hookname
+          this.status = hookname
           handler(...args)
         })
       } else {
@@ -75,25 +76,25 @@ function POZ(packageSourceDir, { write = true } = {}) {
     }
   }
 
-  function handleRenderSuccess(file) {
-    let filePath = relative(templateDir, file.path)
+  handleRenderSuccess(file) {
+    let filePath = relative(this.src, file.path)
     log.success(`render ${log.cyan(filePath)}`)
   }
 
-  function handleRenderFailure(error, file) {
-    let filePath = relative(templateDir, file.path)
+  handleRenderFailure(error, file) {
+    let filePath = relative(this.src, file.path)
     log.error(`render ${log.cyan(filePath)}`)
     log.echo(error)
   }
 
-  function disposeUserConfig() {
-    normalizedConfig = getNormalizedConfig(userConfig, context)
-    context.set('config', normalizedConfig)
+  disposeUserConfig() {
+    this.normalizedConfig = getNormalizedConfig(this.userConfig, this.context)
+    this.context.set('config', this.normalizedConfig)
   }
 
-  function prompt() {
+  prompt() {
     event.emit('onPromptStart')
-    let { prompts } = userConfig
+    let { prompts } = this.userConfig
     const promptsMetadata = isFunction(prompts) ? prompts() : prompts
     prompts = promptsTransformer(promptsMetadata)
     const envPromptsRunner = isTest
@@ -102,57 +103,52 @@ function POZ(packageSourceDir, { write = true } = {}) {
     return envPromptsRunner(prompts)
   }
 
-  function dest() {
-    app = alphax()
-    const { rename, filters, render, outDir } = normalizedConfig
-    app.src(templateDir + '/**', {
-      baseDir: templateDir,
+  dest() {
+    this.app = alphax()
+    const { rename, filters, render, outDir } = this.normalizedConfig
+    this.app.src(this.templateDir + '/**', {
+      baseDir: this.templateDir,
       rename,
       filters,
       transform: render
     })
-    return app.dest(outDir || '.', { write })
-      .then(() => app.fileMap())
+    return this.app.dest(outDir || '.', { write: this.write })
+      .then(() => this.app.fileMap())
       .catch(error => {
         assert(isTest, error)
       })
   }
 
-  function launch() {
-    event.on(RENDER_FAILURE, handleRenderFailure)
-    event.on(RENDER_SUCCESS, handleRenderSuccess)
-    throwIfError()
-    initializeContext()
-    bindHookListener()
-    event.emit('onStart')
+  launch() {
+    event.on(RENDER_FAILURE, this.handleRenderFailure.bind(this))
+    event.on(RENDER_SUCCESS, this.handleRenderFailure.bind(this))
 
-    return prompt()
+    this.error.throwIfError()
+    this.initializeContext()
+    this.bindHookListener()
+
+    event.emit('onStart')
+    return this.prompt()
+
       .then(answers => {
-        context.assign(answers)
+        this.context.assign(answers)
         event.emit('onPromptEnd')
-        disposeUserConfig()
+        this.disposeUserConfig()
         event.emit('onDestStart')
-        return dest()
+        return this.dest()
       })
+
       .then(files => {
         event.emit('onDestEnd')
         event.emit('onExit')
         return files
       })
+
       .catch(error => {
         throw error
         event.emit('onExit', error)
       })
   }
-
-  return {
-    presets,
-    context,
-    utils,
-    launch,
-    error,
-    userConfig
-  }
 }
 
-export default POZ
+export default (...args) => new POZ(...args)
