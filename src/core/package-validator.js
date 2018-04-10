@@ -43,7 +43,7 @@ class POZPackageError {
 }
 
 export default function validatePackage(src, {
-  entryFileName,
+  entryFileName = [],
   templateDirName,
   exportArguements = []
 } = {}) {

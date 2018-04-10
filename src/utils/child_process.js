@@ -1,7 +1,7 @@
 import child_process from 'child_process'
-import {isString, isFunction, isPlainObject} from './datatypes'
+import { isString, isFunction, isPlainObject } from './datatypes'
 
-export function exec(command, options, callback) {
+export function exec(command, options = {}, callback) {
   if (!command || !isString(command)) {
     throw new Error('Expected "command" to be string')
   }
@@ -17,6 +17,12 @@ export function exec(command, options, callback) {
   }
   return new Promise(resolve => {
     child_process.exec(command, options || {}, (error, stdout, stderr) => {
+      if (stdout) {
+        console.log(stdout)
+      }
+      if (stderr) {
+        console.log(stdout)
+      }
       callback && callback(error, stdout, stderr)
       resolve({ error, stdout, stderr })
     })

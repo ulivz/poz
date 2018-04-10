@@ -8,6 +8,8 @@ import * as env from './env'
 import event from './event'
 import Context from './context.js'
 import validatePackage  from './package-validator'
+import saoPlugin  from '../plugins/poz-sao-plugin'
+
 import utils, { logger as log, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
 
 const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
@@ -32,6 +34,7 @@ class POZ {
     if (arguments[1] === false) {
       this.write = false
     }
+    this.use(saoPlugin)
     return this
   }
 
@@ -133,7 +136,7 @@ class POZ {
   }
 
   launch() {
-    this.plugins.forEach(plugin => plugin())
+    this.plugins.forEach(plugin => plugin(this))
     this.validatePackage()
 
     event.on(RENDER_FAILURE, this.handleRenderFailure.bind(this))

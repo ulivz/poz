@@ -1,5 +1,7 @@
 import { errorListLogger, localPackagesLogger } from './utils'
+// import { exec, execSync } from '../utils'
 import { POZ, PackageManager } from '../index'
+import shelljs from 'shelljs'
 
 export default function (cli) {
   return {
@@ -18,9 +20,13 @@ export default function (cli) {
         } else {
           const requestName = input[0]
           const TIMEOUT = 60000
+          const prevCwd = process.cwd()
           pm.fetchPkg(requestName, TIMEOUT)
             .then(pkg => {
               if (pkg) {
+                process.chdir(pkg.cachePath)
+                shelljs.exec(`yarn`)
+                process.chdir(prevCwd)
                 const app = new POZ(pkg.cachePath)
                 return app.launch()
               }
