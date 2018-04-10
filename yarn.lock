@@ -785,11 +785,12 @@ alphanum-sort@^1.0.1, alphanum-sort@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/alphanum-sort/-/alphanum-sort-1.0.2.tgz#97a1119649b211ad33691d9f9f486a8ec9fbe0a3"
 
-alphax@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/alphax/-/alphax-1.0.1.tgz#e96cb8af76961640cf6ab25997d15fd1298b0bda"
+alphax@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/alphax/-/alphax-1.0.3.tgz#352e6e87ddc5dc56f02c033b3d17d5058690f1a7"
   dependencies:
     event-stream "^3.3.4"
+    minimatch "^3.0.4"
     tslib "^1.9.0"
     vinyl-fs "^3.0.1"
     ware "^1.3.0"
@@ -930,6 +931,10 @@ arrify@^1.0.0, arrify@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-1.0.1.tgz#898508da2226f380df904728456849c1501a4b0d"
 
+asap@~2.0.3:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/asap/-/asap-2.0.6.tgz#e50347611d7e690943208bbdafebcbc2fb866d46"
+
 asn1@~0.2.3:
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/asn1/-/asn1-0.2.3.tgz#dac8787713c9966849fc8180777ebe9c1ddf3b86"
@@ -959,6 +964,10 @@ async@2.6.0, async@^2.1.4:
 async@^1.4.0:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
+
+async@~0.2.6:
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -3603,7 +3612,7 @@ handlebars2@^0.1.1:
   dependencies:
     handlebars "^4.0.10"
 
-handlebars@^4.0.10, handlebars@^4.0.3:
+handlebars@^4.0.1, handlebars@^4.0.10, handlebars@^4.0.3:
   version "4.0.11"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.11.tgz#630a35dfe0294bc281edae6ffc5d329fc7982dcc"
   dependencies:
@@ -4217,7 +4226,7 @@ is-primitive@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/is-primitive/-/is-primitive-2.0.0.tgz#207bab91638499c07b2adf240a41a87210034575"
 
-is-promise@^2.1.0:
+is-promise@^2.0.0, is-promise@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-2.1.0.tgz#79a2a9ece7f096e80f36d2b2f3bc16c1ff4bf3fa"
 
@@ -4748,6 +4757,25 @@ jsprim@^1.2.2:
     extsprintf "1.3.0"
     json-schema "0.2.3"
     verror "1.10.0"
+
+jstransformer-handlebars@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/jstransformer-handlebars/-/jstransformer-handlebars-1.1.0.tgz#91ba56e0a28aee31bb56d4adbcbce508d8230468"
+  dependencies:
+    handlebars "^4.0.1"
+
+jstransformer-swig@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/jstransformer-swig/-/jstransformer-swig-1.0.0.tgz#5b614f5f77a0aaece9dc4b38df7b3747cf8bfb15"
+  dependencies:
+    swig-templates "^2.0.2"
+
+jstransformer@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/jstransformer/-/jstransformer-1.0.0.tgz#ed8bf0921e2f3f1ed4d5c1a44f68709ed24722c3"
+  dependencies:
+    is-promise "^2.0.0"
+    promise "^7.0.1"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
@@ -5363,7 +5391,7 @@ onetime@^2.0.0:
   dependencies:
     mimic-fn "^1.0.0"
 
-optimist@^0.6.1:
+optimist@^0.6.1, optimist@~0.6:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
   dependencies:
@@ -5984,6 +6012,12 @@ progress@^1.1.8:
 promise.series@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/promise.series/-/promise.series-0.2.0.tgz#2cc7ebe959fc3a6619c04ab4dbdc9e452d864bbd"
+
+promise@^7.0.1:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/promise/-/promise-7.3.1.tgz#064b72602b18f90f29192b8b1bc418ffd1ebd3bf"
+  dependencies:
+    asap "~2.0.3"
 
 promisify-function@^1.3.2:
   version "1.3.2"
@@ -7008,6 +7042,13 @@ svgo@^0.7.0:
     sax "~1.2.1"
     whet.extend "~0.9.9"
 
+swig-templates@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/swig-templates/-/swig-templates-2.0.2.tgz#d2502a7303019356f4ea76ea9065d4f58af6ab75"
+  dependencies:
+    optimist "~0.6"
+    uglify-js "2.6.0"
+
 symbol-tree@^3.2.1:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.2.tgz#ae27db38f660a7ae2e1c3b7d1bc290819b8519e6"
@@ -7267,6 +7308,15 @@ uglify-es@^3.3.7:
   dependencies:
     commander "~2.13.0"
     source-map "~0.6.1"
+
+uglify-js@2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-2.6.0.tgz#25eaa1cc3550e39410ceefafd1cfbb6b6d15f001"
+  dependencies:
+    async "~0.2.6"
+    source-map "~0.5.1"
+    uglify-to-browserify "~1.0.0"
+    yargs "~3.10.0"
 
 uglify-js@^2.6:
   version "2.8.29"
