@@ -56,6 +56,7 @@ class POZ {
     this.error = error
     this.templateDir = templateDir
     this.userConfig = userConfig
+    return this
   }
 
   initializeContext() {
@@ -136,7 +137,7 @@ class POZ {
     this.validatePackage()
 
     event.on(RENDER_FAILURE, this.handleRenderFailure.bind(this))
-    event.on(RENDER_SUCCESS, this.handleRenderFailure.bind(this))
+    event.on(RENDER_SUCCESS, this.handleRenderSuccess.bind(this))
 
     this.error.throwIfError()
     this.initializeContext()
