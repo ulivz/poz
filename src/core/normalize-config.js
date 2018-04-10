@@ -61,14 +61,19 @@ function getDefaultRenameConfig(context) {
 
 export function getNormalizedConfig(userConfig = {}, context) {
   let {
-    render,
+    template,
+    renderTransformer,
     outDir = context.cwd,
     rename = null,
     filters = null,
     ...rest
   } = userConfig
 
-  render = getRender(render)
+  let render = getRender(template)
+
+  if (renderTransformer) {
+    render = renderTransformer(render)
+  }
 
   if (isFunction(outDir)) outDir = outDir()
   if (isFunction(rename)) rename = rename()

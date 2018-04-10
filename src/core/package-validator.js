@@ -6,8 +6,8 @@ import { getPackageValidateError } from './error'
 import { isDev } from './env'
 
 class POZPackageError {
-  constructor(packagePath) {
-    this.packagePath = packagePath
+  constructor(src) {
+    this.src = src
     this.errors = []
   }
 
@@ -42,56 +42,59 @@ class POZPackageError {
   }
 }
 
-export function validatePackage(packagePath, {
-  entryFileName = PACKAGE_ENTRY_FILE_NAME,
-  templateDirName = TEMPLATE_DIRECTORY_NAME,
+export default function validatePackage(src, {
+  entryFileName,
+  templateDirName,
   exportArguements = []
 } = {}) {
   const error = new POZPackageError()
   // 1. Check if the package path exists
-  if (!fs.existsSync(packagePath)) {
-    error.push('NOT_FOUND', packagePath)
+  if (!fs.existsSync(src)) {
+    error.push('NOT_FOUND', src)
 
     // 2. If the package path exists, Check if the package path is a directory
-  } else if (!fs.isDirectory(packagePath)) {
-    error.push('MUST_BE_DIRECTORY', packagePath)
+  } else if (!fs.isDirectory(src)) {
+    error.push('MUST_BE_DIRECTORY', src)
   }
 
   // 3. Check if entry file exists
-  const indexFile = resolve(packagePath, entryFileName)
+  let entryFile
   let userConfig
 
-  if (!fs.existsSync(indexFile)) {
-    error.push('MISSING_ENTRY_FILE', indexFile)
-  } else {
-
-    // 4. Check if entry file exports a plain object or function
-    try {
-      userConfig = require(indexFile)
-
-      if (isPlainObject(userConfig)) {
-        if (JSON.stringify(userConfig) === '{}') {
-          error.push('CANNOT_EXPORT_EMPTY_OBJECT', entryFileName)
+  for (const filename of entryFileName) {
+    entryFile = resolve(src, filename)
+    if (fs.existsSync(entryFile)) {
+      try {
+        userConfig = require(entryFile)
+      } catch (error) {
+        if (error.name === 'TypeError') {
+          error.push('ENTRY_FILE_THROW_ERROR')
+          console.log('\n')
+          console.log(error)
+        } else {
+          throw error
         }
-      } else if (isFunction(userConfig)) {
-        userConfig = userConfig(...exportArguements)
-      } else {
-        error.push('UNEXPECTED_ENTRY_FILE')
       }
-    } catch (error) {
-      if (error.name === 'TypeError') {
-        error.push('ENTRY_FILE_THROW_ERROR')
-        console.log('\n')
-        console.log(error)
-      } else {
-        throw error
+      break
+    }
+  }
+
+  if (!userConfig) {
+    error.push('MISSING_ENTRY_FILE')
+  } else {
+    if (isPlainObject(userConfig)) {
+      if (JSON.stringify(userConfig) === '{}') {
+        error.push('CANNOT_EXPORT_EMPTY_OBJECT', entryFileName)
       }
+    } else if (isFunction(userConfig)) {
+      userConfig = userConfig(...exportArguements)
+    } else {
+      error.push('UNEXPECTED_ENTRY_FILE')
     }
   }
 
   // 5. Check if the 'template' directory exists
-  const templateDir = resolve(packagePath, templateDirName)
-
+  const templateDir = resolve(src, templateDirName)
 
   if (userConfig && !fs.existsSync(templateDir)) {
     // when 'userConfig.noTemplate' = true, means that this package is an non-template package.
@@ -103,7 +106,7 @@ export function validatePackage(packagePath, {
 
   return {
     error,
-    indexFile,
+    entryFile,
     templateDir,
     userConfig
   }

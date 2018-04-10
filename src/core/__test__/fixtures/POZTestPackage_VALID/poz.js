@@ -8,8 +8,8 @@ module.exports = function (ctx) {
 
   return {
 
-    get target() {
-      return ctx.dirpath + '/dist'
+    get outDir() {
+      return ctx.src + '/dist'
     },
 
     get rename() {

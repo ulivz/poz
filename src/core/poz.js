@@ -5,10 +5,9 @@ import { LIFE_CYCLE } from './presets'
 import { RENDER_FAILURE, RENDER_SUCCESS } from './event-names'
 import { isDev, isTest } from './env'
 import * as env from './env'
-import * as presets from './presets'
 import event from './event'
 import Context from './context.js'
-import { validatePackage } from './package-validator'
+import validatePackage  from './package-validator'
 import utils, { logger as log, prompts, datatypes, consolelog, assert, getGitUser } from '../utils/index'
 
 const { promptsRunner, mockPromptsRunner, promptsTransformer } = prompts
@@ -25,12 +24,23 @@ class POZ {
     this.status = null
     this.app = null
     this.error = null
+    this.plugins = []
     this.cwd = process.cwd()
     this.context = Context()
+    this.entryFileName = ['poz.js']
+    this.templateDirName = 'template'
     if (arguments[1] === false) {
       this.write = false
     }
-    this.validatePackage()
+    return this
+  }
+
+  use(plugin) {
+    this.plugins.push(plugin)
+  }
+
+  addEntryFileName(name) {
+    this.entryFileName.push(name)
   }
 
   validatePackage() {
@@ -39,6 +49,8 @@ class POZ {
       templateDir,
       userConfig
     } = validatePackage(this.src, {
+      entryFileName: this.entryFileName,
+      templateDirName: this.templateDirName,
       exportArguements: [this.context, utils]
     })
     this.error = error
@@ -87,7 +99,7 @@ class POZ {
     log.echo(error)
   }
 
-  disposeUserConfig() {
+  normalizeUserConfig() {
     this.normalizedConfig = getNormalizedConfig(this.userConfig, this.context)
     this.context.set('config', this.normalizedConfig)
   }
@@ -120,6 +132,9 @@ class POZ {
   }
 
   launch() {
+    this.plugins.forEach(plugin => plugin())
+    this.validatePackage()
+
     event.on(RENDER_FAILURE, this.handleRenderFailure.bind(this))
     event.on(RENDER_SUCCESS, this.handleRenderFailure.bind(this))
 
@@ -133,7 +148,7 @@ class POZ {
       .then(answers => {
         this.context.assign(answers)
         event.emit('onPromptEnd')
-        this.disposeUserConfig()
+        this.normalizeUserConfig()
         event.emit('onDestStart')
         return this.dest()
       })
