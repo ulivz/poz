@@ -7,7 +7,6 @@ Object {
 - description: my awesome project
 - author: POZ
 ",
-  "src": null,
   "src/index.js": "module.exports = function fixtures() {
   // Go hacking!
 }",
