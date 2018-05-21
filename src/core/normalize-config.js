@@ -1,6 +1,16 @@
+import transformer from 'jstransformer'
 import event from './event'
 import { RENDER_FAILURE, RENDER_SUCCESS } from './event-names'
 import { isString, isPlainObject, isFunction, isNullOrUndefined } from '../utils/datatypes'
+
+function getRender(render = 'handlebars') {
+  if (isString(render)) {
+    const renderEngine = transformer(require(`jstransformer-${render}`))
+    // Implement a unified interface
+    return (str, ctx) => renderEngine.render(str, {}, ctx).body
+  }
+  return render
+}
 
 /**
  * A curry function that accpets a pure render function, and
@@ -34,25 +44,36 @@ function curryTransformer(render, context) {
 
 function getDefaultRenameConfig(context) {
   const rename = {}
-  Object.keys(context).forEach(key => rename[`{${key}}`] = context[key])
+  Object.keys(context).forEach(key => {
+    if (isString(context[key])) {
+      rename[`{${key}}`] = context[key]
+    }
+  })
   return rename
 }
 
 /**
  * Merge and handle the initial config and user config
- * @param {Object} initConfig
  * @param {Object} userConfig
  * @param {Context} context
  * @returns {Object} normalized Config
  */
 
-export function getNormalizedConfig(initConfig, userConfig = {}, context) {
-  let { render, outDir, rename, filters } = userConfig
+export function getNormalizedConfig(userConfig = {}, context) {
+  let {
+    template,
+    renderTransformer,
+    outDir = context.cwd,
+    rename = null,
+    filters = null,
+    ...rest
+  } = userConfig
 
-  if (!render) render = initConfig.render
-  if (!outDir) outDir = initConfig.outDir
-  if (!rename) rename = initConfig.rename
-  if (!filters) filters = initConfig.filters
+  let render = getRender(template)
+
+  if (renderTransformer) {
+    render = renderTransformer(render)
+  }
 
   if (isFunction(outDir)) outDir = outDir()
   if (isFunction(rename)) rename = rename()
@@ -85,10 +106,11 @@ export function getNormalizedConfig(initConfig, userConfig = {}, context) {
   render = curryTransformer(render, context)
   rename = Object.assign(rename || {}, getDefaultRenameConfig(context))
 
-  return Object.assign({}, initConfig, {
+  return {
     render,
     outDir,
     rename,
-    filters
-  })
+    filters,
+    ...rest
+  }
 }

@@ -6,8 +6,9 @@ import gitConfigPath from 'git-config-path'
  * @returns {name, email}
  */
 export function getGitUser() {
-  return Object.assign(
-    { name: '', email: '' },
-    parseGitConfig.sync({ cwd: '/', path: gitConfigPath('global') }).user
-  )
+  return {
+    name: '',
+    email: '',
+    ...parseGitConfig.sync({ cwd: '/', path: gitConfigPath('global') }).user
+  }
 }

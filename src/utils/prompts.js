@@ -8,10 +8,10 @@ import inquirer from 'inquirer'
 export function promptsTransformer(promptsMetadata) {
   let prompts = []
   for (let promptName of Object.keys(promptsMetadata)) {
-    prompts.push(Object.assign({
-        name: promptName
-      }, promptsMetadata[promptName])
-    )
+    prompts.push({
+      name: promptName,
+      ...promptsMetadata[promptName]
+    })
   }
   return prompts
 }

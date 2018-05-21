@@ -8,8 +8,8 @@ module.exports = function (ctx) {
 
   return {
 
-    get target() {
-      return ctx.$sourceDir + '/dist'
+    get outDir() {
+      return ctx.src + '/dist'
     },
 
     get rename() {
@@ -22,7 +22,7 @@ module.exports = function (ctx) {
       return {
         name: {
           message: "What's your project name",
-          default: ctx.$dirname
+          default: ctx.dirname
         },
         description: {
           message: 'How would you describe your project',

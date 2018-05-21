@@ -89,10 +89,10 @@ export default class PackageManager {
         spinner.stop()
         clearTimeout(timer)
 
-        let { errors } = PackageValidator(_package.cachePath)
-        if (errors && errors.length) {
-          return Promise.reject(errorList)
-        }
+        // let { errors } = PackageValidator(_package.cachePath)
+        // if (errors && errors.length) {
+        //   return Promise.reject(errorList)
+        // }
 
         this.cache.cachePackageInfo(_package)
         return _package
